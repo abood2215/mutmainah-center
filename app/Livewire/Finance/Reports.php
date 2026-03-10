@@ -25,7 +25,7 @@ class Reports extends Component
     public function updatingReportType()  { $this->resetPage(); $this->searched = false; }
     public function updatingSearch()      { $this->resetPage(); }
 
-    public function search(): void
+    public function runSearch(): void
     {
         $this->searched = true;
         $this->resetPage();
@@ -164,24 +164,26 @@ class Reports extends Component
         $query = DB::table('rec as r')
             ->leftJoin('kstu as s', 's.id', '=', 'r.st_id')
             ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
-            ->where('r.confirm_id', 1)
+            ->where('r.confirm_id', 0)
             ->select(
                 'r.id', 'r.rec_date', 'r.rec_time', 'r.state_id',
-                's.full_name as patient_name', 's.file_id',
+                's.full_name as patient_name', 's.file_id', 's.phone',
                 'c.name as clinic_name'
             )
-            ->orderBy('r.id', 'desc');
+            ->orderByRaw("STR_TO_DATE(r.rec_date, '%e-%c-%Y') DESC")
+            ->orderBy('r.rec_time');
 
         $this->applyDateFilter($query, 'r.rec_date');
         if ($this->filterClinic) $query->where('r.clinic_id', $this->filterClinic);
         if ($this->search) {
             $t = '%' . $this->search . '%';
             $query->where(fn($q) => $q->where('s.full_name', 'like', $t)
+                ->orWhere('s.phone', 'like', $t)
                 ->orWhere('s.file_id', 'like', $t));
         }
 
-        $rows  = $query->paginate(20);
-        $total = DB::table('rec')->where('confirm_id', 1)
+        $rows  = $query->paginate(25);
+        $total = DB::table('rec')->where('confirm_id', 0)
             ->when($this->filterClinic, fn($q) => $q->where('clinic_id', $this->filterClinic))
             ->when($this->dateFrom, fn($q) => $q->whereRaw("STR_TO_DATE(rec_date, '%e-%c-%Y') >= ?", [$this->dateFrom]))
             ->when($this->dateTo,   fn($q) => $q->whereRaw("STR_TO_DATE(rec_date, '%e-%c-%Y') <= ?", [$this->dateTo]))

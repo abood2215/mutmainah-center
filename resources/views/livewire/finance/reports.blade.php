@@ -58,7 +58,7 @@
                 </div>
                 @endif
                 <div style="display:flex; align-items:flex-end;">
-                    <button wire:click="search" class="btn btn-primary" style="height:38px;">🔍 بحث</button>
+                    <button wire:click="runSearch" class="btn btn-primary" style="height:38px;">🔍 بحث</button>
                 </div>
             </div>
         </div>
@@ -183,21 +183,25 @@
 
                     @elseif($reportType === 'appointments')
                     <thead><tr style="background:#fafbfc; border-bottom:2px solid var(--border);">
-                        <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">رقم الملف</th>
+                        <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">#</th>
                         <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">العميل</th>
+                        <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">الجوال</th>
                         <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">التاريخ</th>
+                        <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">الوقت</th>
                         <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">العيادة</th>
                         <th style="padding:0.7rem 1rem; text-align:center; font-weight:800; color:var(--text-dim);">الحالة</th>
                     </tr></thead>
                     <tbody>@forelse($rows as $r)
                         <tr style="border-bottom:1px solid #f0f2f5;" onmouseover="this.style.background='#fafbfc'" onmouseout="this.style.background=''">
-                            <td style="padding:0.65rem 1rem; color:#1565c0; font-weight:700;">#{{ $r->file_id }}</td>
+                            <td style="padding:0.65rem 1rem; color:#1565c0; font-weight:700;">{{ $r->file_id ? '#'.$r->file_id : $r->id }}</td>
                             <td style="padding:0.65rem 1rem; font-weight:800; color:var(--navy);">{{ $r->patient_name ?: '—' }}</td>
-                            <td style="padding:0.65rem 1rem; color:#1565c0; font-weight:700; white-space:nowrap; direction:ltr; unicode-bidi:isolate;">{{ fmt_date($r->rec_date) }}{{ $r->rec_time ? ' - '.$r->rec_time : '' }}</td>
+                            <td style="padding:0.65rem 1rem; color:var(--text-dim); direction:ltr; unicode-bidi:isolate;">{{ $r->phone ?: '—' }}</td>
+                            <td style="padding:0.65rem 1rem; color:#1565c0; font-weight:700; white-space:nowrap;">{{ fmt_date($r->rec_date) }}</td>
+                            <td style="padding:0.65rem 1rem; font-weight:700; color:var(--navy); direction:ltr; unicode-bidi:isolate;">{{ $r->rec_time ? preg_replace('/^(\d+):(\d)$/', '$1:0$2', $r->rec_time) : '—' }}</td>
                             <td style="padding:0.65rem 1rem; color:var(--text-dim);">{{ $r->clinic_name ?: '—' }}</td>
-                            <td style="padding:0.65rem 1rem; text-align:center;">@if($r->state_id==1)<span class="badge badge-green">منتهي</span>@else<span class="badge badge-amber">جارٍ</span>@endif</td>
+                            <td style="padding:0.65rem 1rem; text-align:center;"><span style="background:#fffbeb; color:#b45309; border:1px solid #fde68a; padding:0.2rem 0.75rem; border-radius:20px; font-size:0.78rem; font-weight:800;">محجوز</span></td>
                         </tr>
-                    @empty<tr><td colspan="5" style="padding:3rem; text-align:center; color:var(--text-muted);">لا توجد بيانات</td></tr>@endforelse</tbody>
+                    @empty<tr><td colspan="7" style="padding:3rem; text-align:center; color:var(--text-muted);">لا توجد بيانات</td></tr>@endforelse</tbody>
 
                     @elseif($reportType === 'clinics')
                     <thead><tr style="background:#fafbfc; border-bottom:2px solid var(--border);">
@@ -296,9 +300,8 @@
             </div>
 
             @if($rows instanceof \Illuminate\Pagination\LengthAwarePaginator && $rows->hasPages())
-            <div style="padding:0.9rem 1.25rem; border-top:1px solid var(--border); background:#fafbfc; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
-                <div style="font-size:0.82rem; color:var(--text-muted);">عرض {{ $rows->firstItem() }}–{{ $rows->lastItem() }} من {{ number_format($rows->total()) }}</div>
-                <div class="custom-pagination">{{ $rows->links() }}</div>
+            <div style="padding:0.85rem 1.25rem; border-top:1px solid var(--border); background:#fafbfc;">
+                {{ $rows->links() }}
             </div>
             @endif
         </div>

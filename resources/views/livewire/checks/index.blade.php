@@ -193,13 +193,8 @@
 
                 <!-- الترقيم -->
                 @if($checks->hasPages())
-                    <div style="padding:1rem 1.5rem; border-top:1px solid var(--border); background:#fcfdfe; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
-                        <div style="font-size:0.8rem; color:var(--text-muted); font-weight: 700;">
-                            عرض النتائج من <span style="color: var(--navy);">{{ $checks->firstItem() }}</span> إلى <span style="color: var(--navy);">{{ $checks->lastItem() }}</span> (إجمالي {{ $checks->total() }})
-                        </div>
-                        <div class="custom-pagination">
-                            {{ $checks->links() }}
-                        </div>
+                    <div style="padding:0.85rem 1.5rem; border-top:1px solid var(--border); background:#fcfdfe;">
+                        {{ $checks->links() }}
                     </div>
                 @endif
             </div>
@@ -209,10 +204,15 @@
         <!-- شريط الإحصائيات (تذييل الإطار) -->
         <div style="background:var(--navy); padding:1rem 2rem; display:flex; align-items:center; justify-content:space-between; color:#fff; flex-wrap:wrap; gap:1.5rem; border-top: 4px solid var(--gold);">
             <div style="display:flex; align-items:center; gap:1.5rem;">
-                <div style="display:flex; align-items:center; gap:0.6rem;">
+                <div wire:click="openWaitingModal"
+                    style="display:flex; align-items:center; gap:0.6rem; cursor:pointer; padding:0.4rem 0.8rem; border-radius:8px; transition:background 0.2s;"
+                    onmouseover="this.style.background='rgba(251,191,36,0.15)'"
+                    onmouseout="this.style.background='transparent'"
+                    title="اضغط لعرض قائمة المنتظرين">
                     <div style="width: 10px; height: 10px; background: #fbbf24; border-radius: 50%;"></div>
                     <span style="font-size:0.85rem; font-weight: 600; opacity:0.8;">في الانتظار اليوم:</span>
                     <span style="font-size:1.4rem; font-weight:900; color:#fbbf24;">{{ $todayWaiting }}</span>
+                    <span style="font-size:0.7rem; opacity:0.5; margin-right:0.2rem;">▲</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:0.6rem;">
                     <div style="width: 10px; height: 10px; background: #34d399; border-radius: 50%;"></div>
@@ -227,6 +227,96 @@
     </div>
 
 </div>
+
+<!-- ══════ MODAL: قائمة الانتظار ══════ -->
+@if($showWaitingModal)
+<div wire:click.self="closeWaitingModal"
+    style="position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center; padding:1rem; animation:fadeIn 0.2s ease;">
+
+    <div style="background:#fff; border-radius:16px; width:100%; max-width:620px; box-shadow:0 20px 60px rgba(0,0,0,0.3); overflow:hidden; animation:slideUp 0.25s cubic-bezier(0.16,1,0.3,1);">
+
+        <!-- رأس الـ modal -->
+        <div style="background:var(--navy); padding:1.1rem 1.5rem; display:flex; align-items:center; justify-content:space-between; border-bottom:3px solid #fbbf24;">
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+                <div style="width:36px; height:36px; background:rgba(251,191,36,0.2); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1.2rem;">⏳</div>
+                <div>
+                    <div style="color:#fff; font-weight:900; font-size:1rem;">قائمة الانتظار اليوم</div>
+                    <div style="color:rgba(255,255,255,0.5); font-size:0.75rem;">{{ now()->locale('ar')->isoFormat('dddd، D MMMM YYYY') }}</div>
+                </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+                <span style="background:rgba(251,191,36,0.2); color:#fbbf24; font-size:0.78rem; font-weight:900; padding:0.25rem 0.75rem; border-radius:20px; border:1px solid rgba(251,191,36,0.3);">
+                    {{ count($waitingList) }} موعد
+                </span>
+                <button wire:click="closeWaitingModal"
+                    style="width:32px; height:32px; border-radius:8px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15); color:rgba(255,255,255,0.7); font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1;">
+                    ✕
+                </button>
+            </div>
+        </div>
+
+        <!-- القائمة -->
+        <div style="max-height:420px; overflow-y:auto;">
+            @forelse($waitingList as $i => $w)
+            <div style="display:flex; align-items:center; gap:1rem; padding:0.85rem 1.5rem; border-bottom:1px solid #f1f5f9; transition:background 0.15s;"
+                onmouseover="this.style.background='#fffbeb'"
+                onmouseout="this.style.background=''">
+
+                <!-- رقم -->
+                <div style="width:28px; height:28px; background:#f1f5f9; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:900; color:var(--text-muted); flex-shrink:0;">
+                    {{ $i + 1 }}
+                </div>
+
+                <!-- الوقت -->
+                <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:0.3rem 0.65rem; font-size:0.82rem; font-weight:900; color:#92400e; white-space:nowrap; flex-shrink:0; direction:ltr;">
+                    {{ $w->rec_time ? preg_replace('/^(\d+):(\d)$/', '$1:0$2', $w->rec_time) : '--:--' }}
+                </div>
+
+                <!-- الاسم -->
+                <div style="flex:1; min-width:0;">
+                    <div style="font-weight:800; color:var(--navy); font-size:0.92rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                        {{ $w->full_name ?: 'غير محدد' }}
+                    </div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.1rem; display:flex; gap:0.75rem;">
+                        @if($w->clinic_name)<span>🏥 {{ $w->clinic_name }}</span>@endif
+                        @if($w->phone)<span>📞 {{ $w->phone }}</span>@endif
+                    </div>
+                </div>
+
+                <!-- رقم الملف -->
+                @if($w->file_id)
+                <div style="font-size:0.75rem; color:#1565c0; font-weight:800; background:#e3f2fd; padding:0.2rem 0.6rem; border-radius:6px; white-space:nowrap; flex-shrink:0;">
+                    #{{ $w->file_id }}
+                </div>
+                @endif
+
+            </div>
+            @empty
+            <div style="padding:3rem; text-align:center; color:var(--text-muted);">
+                <div style="font-size:2.5rem; opacity:0.2; margin-bottom:0.5rem;">✅</div>
+                <div style="font-weight:800;">لا يوجد أحد في الانتظار</div>
+            </div>
+            @endforelse
+        </div>
+
+        <!-- ذيل -->
+        <div style="padding:0.85rem 1.5rem; background:#f8fafc; border-top:1px solid var(--border); text-align:center;">
+            <button wire:click="closeWaitingModal"
+                style="background:var(--navy); color:#fff; border:none; border-radius:8px; padding:0.55rem 2rem; font-family:'Tajawal',sans-serif; font-weight:800; font-size:0.88rem; cursor:pointer;">
+                إغلاق
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<style>
+@keyframes slideUp {
+    from { opacity:0; transform:translateY(20px) scale(0.97); }
+    to   { opacity:1; transform:translateY(0) scale(1); }
+}
+</style>
+@endif
 
 <style>
     .form-input {
@@ -243,10 +333,5 @@
     .form-input:focus {
         border-color: var(--primary);
         box-shadow: 0 0 0 4px var(--primary-glow);
-    }
-    /* إخفاء أي تذييل تلقائي من نظام Laravel افتراضياً داخل حاوية الترقيم */
-    .custom-pagination nav > div:first-child,
-    .custom-pagination div[role="navigation"] > div:first-child {
-        display: none !important;
     }
 </style>

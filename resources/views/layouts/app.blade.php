@@ -219,6 +219,47 @@
             position: relative;
         }
 
+        /* User Dropdown */
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-dd-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            min-width: 200px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--primary);
+            border-radius: 0 0 12px 12px;
+            box-shadow: var(--shadow-lg);
+            z-index: 400;
+            overflow: hidden;
+            animation: dropIn 0.2s ease;
+        }
+
+        .user-dd-menu.open { display: block; }
+
+        .user-dd-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.7rem 1.2rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: all 0.2s;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .user-dd-item:hover {
+            background: #fef2f2;
+            padding-right: 1.6rem;
+        }
+
+        .user-dd-item:last-child { border-bottom: none; }
+
         .online-dot {
             width: 8px;
             height: 8px;
@@ -358,6 +399,80 @@
         ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #aaa; }
 
+        /* ═══ PAGINATION ═══ */
+        .mtm-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .mtm-pg-info {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .mtm-pg-info strong {
+            color: var(--text-dim);
+            font-weight: 800;
+        }
+
+        .mtm-pg-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+        }
+
+        .mtm-pg-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 34px;
+            padding: 0 0.6rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-decoration: none;
+            border: 1.5px solid var(--border);
+            background: #fff;
+            color: var(--text-dim);
+            transition: all 0.18s;
+            cursor: pointer;
+        }
+
+        a.mtm-pg-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-glow);
+        }
+
+        .mtm-pg-active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff !important;
+            cursor: default;
+            box-shadow: 0 2px 8px var(--primary-glow);
+        }
+
+        .mtm-pg-disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            background: #f8f9fa;
+        }
+
+        .mtm-pg-dots {
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: default;
+            min-width: 20px;
+        }
+
         /* ═══ RESPONSIVE ═══ */
         @media (max-width: 1024px) {
             .topbar-nav { display: none; }
@@ -462,11 +577,7 @@
                     <li><a href="{{ route('finance.reports') }}?type=services"     wire:navigate><span>🔬</span> الخدمات</a></li>
                     <li><a href="{{ route('finance.reports') }}?type=appointments" wire:navigate><span>📅</span> المواعيد</a></li>
                     <li><a href="{{ route('finance.reports') }}?type=clinics"      wire:navigate><span>🏛️</span> العيادات</a></li>
-                    <li><a href="{{ route('finance.reports') }}?type=claims"       wire:navigate><span>📋</span> المطالبات</a></li>
                     <li><a href="{{ route('finance.reports') }}?type=pfs"          wire:navigate><span>📊</span> البيان المالي</a></li>
-                    <li><a href="{{ route('finance.reports') }}?type=patients"     wire:navigate><span>📁</span> الملفات</a></li>
-                    <li><a href="{{ route('finance.reports') }}?type=income"       wire:navigate><span>💵</span> الدخل</a></li>
-                    <li><a href="{{ route('finance.reports') }}?type=till"         wire:navigate><span>🗃️</span> الدرج</a></li>
                 </ul>
             </li>
 
@@ -476,13 +587,9 @@
                 </a>
                 <ul class="dd-menu">
                     <li><a href="#"><span>🔬</span> الخدمات</a></li>
-                    <li><a href="#"><span>🏥</span> العيادات</a></li>
-                    <li><a href="#"><span>🕐</span> الفترات</a></li>
-                    <li><a href="#"><span>🏢</span> الشركات</a></li>
+                    <li><a href="{{ route('clinics.index') }}" wire:navigate><span>🏥</span> العيادات</a></li>
                     <li><a href="{{ route('employees.index') }}" wire:navigate><span>👨‍⚕️</span> الموظفين</a></li>
                     <li><a href="#"><span>💼</span> الوظائف</a></li>
-                    <li><a href="#"><span>💾</span> باك آب</a></li>
-                    <li><a href="#"><span>🏛️</span> المنشأة</a></li>
                     <li><a href="{{ route('system.users') }}" wire:navigate><span>👤</span> المستخدمين</a></li>
                 </ul>
             </li>
@@ -490,11 +597,32 @@
 
         <div class="topbar-right">
             <div class="topbar-date">📅 {{ now()->locale('ar')->isoFormat('D MMM YYYY') }}</div>
-            <div class="user-chip">
-                <div style="position: relative;">
-                    <div class="user-avatar">م<span class="online-dot"></span></div>
+
+            <!-- User Dropdown -->
+            <div class="user-dropdown" id="userDropdown">
+                <div class="user-chip" id="userChipBtn" onclick="toggleUserMenu()" style="cursor:pointer;">
+                    <div style="position: relative;">
+                        <div class="user-avatar">
+                            {{ mb_substr(auth()->user()?->getName() ?? 'م', 0, 1) }}
+                            <span class="online-dot"></span>
+                        </div>
+                    </div>
+                    <span class="user-name">{{ auth()->user()?->getName() ?? 'مدير النظام' }}</span>
+                    <span style="color:rgba(255,255,255,0.4); font-size:0.65rem; margin-right:0.1rem;">▾</span>
                 </div>
-                <span class="user-name">مدير النظام</span>
+
+                <div class="user-dd-menu" id="userDdMenu">
+                    <div style="padding:0.75rem 1rem; border-bottom:1px solid #f0f0f0;">
+                        <div style="font-weight:800; color:var(--navy); font-size:0.88rem;">{{ auth()->user()?->getName() ?? 'مدير النظام' }}</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.15rem;">مسؤول النظام</div>
+                    </div>
+                    <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                        @csrf
+                        <button type="submit" class="user-dd-item" style="width:100%; border:none; background:none; cursor:pointer; text-align:right; font-family:'Tajawal',sans-serif; color:#dc2626;">
+                            <span>🚪</span> تسجيل الخروج
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </header>
@@ -573,6 +701,17 @@
         mobileBtn.addEventListener('click', () => {
             topNav.classList.toggle('mobile-active');
             mobileBtn.innerText = topNav.classList.contains('mobile-active') ? '✕' : '☰';
+        });
+
+        function toggleUserMenu() {
+            document.getElementById('userDdMenu').classList.toggle('open');
+        }
+
+        document.addEventListener('click', function(e) {
+            const dd = document.getElementById('userDropdown');
+            if (dd && !dd.contains(e.target)) {
+                document.getElementById('userDdMenu')?.classList.remove('open');
+            }
         });
     </script>
 </body>

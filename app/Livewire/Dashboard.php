@@ -15,22 +15,19 @@ class Dashboard extends Component
 
         $today = now()->format('j-n-Y');
 
-        $todayChecks = DB::table('rec')
-            ->where('rec_date', $today)
-            ->where('confirm_id', 1)
-            ->count();
-
+        // تم الكشف = نزل بقائمة الكشوف (دفع) confirm_id=1
         $todayDone = DB::table('rec')
             ->where('rec_date', $today)
             ->where('confirm_id', 1)
-            ->where('state_id', 1)
             ->count();
 
+        // في الانتظار = حاجز موعد اليوم ولسا ما دفع confirm_id=0
         $todayWaiting = DB::table('rec')
             ->where('rec_date', $today)
-            ->where('confirm_id', 1)
-            ->where('state_id', 0)
+            ->where('confirm_id', 0)
             ->count();
+
+        $todayChecks = $todayDone + $todayWaiting;
 
         // إيرادات هذا الشهر — pdate بصيغة j-n-Y
         $currentMonth = now()->format('n');

@@ -18,6 +18,35 @@ class Index extends Component
     public $filterDate = '';
     public $selectedClinic = '';
 
+    public bool  $showTodayModal = false;
+    public array $todayList      = [];
+
+    public function updatingSearch(): void       { $this->resetPage(); }
+    public function updatingFilterDate(): void   { $this->resetPage(); }
+    public function updatingSelectedClinic(): void { $this->resetPage(); }
+
+    public function openTodayModal(): void
+    {
+        $today = now()->format('j-n-Y');
+
+        $this->todayList = DB::table('rec as r')
+            ->leftJoin('kstu as k', 'k.id', '=', 'r.st_id')
+            ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
+            ->where('r.rec_date', $today)
+            ->where('r.confirm_id', 0)
+            ->select('k.full_name', 'k.phone', 'k.file_id', 'r.rec_time', 'r.state_id', 'c.name as clinic_name')
+            ->orderBy('r.rec_time')
+            ->get()
+            ->toArray();
+
+        $this->showTodayModal = true;
+    }
+
+    public function closeTodayModal(): void
+    {
+        $this->showTodayModal = false;
+    }
+
     #[Title('جدول المواعيد : Appointments')]
     public function render()
     {
@@ -50,12 +79,25 @@ class Index extends Component
             $query->where('r.clinic_id', $this->selectedClinic);
         }
 
-        $appointments = $query->orderBy('r.id', 'desc')->paginate(15);
-        $clinics = DB::table('clinic')->orderBy('name')->get();
+        $appointments = $query->orderBy('r.rec_date', 'desc')->orderBy('r.rec_time', 'asc')->paginate(20);
+        $clinics      = DB::table('clinic')->orderBy('name')->get();
+
+        $todayCount = DB::table('rec')
+            ->where('rec_date', $today)
+            ->where('confirm_id', 0)
+            ->count();
+
+        $doneCount = DB::table('rec')
+            ->where('rec_date', $today)
+            ->where('confirm_id', 0)
+            ->where('state_id', 1)
+            ->count();
 
         return view('livewire.appointments.index', [
-            'clinics' => $clinics,
-            'appointments' => $appointments
+            'clinics'      => $clinics,
+            'appointments' => $appointments,
+            'todayCount'   => $todayCount,
+            'doneCount'    => $doneCount,
         ])->layout('layouts.app');
     }
 }

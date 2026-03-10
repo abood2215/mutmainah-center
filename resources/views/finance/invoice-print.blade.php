@@ -255,7 +255,10 @@ body {
                 <td class="lbl">الوقت</td>
                 <td class="val ltr">
                     @if($rec->rec_time)
-                        @php echo \Carbon\Carbon::createFromFormat('H:i', substr($rec->rec_time,0,5))->format('h:i A'); @endphp
+                        @php
+                            $t = preg_replace('/^(\d+):(\d)$/', '$1:0$2', trim($rec->rec_time));
+                            echo \Carbon\Carbon::createFromFormat('H:i', substr($t,0,5))->format('h:i A');
+                        @endphp
                     @else — @endif
                 </td>
                 <td class="lbl">رقم الإحالة</td>
