@@ -1,0 +1,20 @@
+ID: 106370 | Name: عبدالله سلوم محمد الزغبى
+  - Amt: 0 | Prc: 50 | Vno: []
+ID: 106371 | Name: مها بدر
+  - Amt: 0 | Prc: 40 | Vno: []
+ID: 106373 | Name: لولوة المانع
+  - Amt: 0 | Prc: 0 | Vno: []
+ID: 106374 | Name: ابو شيخة الهذال
+  - Amt: 0 | Prc: 0 | Vno: []
+ID: 106378 | Name: شيخة خالد
+  - Amt: 50 | Prc: 50 | Vno: []
+ID: 106379 | Name: ماريا ايوب بن نخي
+  - Amt: 0 | Prc: 40 | Vno: []
+ID: 106380 | Name: خالد سعود الرماح
+  - Amt: 0 | Prc: 40 | Vno: []
+ID: 106381 | Name: سها بنت موسي
+  - Amt: 0 | Prc: 40 | Vno: []
+ID: 106383 | Name: شجون العتيبي
+  - Amt: 50 | Prc: 50 | Vno: []
+ID: 106384 | Name: حوراء
+  - Amt: 0 | Prc: 40 | Vno: []

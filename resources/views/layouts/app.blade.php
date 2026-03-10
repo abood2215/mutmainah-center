@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ $title ?? 'مركز مطمئنة الاستشاري' }}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --primary:    #8b1c2b;
+            --primary-light: #b02535;
+            --primary-glow: rgba(139,28,43,0.15);
+            --navy:       #1a1a2e;
+            --gold:       #c8941a;
+            --bg:         #f4f6f9;
+            --bg-card:    #ffffff;
+            --text:       #1e2a38;
+            --text-dim:   #546e7a;
+            --text-muted: #90a4ae;
+            --border:     #dde3ea;
+            --border-strong: #c5cdd8;
+            --success:    #2e7d32;
+            --danger:     #c62828;
+            --shadow-sm:  0 1px 4px rgba(0,0,0,0.08);
+            --shadow:     0 4px 16px rgba(0,0,0,0.1);
+            --shadow-lg:  0 8px 32px rgba(0,0,0,0.12);
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes slideDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeIn    { from { opacity:0; } to { opacity:1; } }
+        @keyframes dropIn    { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes pulse     { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+        /* ═══ TOP BAR ═══ */
+        .topbar {
+            background: var(--navy);
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 58px;
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            animation: slideDown 0.3s ease;
+        }
+
+        .topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .topbar-brand img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid rgba(200,148,26,0.4);
+        }
+
+        .topbar-brand .t-name {
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.1;
+        }
+
+        .topbar-brand .t-gold {
+            font-size: 0.65rem;
+            color: var(--gold);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* Nav */
+        .topbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            height: 100%;
+            list-style: none;
+        }
+
+        .topbar-nav > li {
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .topbar-nav > li > a {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0 1rem;
+            height: 100%;
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.88rem;
+            transition: all 0.25s;
+            position: relative;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+        }
+
+        .topbar-nav > li > a:hover,
+        .topbar-nav > li.active > a {
+            color: #fff;
+            border-bottom-color: var(--gold);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .topbar-nav > li > a .nav-icon { font-size: 0.95rem; }
+
+        /* Dropdown */
+        .dd-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 240px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--primary);
+            border-radius: 0 0 12px 12px;
+            box-shadow: var(--shadow-lg);
+            list-style: none;
+            overflow: hidden;
+            z-index: 300;
+        }
+
+        .topbar-nav > li:hover .dd-menu {
+            display: block;
+            animation: dropIn 0.2s ease;
+        }
+
+        .dd-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.7rem 1.2rem;
+            color: var(--text-dim);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.2s;
+        }
+
+        .dd-menu li a:hover {
+            background: #fef5f5;
+            color: var(--primary);
+            padding-right: 1.6rem;
+        }
+
+        .dd-menu li:last-child a { border-bottom: none; }
+
+        /* Right */
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .topbar-date {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 50px;
+            padding: 0.25rem 0.9rem;
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.7);
+            font-weight: 600;
+        }
+
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: default;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 900;
+            font-size: 0.85rem;
+            position: relative;
+        }
+
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background: #4caf50;
+            border-radius: 50%;
+            border: 2px solid var(--navy);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            animation: pulse 2s infinite;
+        }
+
+        .user-name {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: rgba(255,255,255,0.85);
+        }
+
+        .mobile-toggle {
+            display: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            font-size: 1.3rem;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ═══ CONTENT ═══ */
+        .page-content {
+            flex: 1;
+            padding: 1.5rem 2rem;
+            animation: fadeIn 0.4s ease;
+        }
+
+        /* ═══ FOOTER ═══ */
+        .page-footer {
+            background: var(--navy);
+            padding: 0.75rem 2rem;
+            text-align: center;
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.45);
+        }
+
+        .page-footer strong { color: rgba(255,255,255,0.7); }
+
+        /* ═══ UTILITY ═══ */
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: box-shadow 0.25s;
+        }
+
+        .card:hover { box-shadow: var(--shadow); }
+
+        .card-header {
+            padding: 0.9rem 1.4rem;
+            border-bottom: 1px solid var(--border);
+            background: #fafbfc;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title { font-size: 0.95rem; font-weight: 800; color: var(--text); }
+        .card-body  { padding: 1.4rem; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.55rem 1.3rem;
+            border-radius: 8px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.25s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 3px 10px var(--primary-glow);
+        }
+        .btn-primary:hover { background: var(--primary-light); transform: translateY(-1px); box-shadow: 0 5px 15px var(--primary-glow); }
+
+        .btn-secondary {
+            background: #f0f2f5;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover { background: #e8eaed; }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.2rem 0.65rem;
+            border-radius: 6px;
+            font-size: 0.74rem;
+            font-weight: 700;
+        }
+
+        .badge-green  { background: #e8f5e9; color: var(--success); }
+        .badge-red    { background: #ffebee; color: var(--danger); }
+        .badge-blue   { background: #e3f2fd; color: #1565c0; }
+        .badge-amber  { background: #fff8e1; color: #e65100; }
+        .badge-gray   { background: #f5f5f5; color: var(--text-dim); }
+
+        .form-input {
+            width: 100%;
+            padding: 0.65rem 1rem;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.25s, box-shadow 0.25s;
+            background: #fff;
+            color: var(--text);
+        }
+        .form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
+        .form-input::placeholder { color: var(--text-muted); }
+
+
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #f0f0f0; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #aaa; }
+
+        /* ═══ RESPONSIVE ═══ */
+        @media (max-width: 1024px) {
+            .topbar-nav { display: none; }
+            .mobile-toggle { display: flex; }
+
+            .topbar-nav.mobile-active {
+                display: flex;
+                flex-direction: column;
+                position: fixed;
+                top: 58px;
+                left: 0; right: 0;
+                background: var(--navy);
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                padding: 0.75rem;
+                z-index: 1000;
+                gap: 0.25rem;
+                animation: slideDown 0.25s ease;
+            }
+
+            .topbar-nav.mobile-active li { width: 100%; }
+            .topbar-nav.mobile-active > li > a {
+                padding: 0.85rem 1rem;
+                border-radius: 8px;
+                border-bottom: none;
+            }
+            .topbar-nav.mobile-active .dd-menu {
+                position: static;
+                display: block;
+                background: rgba(255,255,255,0.04);
+                box-shadow: none;
+                border: none;
+                border-radius: 8px;
+                margin-top: 0.25rem;
+            }
+            .topbar-nav.mobile-active .dd-menu li a {
+                color: rgba(255,255,255,0.65);
+                border-bottom-color: rgba(255,255,255,0.06);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-content { padding: 1rem; }
+            .topbar { padding: 0 1rem; }
+            .user-name { display: none; }
+            .topbar-date { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ═══════ TOP BAR ═══════ -->
+    <header class="topbar">
+        <a href="{{ route('dashboard') }}" wire:navigate class="topbar-brand">
+            <img src="/logo.jpg" alt="مطمئنة">
+            <div>
+                <div class="t-name">مطمئنة</div>
+                <div class="t-gold">المركز الاستشاري</div>
+            </div>
+        </a>
+
+        <button class="mobile-toggle" id="mobileMenuBtn">☰</button>
+
+        <ul class="topbar-nav" id="topNav">
+            <li class="{{ request()->routeIs('checks.*') ? 'active' : '' }}">
+                <a href="{{ route('checks.index') }}" wire:navigate>
+                    <span class="nav-icon">📋</span> الكشوف
+                </a>
+            </li>
+
+            <li class="{{ request()->routeIs('patients.*') ? 'active' : '' }}">
+                <a href="{{ route('patients.index') }}" wire:navigate>
+                    <span class="nav-icon">👥</span> العملاء
+                </a>
+            </li>
+
+            <li class="{{ request()->routeIs('appointments.*') ? 'active' : '' }}">
+                <a href="{{ route('appointments.index') }}" wire:navigate>
+                    <span class="nav-icon">📅</span> المواعيد
+                </a>
+            </li>
+
+            <li class="{{ request()->routeIs('finance.*') ? 'active' : '' }}">
+                <a href="{{ route('finance.movements') }}" wire:navigate>
+                    <span class="nav-icon">💰</span> المالية
+                </a>
+                <ul class="dd-menu">
+                    <li><a href="{{ route('finance.movements') }}" wire:navigate><span>💳</span> حركات مالية</a></li>
+                    <li><a href="{{ route('finance.statement') }}" wire:navigate><span>📄</span> بيان حساب</a></li>
+                    <li><a href="#"><span>📤</span> المصروفات</a></li>
+                    <li><a href="#"><span>📱</span> رسائل نصية</a></li>
+                </ul>
+            </li>
+
+            <li class="{{ request()->routeIs('finance.reports') ? 'active' : '' }}">
+                <a href="{{ route('finance.reports') }}" wire:navigate>
+                    <span class="nav-icon">📊</span> التقارير
+                </a>
+                <ul class="dd-menu">
+                    <li><a href="{{ route('finance.invoices') }}"                   wire:navigate><span>💳</span> الفواتير</a></li>
+                    <li><a href="{{ route('finance.vouchers') }}"                   wire:navigate><span>📑</span> السندات</a></li>
+                    <li><a href="{{ route('finance.reports') }}?type=pb"           wire:navigate><span>💰</span> أرصدة العملاء</a></li>
+                    <li><a href="{{ route('finance.reports') }}?type=services"     wire:navigate><span>🔬</span> الخدمات</a></li>
+                    <li><a href="{{ route('finance.reports') }}?type=appointments" wire:navigate><span>📅</span> المواعيد</a></li>
+                    <li><a href="{{ route('finance.reports') }}?type=clinics"      wire:navigate><span>🏛️</span> العيادات</a></li>
+                    <li><a href="{{ route('finance.reports') }}?type=claims"       wire:navigate><span>📋</span> المطالبات</a></li>
+                    <li><a href="{{ route('finance.reports') }}?type=pfs"          wire:navigate><span>📊</span> البيان المالي</a></li>
+                    <li><a href="{{ route('finance.reports') }}?type=patients"     wire:navigate><span>📁</span> الملفات</a></li>
+                    <li><a href="{{ route('finance.reports') }}?type=income"       wire:navigate><span>💵</span> الدخل</a></li>
+                    <li><a href="{{ route('finance.reports') }}?type=till"         wire:navigate><span>🗃️</span> الدرج</a></li>
+                </ul>
+            </li>
+
+            <li class="{{ request()->routeIs('system.*') ? 'active' : '' }}">
+                <a href="{{ route('system.settings') }}" wire:navigate>
+                    <span class="nav-icon">⚙️</span> الإعدادات
+                </a>
+                <ul class="dd-menu">
+                    <li><a href="#"><span>🔬</span> الخدمات</a></li>
+                    <li><a href="#"><span>🏥</span> العيادات</a></li>
+                    <li><a href="#"><span>🕐</span> الفترات</a></li>
+                    <li><a href="#"><span>🏢</span> الشركات</a></li>
+                    <li><a href="{{ route('employees.index') }}" wire:navigate><span>👨‍⚕️</span> الموظفين</a></li>
+                    <li><a href="#"><span>💼</span> الوظائف</a></li>
+                    <li><a href="#"><span>💾</span> باك آب</a></li>
+                    <li><a href="#"><span>🏛️</span> المنشأة</a></li>
+                    <li><a href="{{ route('system.users') }}" wire:navigate><span>👤</span> المستخدمين</a></li>
+                </ul>
+            </li>
+        </ul>
+
+        <div class="topbar-right">
+            <div class="topbar-date">📅 {{ now()->locale('ar')->isoFormat('D MMM YYYY') }}</div>
+            <div class="user-chip">
+                <div style="position: relative;">
+                    <div class="user-avatar">م<span class="online-dot"></span></div>
+                </div>
+                <span class="user-name">مدير النظام</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ═══════ CONTENT ═══════ -->
+    <main class="page-content">
+        {{ $slot }}
+    </main>
+
+    <!-- ═══════ FOOTER ═══════ -->
+    <footer class="page-footer">
+        جميع الحقوق محفوظة &copy; {{ date('Y') }} &mdash; <strong>مركز مطمئنة الاستشاري</strong>
+    </footer>
+
+    @livewireScripts
+
+    {{-- ═══ أنماط الطباعة المشتركة ═══ --}}
+    <style>
+    /* إخفاء عناصر الطباعة على الشاشة العادية */
+    .print-only       { display: none !important; }
+    .print-letterhead { display: none !important; }
+    .print-footer     { display: none !important; }
+
+    @media print {
+        /* إخفاء كل شيء في الصفحة */
+        body * { visibility: hidden !important; }
+
+        /* إظهار منطقة الطباعة وكل محتواها */
+        #print-area,
+        #print-area * { visibility: visible !important; }
+
+        /* ═══ المفتاح: absolute بدل fixed — يسمح بصفحات متعددة ═══ */
+        #print-area {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0.75rem 1.25rem !important;
+            box-shadow: none !important;
+            border: none !important;
+            border-radius: 0 !important;
+            background: #fff !important;
+            overflow: visible !important;
+        }
+
+        /* ترويسة وتذييل الطباعة */
+        #print-area .print-letterhead { display: flex  !important; }
+        #print-area .print-footer     { display: block !important; }
+
+        /* إخفاء أزرار وعناصر الشاشة */
+        #print-area .no-print { display: none !important; visibility: hidden !important; }
+
+        /* نسخة الطباعة للسجل الاستشاري */
+        #print-area .print-only {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+        }
+
+        /* الجداول: thead يتكرر بكل صفحة، tfoot لا يتكرر */
+        table  { page-break-inside: auto !important; }
+        tr     { page-break-inside: avoid !important; page-break-after: auto !important; }
+        thead  { display: table-header-group !important; }
+        tfoot  { display: table-row-group  !important; }
+
+        /* ضمان ظهور الألوان */
+        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    }
+    </style>
+
+    <script>
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+        const topNav    = document.getElementById('topNav');
+
+        mobileBtn.addEventListener('click', () => {
+            topNav.classList.toggle('mobile-active');
+            mobileBtn.innerText = topNav.classList.contains('mobile-active') ? '✕' : '☰';
+        });
+    </script>
+</body>
+</html>
