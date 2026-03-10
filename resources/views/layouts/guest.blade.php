@@ -142,7 +142,7 @@
 
         .logo-ring {
             position: relative;
-            width: 90px; height: 90px;
+            width: 130px; height: 130px;
             margin-bottom: 1.1rem;
         }
 
@@ -207,10 +207,8 @@
         }
 
         .logo-title span {
-            background: linear-gradient(90deg, var(--gold), var(--gold-l), var(--gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: #000;
+            -webkit-text-fill-color: #000;
         }
 
         /* ══════ DIVIDER ══════ */

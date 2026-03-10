@@ -84,11 +84,11 @@ class Invoices extends Component
     private function buildInvoicesQuery()
     {
         $q = DB::table('kpayments as k')
-            ->leftJoin('rec as r',       'r.id', '=', 'k.rec_id')
+            ->join('rec as r',           'r.id', '=', 'k.rec_id')
             ->leftJoin('kstu as s',      's.id', '=', 'r.st_id')
             ->leftJoin('clinic as c',    'c.id', '=', 'k.clinic_id')
             ->leftJoin('employees as e', 'e.id', '=', 'k.user_id')
-            ->where('k.price', '>', 0);
+            ->where('r.confirm_id', 1);
 
         if ($this->filterClinic)
             $q->where('k.clinic_id', $this->filterClinic);
@@ -97,9 +97,9 @@ class Invoices extends Component
         if ($this->filterPayment)
             $q->where('k.payment_method', $this->filterPayment);
         if ($df = $this->dateFrom())
-            $q->whereRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') >= ?", [$df]);
+            $q->whereRaw("STR_TO_DATE(r.rec_date, '%e-%c-%Y') >= ?", [$df]);
         if ($dt = $this->dateTo())
-            $q->whereRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') <= ?", [$dt]);
+            $q->whereRaw("STR_TO_DATE(r.rec_date, '%e-%c-%Y') <= ?", [$dt]);
 
         return $q;
     }
@@ -107,7 +107,9 @@ class Invoices extends Component
     private function buildVouchersQuery()
     {
         $q = DB::table('vouchers as v')
-            ->leftJoin('kstu as s', 's.id', '=', 'v.stu_id');
+            ->leftJoin('acck as a', 'a.id', '=', 'v.account_id')
+            ->where('v.credit', '>', 0)
+            ->where('v.rec_id', 0);
 
         if ($df = $this->dateFrom())
             $q->whereRaw("STR_TO_DATE(v.pdate, '%e-%c-%Y') >= ?", [$df]);
@@ -126,25 +128,26 @@ class Invoices extends Component
             ->orderBy('e.first_name')
             ->get();
 
-        $invoices   = collect();
-        $totals     = ['amount' => 0, 'discount' => 0, 'tax' => 0, 'net' => 0, 'count' => 0];
-        $payBreak   = [];
-        $vouchers   = collect();
-        $vTotals    = ['credit' => 0, 'debit' => 0];
-        $clinicName = 'مطمئنة الكويت';
-        $dateLabel  = '';
+        $invoices      = collect();
+        $totals        = ['amount' => 0, 'discount' => 0, 'tax' => 0, 'net' => 0, 'count' => 0];
+        $payBreak      = [];
+        $vouchers      = collect();
+        $vTotals       = ['credit' => 0, 'debit' => 0];
+        $vMethodBreak  = ['bank' => 0, 'myf' => 0, 'deema' => 0];
+        $clinicName    = 'مطمئنة الكويت';
+        $dateLabel     = '';
 
         if ($this->searched) {
             $invoices = $this->buildInvoicesQuery()
                 ->select(
-                    'k.id', 'k.serial_no', 'k.vno', 'k.pdate', 'k.price',
+                    'k.id', 'k.serial_no', 'k.vno', 'r.rec_date as pdate', 'k.price',
                     'k.discount', 'k.tax_value', 'k.payment_method',
                     DB::raw('(k.price - COALESCE(k.discount, 0)) as net'),
                     's.full_name as patient_name', 's.file_id',
                     'c.name as clinic_name',
                     DB::raw("CONCAT(COALESCE(e.first_name,''), ' ', COALESCE(e.middle_initial,'')) as rep_name")
                 )
-                ->orderByRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') DESC, k.id DESC")
+                ->orderByRaw("STR_TO_DATE(r.rec_date, '%e-%c-%Y') DESC, k.id DESC")
                 ->get();
 
             $totals = [
@@ -164,7 +167,7 @@ class Invoices extends Component
                 ->select(
                     'v.id', 'v.pdate', 'v.credit', 'v.debit',
                     'v.pdesc', 'v.notes', 'v.serial_no', 'v.ptype',
-                    's.full_name as patient_name'
+                    'a.name as patient_name'
                 )
                 ->orderByRaw("STR_TO_DATE(v.pdate, '%e-%c-%Y') DESC, v.id DESC")
                 ->get();
@@ -174,6 +177,21 @@ class Invoices extends Component
                 'debit'  => $vouchers->sum('debit'),
             ];
 
+            // كسر طرق دفع السندات الخارجية من pdesc
+            $vMethodBreak = ['bank' => 0, 'myf' => 0, 'deema' => 0];
+            foreach ($vouchers as $v) {
+                $pd  = $v->pdesc ?? '';
+                $amt = (float) $v->credit;
+                if (preg_match('/2026\d{5,7}/', $pd))
+                    $vMethodBreak['myf']   += $amt;
+                elseif (preg_match('/\b4\d{5}\b/', $pd))
+                    $vMethodBreak['deema'] += $amt;
+                elseif (mb_strpos($pd, 'تحو') !== false || mb_strpos($pd, 'بنك') !== false)
+                    $vMethodBreak['bank']  += $amt;
+                else
+                    $vMethodBreak['myf']   += $amt;
+            }
+
             $clinicName = $this->filterClinic
                 ? ($clinics->firstWhere('id', $this->filterClinic)?->name ?? 'مطمئنة الكويت')
                 : 'مطمئنة الكويت';
@@ -182,16 +200,17 @@ class Invoices extends Component
         }
 
         return view('livewire.finance.invoices', [
-            'clinics'       => $clinics,
-            'employees'     => $employees,
-            'invoices'      => $invoices,
-            'totals'        => $totals,
-            'vouchers'      => $vouchers,
-            'vTotals'       => $vTotals,
-            'payBreak'      => $payBreak,
-            'paymentLabels' => self::PAYMENT_LABELS,
-            'clinicName'    => $clinicName,
-            'dateLabel'     => $dateLabel,
+            'clinics'        => $clinics,
+            'employees'      => $employees,
+            'invoices'       => $invoices,
+            'totals'         => $totals,
+            'vouchers'       => $vouchers,
+            'vTotals'        => $vTotals,
+            'vMethodBreak'   => $vMethodBreak,
+            'payBreak'       => $payBreak,
+            'paymentLabels'  => self::PAYMENT_LABELS,
+            'clinicName'     => $clinicName,
+            'dateLabel'      => $dateLabel,
         ])->layout('layouts.app');
     }
 }

@@ -193,9 +193,12 @@ $years  = range(2000, now()->year + 1);
                     <td style="padding:0.4rem 0.55rem; text-align:center; color:#1565c0; font-weight:700; border-left:1px solid #eee; white-space:nowrap; font-size:0.8rem; direction:ltr; unicode-bidi:isolate;">{{ fmt_date($inv->pdate) }}</td>
                     <td style="padding:0.4rem 0.55rem; text-align:left; font-weight:700; color:#333; border-left:1px solid #eee; font-size:0.81rem; direction:ltr;">{{ number_format($inv->price, 2) }}</td>
                     <td style="padding:0.4rem 0.55rem; text-align:center; border-left:1px solid #eee;">
-                        <span style="color:{{ in_array($inv->payment_method,[1,7]) ? '#2e7d32' : (in_array($inv->payment_method,[3,4]) ? '#1565c0' : '#c8401a') }}; font-weight:700; font-size:0.79rem;">
-                            {{ $paymentLabels[$inv->payment_method]['ar'] ?? '—' }}
-                        </span>
+                        @php
+                            $isFree = ($inv->price == 0 || $inv->payment_method == 7);
+                            $methodLabel = $isFree ? 'مجاني' : ($paymentLabels[$inv->payment_method]['ar'] ?? '—');
+                            $methodColor = $isFree ? '#2e7d32' : (in_array($inv->payment_method,[1,7]) ? '#2e7d32' : (in_array($inv->payment_method,[3]) ? '#1565c0' : '#c8401a'));
+                        @endphp
+                        <span style="color:{{ $methodColor }}; font-weight:700; font-size:0.79rem;">{{ $methodLabel }}</span>
                     </td>
                     <td style="padding:0.4rem 0.55rem; text-align:left; color:#c62828; border-left:1px solid #eee; font-size:0.8rem; direction:ltr;">{{ number_format($inv->discount ?? 0, 2) }}</td>
                     <td style="padding:0.4rem 0.55rem; text-align:left; color:#888; border-left:1px solid #eee; font-size:0.8rem; direction:ltr;">{{ number_format($inv->tax_value ?? 0, 2) }}</td>
@@ -212,9 +215,44 @@ $years  = range(2000, now()->year + 1);
                 @endforelse
             </tbody>
 
-            {{-- لا يوجد tfoot هنا — الإجمالي يظهر مرة واحدة في آخر الكشف --}}
+            @if($invoices->count() > 0)
+            <tfoot>
+                <tr style="background:#e0e0e0; border-top:2px solid #aaa; font-weight:900; font-family:'Tajawal',sans-serif;">
+                    <td colspan="5" style="padding:0.55rem 0.75rem; text-align:right; color:#1a1a2e; font-size:0.85rem; border-left:1px solid #ccc;">
+                        الإجمالي : Total
+                    </td>
+                    <td style="padding:0.55rem 0.5rem; text-align:left; color:#333; font-size:0.88rem; border-left:1px solid #ccc; direction:ltr; font-weight:900;">
+                        {{ number_format($totals['amount'], 2) }}
+                    </td>
+                    <td style="padding:0.55rem 0.5rem; border-left:1px solid #ccc;"></td>
+                    <td style="padding:0.55rem 0.5rem; text-align:left; color:#c62828; font-size:0.88rem; border-left:1px solid #ccc; direction:ltr; font-weight:900;">
+                        {{ number_format($totals['discount'], 2) }}
+                    </td>
+                    <td style="padding:0.55rem 0.5rem; text-align:left; color:#888; font-size:0.88rem; border-left:1px solid #ccc; direction:ltr; font-weight:900;">
+                        {{ number_format($totals['tax'], 2) }}
+                    </td>
+                    <td style="padding:0.55rem 0.5rem; text-align:left; color:var(--primary); font-size:0.95rem; border-left:1px solid #ccc; direction:ltr; font-weight:900;">
+                        {{ number_format($totals['net'], 2) }}
+                    </td>
+                    <td style="padding:0.55rem 0.5rem;"></td>
+                </tr>
+            </tfoot>
+            @endif
         </table>
     </div>
+
+    {{-- سطر المراجعين :: Clients --}}
+    @if($invoices->count() > 0)
+    <div style="background:var(--navy); padding:0.6rem 1.5rem; display:flex; align-items:center; justify-content:space-between;">
+        <div style="font-weight:900; color:#fbbf24; font-size:0.95rem; font-family:'Tajawal',sans-serif;">
+            المراجعين :: Clients
+        </div>
+        <div style="font-weight:900; color:#fbbf24; font-size:1.25rem; direction:ltr; font-family:'Inter';">
+            {{ number_format($totals['net'], 2) }}
+            <span style="font-size:0.76rem; color:rgba(255,255,255,0.5); font-weight:400; font-family:'Tajawal'; margin-right:3px;">د.ك</span>
+        </div>
+    </div>
+    @endif
 </div>
 
 {{-- ═══ جدول السندات ═══ --}}
@@ -260,7 +298,14 @@ $years  = range(2000, now()->year + 1);
                         {{ number_format($v->credit > 0 ? $v->credit : $v->debit, 2) }}
                     </td>
                     <td style="padding:0.4rem 0.6rem; text-align:center; border-left:1px solid #eee;">
-                        <span style="color:#c8401a; font-weight:700; font-size:0.78rem;">{{ $v->notes ?: ($v->ptype ?: 'سند قبض') }}</span>
+                        @php
+                            $pdesc = $v->pdesc ?? '';
+                            if (preg_match('/2026\d{6}/', $pdesc)) $vMethod = 'myfatoorah';
+                            elseif (preg_match('/\b4\d{5}\b|\b45\d{4}\b/', $pdesc)) $vMethod = 'Deema';
+                            elseif ($v->notes) $vMethod = $v->notes;
+                            else $vMethod = 'سند قبض';
+                        @endphp
+                        <span style="color:#c8401a; font-weight:700; font-size:0.78rem;">{{ $vMethod }}</span>
                     </td>
                     <td style="padding:0.4rem 0.75rem; color:#555; border-left:1px solid #eee; font-size:0.79rem; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ $v->pdesc ?: '—' }}</td>
                     <td style="padding:0.4rem 0.6rem; text-align:center;">
@@ -292,70 +337,48 @@ $years  = range(2000, now()->year + 1);
     </div>
 </div>
 
-{{-- ═══ تفصيل طرق الدفع ═══ --}}
+{{-- ═══ تفصيل طرق الدفع والسندات ═══ --}}
 @if($invoices->count() > 0 || $vouchers->count() > 0)
-<div style="background:#fff; border:1px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:var(--shadow-sm);">
-
-    <div style="background:#f8fafc; border-bottom:2px solid var(--border); padding:0.65rem 1.5rem;">
-        <span style="font-weight:900; color:var(--navy); font-size:0.92rem;">تفصيل طرق الدفع</span>
-    </div>
-
-    <div style="padding:0.25rem 0;">
-        @foreach($payBreak as $code => $pb)
-        @if($pb['total'] > 0)
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:0.45rem 2rem; border-bottom:1px solid #f0f2f5;"
-            onmouseover="this.style.background='#fafbfc'" onmouseout="this.style.background=''">
-            <div style="font-weight:800; color:#1a1a2e; font-size:0.88rem; display:flex; align-items:center; gap:2rem;">
-                <span style="color:var(--text-muted); font-size:0.77rem; min-width:90px; font-weight:600; direction:ltr; unicode-bidi:embed;">{{ $pb['en'] }}</span>
-                <span>إجمالي {{ $pb['label'] }} ::</span>
-            </div>
-            <div style="font-weight:900; color:var(--primary); font-size:0.95rem; direction:ltr; font-family:'Inter';">
-                {{ number_format($pb['total'], 2) }}
-                <span style="font-size:0.7rem; color:var(--text-muted); font-weight:400; font-family:'Tajawal'; margin-right:2px;">د.ك</span>
-            </div>
+@php
+$breakRows = [
+    ['en' => 'Cash',          'ar' => 'إجمالي النقدية',        'val' => $payBreak[1]['total']  ?? 0, 'braces' => true,  'green' => false],
+    ['en' => 'Total Visa',    'ar' => 'إجمالي الفيزا',         'val' => $payBreak[2]['total']  ?? 0, 'braces' => false, 'green' => false],
+    ['en' => 'Total Net',     'ar' => 'إجمالي الشبكة',         'val' => $payBreak[3]['total']  ?? 0, 'braces' => false, 'green' => false],
+    ['en' => 'Total Net',     'ar' => 'إجمالي التحويل البنكي', 'val' => $vMethodBreak['bank']  ?? 0, 'braces' => false, 'green' => false],
+    ['en' => 'Total Quick Pay','ar' => 'إجمالي الدفع السريع',  'val' => $payBreak[14]['total'] ?? 0, 'braces' => true,  'green' => false],
+    ['en' => 'Total stcpay',  'ar' => '',                       'val' => $payBreak[12]['total'] ?? 0, 'braces' => true,  'green' => false],
+    ['en' => 'Total myfatoorah','ar' => '',                     'val' => $vMethodBreak['myf']   ?? 0, 'braces' => true,  'green' => false],
+    ['en' => 'Total Deema',   'ar' => '',                       'val' => $vMethodBreak['deema'] ?? 0, 'braces' => true,  'green' => false],
+    ['en' => 'Total Kidding', 'ar' => '',                       'val' => 0,                           'braces' => true,  'green' => false],
+    ['en' => 'زكاة',          'ar' => '',                       'val' => 0,                           'braces' => true,  'green' => false],
+    ['en' => 'نقل رصيد',      'ar' => '',                       'val' => 0,                           'braces' => true,  'green' => false],
+    ['en' => 'Vouchers',      'ar' => 'السندات',               'val' => $payBreak[5]['total']  ?? 0, 'braces' => false, 'green' => true],
+];
+@endphp
+<div style="background:#fff; border:1px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:var(--shadow-sm); margin-bottom:1rem;">
+    @foreach($breakRows as $row)
+    @php
+        $valFmt = number_format($row['val'], 2);
+        $display = $row['braces'] ? '{' . $valFmt . '}' : $valFmt;
+        $valColor = $row['green'] ? '#16a34a' : '#c8401a';
+        $labelColor = $row['green'] ? '#16a34a' : '#1565c0';
+    @endphp
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:0.42rem 1.5rem; border-bottom:1px solid #f0f2f5; direction:rtl;">
+        <div style="font-weight:700; color:{{ $labelColor }}; font-size:0.85rem; font-family:'Tajawal',sans-serif;">
+            @if($row['ar'])
+                {{ $row['en'] }} : {{ $row['ar'] }} ::
+            @else
+                {{ $row['en'] }} ::
+            @endif
         </div>
-        @endif
-        @endforeach
-
-        @if(isset($vTotals['credit']) && $vTotals['credit'] > 0)
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:0.45rem 2rem; border-bottom:1px solid #f0f2f5; background:#f0fdf4;">
-            <div style="font-weight:800; color:#166534; font-size:0.88rem; display:flex; align-items:center; gap:2rem;">
-                <span style="color:#16a34a; font-size:0.77rem; min-width:90px; font-weight:600;">Vouchers</span>
-                <span>السندات ::</span>
-            </div>
-            <div style="font-weight:900; color:#166534; font-size:0.95rem; direction:ltr; font-family:'Inter';">
-                {{ number_format($vTotals['credit'], 2) }}
-                <span style="font-size:0.7rem; color:var(--text-muted); font-weight:400; font-family:'Tajawal'; margin-right:2px;">د.ك</span>
-            </div>
+        <div style="font-weight:900; color:{{ $valColor }}; font-size:0.88rem; direction:ltr; font-family:'Inter';">
+            {{ $display }}
         </div>
-        @endif
-
     </div>
+    @endforeach
 </div>
 @endif
 
-{{-- ═══ إجمالي الفواتير — يظهر مرة واحدة في آخر الكشف ═══ --}}
-@if($invoices->count() > 0)
-<div style="background:#fff; border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-top:1rem; box-shadow:var(--shadow-sm);">
-    {{-- صف مجاميع الأعمدة --}}
-    <div style="background:#e8e8e8; border-bottom:2px solid #aaa; padding:0.55rem 1rem; display:flex; align-items:center; justify-content:space-between; font-weight:900; font-family:'Tajawal',sans-serif;">
-        <span style="color:#1a1a2e; font-size:0.88rem;">الإجمالي : Total &nbsp; <span style="color:#555; font-size:0.82rem;">({{ $totals['count'] }} فاتورة)</span></span>
-        <div style="display:flex; gap:2rem; direction:ltr; font-family:'Inter';">
-            <span style="color:#c62828; font-size:0.88rem;">خصم: {{ number_format($totals['discount'], 2) }}</span>
-            <span style="color:#888; font-size:0.88rem;">ضريبة: {{ number_format($totals['tax'], 2) }}</span>
-            <span style="color:var(--primary); font-size:1rem; font-weight:900;">{{ number_format($totals['net'], 2) }}</span>
-        </div>
-    </div>
-    {{-- صف المراجعين الرئيسي --}}
-    <div style="background:var(--navy); padding:0.65rem 1.5rem; display:flex; align-items:center; justify-content:space-between;">
-        <div style="font-weight:900; color:#fbbf24; font-size:0.95rem; font-family:'Tajawal',sans-serif;">المراجعين :: Clients</div>
-        <div style="font-weight:900; color:#fbbf24; font-size:1.3rem; direction:ltr; font-family:'Inter';">
-            {{ number_format($totals['net'], 2) }}
-            <span style="font-size:0.78rem; color:rgba(255,255,255,0.5); font-weight:400; font-family:'Tajawal'; margin-right:3px;">د.ك</span>
-        </div>
-    </div>
-</div>
-@endif
 
 {{-- تذييل الطباعة --}}
 <div class="print-footer" style="display:none; margin-top:1rem; text-align:center; font-size:0.72rem; color:#9ca3af; font-family:'Tajawal',sans-serif; border-top:1px solid #e2e8f0; padding-top:0.5rem;">
