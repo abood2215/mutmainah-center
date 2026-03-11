@@ -21,22 +21,73 @@
     <!-- المحتوى -->
     <div style="padding:1.75rem;">
 
-        <!-- بطاقات الإحصائيات -->
-        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-bottom:1.75rem;">
-            <div style="background:linear-gradient(135deg,#e8f5e9,#f1faf2); border:1px solid #c8e6c9; border-radius:12px; padding:1.5rem;">
-                <div style="color:#2e7d32; font-size:0.82rem; font-weight:800; letter-spacing:1px; margin-bottom:0.75rem;">إجمالي المدفوع | TOTAL PAID</div>
-                <div style="font-size:2rem; font-weight:900; color:#1b5e20; font-family:'Inter';">{{ number_format($totalDeposited, 3) }} <span style="font-size:0.9rem; color:#4caf50; font-weight:600;">د.ك</span></div>
+        <!-- بطاقات الإحصائيات - صف علوي -->
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-bottom:1rem;">
+            <div style="background:linear-gradient(135deg,#fff8e1,#fffde7); border:1px solid #ffe082; border-radius:12px; padding:1.25rem 1.5rem;">
+                <div style="color:#e65100; font-size:0.78rem; font-weight:800; letter-spacing:1px; margin-bottom:0.5rem;">إجمالي الخدمات | TOTAL SERVICES</div>
+                <div style="font-size:1.9rem; font-weight:900; color:#bf360c; font-family:'Inter';">{{ number_format($totalServices, 3) }} <span style="font-size:0.85rem; color:#ff8f00; font-weight:600;">د.ك</span></div>
+                @if($totalDirectPaid > 0)
+                <div style="font-size:0.72rem; color:#9e5000; margin-top:0.35rem;">منها {{ number_format($totalDirectPaid, 3) }} د.ك مدفوعة نقداً / K-Net</div>
+                @endif
             </div>
-            <div style="background:linear-gradient(135deg,#fff8e1,#fffde7); border:1px solid #ffe082; border-radius:12px; padding:1.5rem;">
-                <div style="color:#e65100; font-size:0.82rem; font-weight:800; letter-spacing:1px; margin-bottom:0.75rem;">إجمالي الخدمات | TOTAL SERVICES</div>
-                <div style="font-size:2rem; font-weight:900; color:#bf360c; font-family:'Inter';">{{ number_format($totalServices, 3) }} <span style="font-size:0.9rem; color:#ff8f00; font-weight:600;">د.ك</span></div>
+            <div style="background:linear-gradient(135deg,#e8f5e9,#f1faf2); border:1px solid #c8e6c9; border-radius:12px; padding:1.25rem 1.5rem;">
+                <div style="color:#2e7d32; font-size:0.78rem; font-weight:800; letter-spacing:1px; margin-bottom:0.5rem;">إيداعات على الحساب | DEPOSITS</div>
+                <div style="font-size:1.9rem; font-weight:900; color:#1b5e20; font-family:'Inter';">{{ number_format($totalDeposited, 3) }} <span style="font-size:0.85rem; color:#4caf50; font-weight:600;">د.ك</span></div>
+                <div style="font-size:0.72rem; color:#2e7d32; margin-top:0.35rem;">{{ $deposits->count() }} إيداع مسجل</div>
             </div>
-            <div style="background:{{ $balance >= 0 ? 'linear-gradient(135deg,#e3f2fd,#f0f8ff)' : 'linear-gradient(135deg,#ffebee,#fff5f5)' }}; border:1px solid {{ $balance >= 0 ? '#bbdefb' : '#ffcdd2' }}; border-radius:12px; padding:1.5rem;">
-                <div style="color:{{ $balance >= 0 ? '#1565c0' : '#c62828' }}; font-size:0.82rem; font-weight:800; letter-spacing:1px; margin-bottom:0.75rem;">الرصيد المتبقي | BALANCE</div>
-                <div style="font-size:2rem; font-weight:900; color:{{ $balance >= 0 ? '#0d47a1' : '#b71c1c' }}; font-family:'Inter';">
-                    {{ number_format(abs($balance), 3) }} <span style="font-size:0.9rem; font-weight:600;">د.ك {{ $balance < 0 ? '(مديونية)' : '' }}</span>
+            <div style="background:{{ $balance >= 0 ? 'linear-gradient(135deg,#e3f2fd,#f0f8ff)' : 'linear-gradient(135deg,#ffebee,#fff5f5)' }}; border:1px solid {{ $balance >= 0 ? '#bbdefb' : '#ffcdd2' }}; border-radius:12px; padding:1.25rem 1.5rem;">
+                <div style="color:{{ $balance >= 0 ? '#1565c0' : '#c62828' }}; font-size:0.78rem; font-weight:800; letter-spacing:1px; margin-bottom:0.5rem;">الرصيد المتبقي | BALANCE</div>
+                <div style="font-size:1.9rem; font-weight:900; color:{{ $balance >= 0 ? '#0d47a1' : '#b71c1c' }}; font-family:'Inter';">
+                    {{ number_format(abs($balance), 3) }} <span style="font-size:0.85rem; font-weight:600;">د.ك</span>
+                    @if($balance < 0)<span style="font-size:0.8rem; color:#b71c1c; font-weight:800;"> (مديونية)</span>@endif
+                    @if($balance == 0)<span style="font-size:0.8rem; color:#388e3c; font-weight:800;"> ✓ مسوّى</span>@endif
                 </div>
             </div>
+        </div>
+
+        <!-- تفصيل حساب الرصيد -->
+        <div style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:1.25rem 1.5rem; margin-bottom:1.75rem; direction:rtl;">
+            <div style="font-size:0.8rem; font-weight:900; color:var(--text-dim); letter-spacing:1px; margin-bottom:1rem; text-transform:uppercase;">تفصيل حساب الرصيد</div>
+            <div style="display:flex; flex-direction:column; gap:0; max-width:420px;">
+                <!-- إجمالي الآجل -->
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:0.55rem 0.75rem; background:#fff; border-radius:8px 8px 0 0; border:1px solid #e2e8f0;">
+                    <span style="font-size:0.88rem; color:var(--text);">خدمات على الحساب (آجل)</span>
+                    <span style="font-weight:900; font-family:'Inter'; color:#c2410c; font-size:0.95rem;">{{ number_format($totalDeferred, 3) }} د.ك</span>
+                </div>
+                @if($totalDiscount > 0)
+                <!-- الخصومات -->
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:0.55rem 0.75rem; background:#fdf4ff; border:1px solid #e2e8f0; border-top:none;">
+                    <span style="font-size:0.88rem; color:#7b1fa2;">خصومات ممنوحة</span>
+                    <span style="font-weight:900; font-family:'Inter'; color:#7b1fa2; font-size:0.95rem;">- {{ number_format($totalDiscount, 3) }} د.ك</span>
+                </div>
+                <!-- صافي الآجل -->
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:0.55rem 0.75rem; background:#fff7ed; border:1px solid #e2e8f0; border-top:none;">
+                    <span style="font-size:0.88rem; color:#9a3412; font-weight:700;">صافي المطلوب على الحساب</span>
+                    <span style="font-weight:900; font-family:'Inter'; color:#9a3412; font-size:0.95rem;">{{ number_format($totalCharged, 3) }} د.ك</span>
+                </div>
+                @endif
+                <!-- الإيداعات -->
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:0.55rem 0.75rem; background:#f0fdf4; border:1px solid #e2e8f0; border-top:none;">
+                    <span style="font-size:0.88rem; color:#166534;">إيداعات على الحساب</span>
+                    <span style="font-weight:900; font-family:'Inter'; color:#166534; font-size:0.95rem;">- {{ number_format($totalDeposited, 3) }} د.ك</span>
+                </div>
+                <!-- الرصيد النهائي -->
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:0.65rem 0.75rem; background:{{ $balance < 0 ? '#fff0f0' : ($balance == 0 ? '#f0fdf4' : '#eff6ff') }}; border-radius:0 0 8px 8px; border:2px solid {{ $balance < 0 ? '#fca5a5' : ($balance == 0 ? '#86efac' : '#93c5fd') }}; border-top:2px solid {{ $balance < 0 ? '#fca5a5' : ($balance == 0 ? '#86efac' : '#93c5fd') }};">
+                    <span style="font-size:0.92rem; font-weight:900; color:{{ $balance < 0 ? '#b91c1c' : ($balance == 0 ? '#15803d' : '#1d4ed8') }};">الرصيد المتبقي</span>
+                    <span style="font-weight:900; font-family:'Inter'; color:{{ $balance < 0 ? '#b91c1c' : ($balance == 0 ? '#15803d' : '#1d4ed8') }}; font-size:1.05rem;">
+                        {{ number_format(abs($balance), 3) }} د.ك
+                        @if($balance < 0) (مديونية)
+                        @elseif($balance == 0) ✓
+                        @else (رصيد دائن)
+                        @endif
+                    </span>
+                </div>
+            </div>
+            @if($totalDirectPaid > 0)
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.85rem; padding-top:0.75rem; border-top:1px dashed #e2e8f0;">
+                * الخدمات المدفوعة مباشرة (نقد / K-Net / فيزا) بمبلغ <strong>{{ number_format($totalDirectPaid, 3) }} د.ك</strong> لا تدخل في حساب الرصيد
+            </div>
+            @endif
         </div>
 
         <!-- جدول الإيداعات -->
@@ -61,7 +112,7 @@
                         <td style="padding:0.7rem 1rem; text-align:center;"><span style="padding:0.25rem 0.6rem; background:#dcfce7; color:#166534; border-radius:6px; font-weight:900; font-size:0.82rem; border:1px solid #bbf7d0;">#{{ $dep->id }}</span></td>
                         <td style="padding:0.7rem 1rem; text-align:center; color:var(--text-dim); font-size:0.88rem; direction:ltr; unicode-bidi:isolate;">{{ fmt_date($dep->pdate) }}</td>
                         <td style="padding:0.7rem 1rem; color:var(--text);">{{ $dep->pdesc ?: '—' }}</td>
-                        <td style="padding:0.7rem 1rem; text-align:center; font-weight:900; color:#166534; font-size:1rem; font-family:'Inter';">{{ number_format($dep->amount, 3) }}</td>
+                        <td style="padding:0.7rem 1rem; text-align:center; font-weight:900; color:#166534; font-size:1rem; font-family:'Inter';">{{ number_format($dep->dep_amount, 3) }}</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -84,6 +135,9 @@
                             <th style="padding:0.7rem 1rem; text-align:right; font-size:0.82rem; font-weight:900; color:var(--text-dim);">البيان</th>
                             <th style="padding:0.7rem 1rem; text-align:center; font-size:0.82rem; font-weight:900; color:var(--text-dim);">الطريقة</th>
                             <th style="padding:0.7rem 1rem; text-align:center; font-size:0.82rem; font-weight:900; color:var(--text-dim);">المبلغ</th>
+                            @if($totalDiscount > 0)
+                            <th style="padding:0.7rem 1rem; text-align:center; font-size:0.82rem; font-weight:900; color:#7b1fa2;">الخصم</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -113,9 +167,18 @@
                                     <span style="font-weight:900; color:{{ $isDeferred ? '#c2410c' : '#2e7d32' }}; font-size:1rem; font-family:'Inter';">{{ number_format($svc->price, 3) }}</span>
                                 @endif
                             </td>
+                            @if($totalDiscount > 0)
+                            <td style="padding:0.7rem 1rem; text-align:center;">
+                                @if(($svc->discount ?? 0) > 0)
+                                    <span style="font-weight:900; color:#7b1fa2; font-size:0.95rem; font-family:'Inter';">- {{ number_format($svc->discount, 3) }}</span>
+                                @else
+                                    <span style="color:#d1d5db;">—</span>
+                                @endif
+                            </td>
+                            @endif
                         </tr>
                         @empty
-                        <tr><td colspan="5" style="padding:4rem; text-align:center; color:var(--text-muted);">
+                        <tr><td colspan="{{ $totalDiscount > 0 ? 6 : 5 }}" style="padding:4rem; text-align:center; color:var(--text-muted);">
                             <div style="font-size:2.5rem; opacity:0.2; margin-bottom:0.75rem;">📋</div>
                             لا توجد خدمات مسجلة
                         </td></tr>

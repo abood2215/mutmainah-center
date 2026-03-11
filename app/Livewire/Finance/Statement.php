@@ -91,15 +91,18 @@ class Statement extends Component
             ->whereRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') >= ?", [$from])
             ->whereRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') <= ?", [$to])
             ->orderByRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') ASC, k.id ASC")
-            ->select('k.id', 'k.pdate', 'k.amount', 'k.payment_method', 'k.pdesc', 'k.serial_no', 'r.id as rec_id')
+            ->select(
+                'k.id', 'k.pdate', 'k.payment_method', 'k.pdesc', 'k.serial_no', 'r.id as rec_id',
+                DB::raw('COALESCE(NULLIF(k.price, 0), NULLIF(k.amount, 0), NULLIF(k.net, 0), 0) as amount')
+            )
             ->get();
 
         $this->rows = $results->toArray();
 
-        // دائن = ما دُفع فعلاً (نقدي/كنت/فيزا)
-        $this->totalCredit = $results->whereIn('payment_method', [1, 2, 3])->sum('amount');
-        // مدين = ما حُمّل على الحساب (آجل)
-        $this->totalDebit  = $results->where('payment_method', 5)->sum('amount');
+        // المحصّل = كل الطرق ما عدا المجاني (7)
+        $this->totalCredit = $results->whereNotIn('payment_method', [7])->sum('amount');
+        // الآجل = لا يوجد فعلياً في هذا النظام
+        $this->totalDebit  = 0;
         $this->searched    = true;
     }
 

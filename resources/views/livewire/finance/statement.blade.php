@@ -188,8 +188,8 @@ $years  = range(2000, now()->year + 1);
             <div style="font-size:1.3rem; font-weight:900; color:#16a34a; font-family:'Inter';">{{ number_format($totalCredit, 3) }} <span style="font-size:0.75rem;">د.ك</span></div>
         </div>
         <div style="padding:0.85rem 1.25rem; text-align:center; border-left:1px solid #e2e8f0;">
-            <div style="font-size:0.72rem; color:#6b7280; font-weight:700; font-family:'Tajawal',sans-serif; margin-bottom:0.25rem;">إجمالي الآجل</div>
-            <div style="font-size:1.3rem; font-weight:900; color:#dc2626; font-family:'Inter';">{{ number_format($totalDebit, 3) }} <span style="font-size:0.75rem;">د.ك</span></div>
+            <div style="font-size:0.72rem; color:#6b7280; font-weight:700; font-family:'Tajawal',sans-serif; margin-bottom:0.25rem;">عدد الحركات</div>
+            <div style="font-size:1.3rem; font-weight:900; color:#1d4ed8; font-family:'Inter';">{{ count($rows) }}</div>
         </div>
         <div style="padding:0.85rem 1.25rem; text-align:center; background:#f8fafc;">
             <div style="font-size:0.72rem; color:#6b7280; font-weight:700; font-family:'Tajawal',sans-serif; margin-bottom:0.25rem;">إجمالي الخدمات</div>
@@ -201,8 +201,8 @@ $years  = range(2000, now()->year + 1);
 
     {{-- جدول الحركات --}}
     @php
-        $methods = [1=>'نقدي',2=>'K-Net',3=>'فيزا',4=>'مجاني',5=>'آجل'];
-        $methodColors = [1=>'#16a34a',2=>'#1d4ed8',3=>'#7c3aed',4=>'#6b7280',5=>'#dc2626'];
+        $methods = [1=>'نقد',2=>'شيك',3=>'شبكة',4=>'تحويل',5=>'سند',6=>'فيزا',7=>'مجاني',11=>'Myfatoorah',12=>'STC',14=>'Quick Pay'];
+        $methodColors = [1=>'#16a34a',2=>'#0891b2',3=>'#1d4ed8',4=>'#7c3aed',5=>'#d97706',6=>'#7c3aed',7=>'#6b7280',11=>'#0891b2',12=>'#16a34a',14=>'#16a34a'];
     @endphp
     <div style="overflow-x:auto;">
         <table style="width:100%; border-collapse:collapse; font-family:'Tajawal',sans-serif; font-size:0.84rem;">
@@ -251,7 +251,7 @@ $years  = range(2000, now()->year + 1);
             <tfoot>
                 <tr style="background:#f1f5f9; border-top:2px solid #cbd5e1; font-weight:900;">
                     <td colspan="5" style="padding:0.7rem 1rem; text-align:right; color:var(--navy); font-family:'Tajawal',sans-serif; font-size:0.88rem;">
-                        إجمالي المبالغ المحصّلة (نقدي/كنت/فيزا)
+                        إجمالي المبالغ المحصّلة
                     </td>
                     <td style="padding:0.7rem 1rem; text-align:center; color:#16a34a; font-family:'Inter';">{{ number_format($totalCredit, 3) }}</td>
                 </tr>

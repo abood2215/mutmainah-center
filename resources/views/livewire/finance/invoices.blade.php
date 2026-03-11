@@ -340,42 +340,90 @@ $years  = range(2000, now()->year + 1);
 {{-- ═══ تفصيل طرق الدفع والسندات ═══ --}}
 @if($invoices->count() > 0 || $vouchers->count() > 0)
 @php
-$breakRows = [
-    ['en' => 'Cash',          'ar' => 'إجمالي النقدية',        'val' => $payBreak[1]['total']  ?? 0, 'braces' => true,  'green' => false],
-    ['en' => 'Total Visa',    'ar' => 'إجمالي الفيزا',         'val' => $payBreak[2]['total']  ?? 0, 'braces' => false, 'green' => false],
-    ['en' => 'Total Net',     'ar' => 'إجمالي الشبكة',         'val' => $payBreak[3]['total']  ?? 0, 'braces' => false, 'green' => false],
-    ['en' => 'Total Net',     'ar' => 'إجمالي التحويل البنكي', 'val' => $vMethodBreak['bank']  ?? 0, 'braces' => false, 'green' => false],
-    ['en' => 'Total Quick Pay','ar' => 'إجمالي الدفع السريع',  'val' => $payBreak[14]['total'] ?? 0, 'braces' => true,  'green' => false],
-    ['en' => 'Total stcpay',  'ar' => '',                       'val' => $payBreak[12]['total'] ?? 0, 'braces' => true,  'green' => false],
-    ['en' => 'Total myfatoorah','ar' => '',                     'val' => $vMethodBreak['myf']   ?? 0, 'braces' => true,  'green' => false],
-    ['en' => 'Total Deema',   'ar' => '',                       'val' => $vMethodBreak['deema'] ?? 0, 'braces' => true,  'green' => false],
-    ['en' => 'Total Kidding', 'ar' => '',                       'val' => 0,                           'braces' => true,  'green' => false],
-    ['en' => 'زكاة',          'ar' => '',                       'val' => 0,                           'braces' => true,  'green' => false],
-    ['en' => 'نقل رصيد',      'ar' => '',                       'val' => 0,                           'braces' => true,  'green' => false],
-    ['en' => 'Vouchers',      'ar' => 'السندات',               'val' => $payBreak[5]['total']  ?? 0, 'braces' => false, 'green' => true],
+$groups = [
+    'كلاسيك' => [
+        ['en'=>'Cash',           'ar'=>'النقدية',        'val'=>$payBreak[1]['total']  ?? 0, 'icon'=>'💵'],
+        ['en'=>'Visa',           'ar'=>'الفيزا',          'val'=>$payBreak[2]['total']  ?? 0, 'icon'=>'💳'],
+        ['en'=>'Net / شبكة',    'ar'=>'الشبكة',          'val'=>$payBreak[3]['total']  ?? 0, 'icon'=>'🏦'],
+        ['en'=>'Bank Transfer',  'ar'=>'التحويل البنكي',  'val'=>$vMethodBreak['bank']  ?? 0, 'icon'=>'🏛'],
+    ],
+    'إلكتروني' => [
+        ['en'=>'myfatoorah',     'ar'=>'ماي فاتورة',     'val'=>$vMethodBreak['myf']   ?? 0, 'icon'=>'📲'],
+        ['en'=>'Deema',          'ar'=>'ديمة',            'val'=>$vMethodBreak['deema'] ?? 0, 'icon'=>'📲'],
+        ['en'=>'stcpay',         'ar'=>'STC Pay',         'val'=>$payBreak[12]['total'] ?? 0, 'icon'=>'📲'],
+        ['en'=>'Quick Pay',      'ar'=>'الدفع السريع',   'val'=>$payBreak[14]['total'] ?? 0, 'icon'=>'📲'],
+    ],
+    'أخرى' => [
+        ['en'=>'Kidding',        'ar'=>'كيدينج',          'val'=>0,                           'icon'=>'📋'],
+        ['en'=>'زكاة',           'ar'=>'',                'val'=>0,                           'icon'=>'📋'],
+        ['en'=>'نقل رصيد',       'ar'=>'',                'val'=>0,                           'icon'=>'📋'],
+    ],
 ];
+$sondatTotal = $payBreak[5]['total'] ?? 0;
 @endphp
-<div style="background:#fff; border:1px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:var(--shadow-sm); margin-bottom:1rem;">
-    @foreach($breakRows as $row)
-    @php
-        $valFmt = number_format($row['val'], 2);
-        $display = $row['braces'] ? '{' . $valFmt . '}' : $valFmt;
-        $valColor = $row['green'] ? '#16a34a' : '#c8401a';
-        $labelColor = $row['green'] ? '#16a34a' : '#1565c0';
-    @endphp
-    <div style="display:flex; align-items:center; justify-content:space-between; padding:0.42rem 1.5rem; border-bottom:1px solid #f0f2f5; direction:rtl;">
-        <div style="font-weight:700; color:{{ $labelColor }}; font-size:0.85rem; font-family:'Tajawal',sans-serif;">
-            @if($row['ar'])
-                {{ $row['en'] }} : {{ $row['ar'] }} ::
-            @else
-                {{ $row['en'] }} ::
-            @endif
+
+<div style="background:#fff; border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:0 4px 16px rgba(0,0,0,0.08); margin-bottom:1rem;">
+
+    {{-- رأس القسم --}}
+    <div style="background:linear-gradient(135deg,var(--navy) 0%,#2d2d5e 100%); padding:0.75rem 1.5rem; display:flex; align-items:center; justify-content:space-between;">
+        <span style="color:#fbbf24; font-weight:900; font-size:0.95rem; font-family:'Tajawal',sans-serif;">تفصيل طرق الدفع</span>
+        <span style="color:rgba(255,255,255,0.5); font-size:0.75rem; font-family:'Tajawal',sans-serif;">Payment Breakdown</span>
+    </div>
+
+    {{-- المجموعات --}}
+    @foreach($groups as $groupName => $items)
+    {{-- عنوان المجموعة --}}
+    <div style="background:#f8fafc; padding:0.35rem 1.5rem; border-bottom:1px solid #e8ecf0; border-top:{{ !$loop->first ? '2px solid #e0e0e0' : 'none' }};">
+        <span style="font-size:0.73rem; font-weight:900; color:#9ca3af; text-transform:uppercase; letter-spacing:1px; font-family:'Tajawal',sans-serif;">{{ $groupName }}</span>
+    </div>
+
+    @foreach($items as $item)
+    @php $hasVal = $item['val'] > 0; @endphp
+    <div style="display:grid; grid-template-columns:1fr auto; align-items:center; padding:0.5rem 1.5rem; border-bottom:1px solid #f3f4f6; background:{{ $hasVal ? '#fffdf5' : '#fff' }}; transition:background 0.15s;"
+         onmouseover="this.style.background='#f0f9ff'" onmouseout="this.style.background='{{ $hasVal ? '#fffdf5' : '#fff' }}'">
+
+        {{-- العنوان --}}
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+            <span style="font-size:0.85rem;">{{ $item['icon'] }}</span>
+            <div>
+                <span style="font-weight:800; color:{{ $hasVal ? '#1a1a2e' : '#9ca3af' }}; font-size:0.84rem; font-family:'Tajawal',sans-serif;">
+                    {{ $item['ar'] ?: $item['en'] }}
+                </span>
+                @if($item['ar'])
+                <span style="color:#b0b8c4; font-size:0.72rem; font-family:'Inter'; margin-right:0.3rem;">{{ $item['en'] }}</span>
+                @endif
+            </div>
         </div>
-        <div style="font-weight:900; color:{{ $valColor }}; font-size:0.88rem; direction:ltr; font-family:'Inter';">
-            {{ $display }}
+
+        {{-- القيمة --}}
+        <div style="text-align:left; direction:ltr;">
+            @if($hasVal)
+            <span style="background:#fff3e0; color:#c8401a; font-weight:900; font-size:0.92rem; font-family:'Inter'; padding:0.2rem 0.65rem; border-radius:20px; border:1px solid #f5cba7;">
+                {{ number_format($item['val'], 2) }}
+            </span>
+            @else
+            <span style="color:#d1d5db; font-size:0.82rem; font-family:'Inter'; font-weight:600;">—</span>
+            @endif
         </div>
     </div>
     @endforeach
+    @endforeach
+
+    {{-- شريط السندات الإجمالي --}}
+    <div style="background:linear-gradient(135deg,#166534 0%,#16a34a 100%); padding:0.75rem 1.5rem; display:flex; align-items:center; justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+            <span style="font-size:1rem;">🧾</span>
+            <div>
+                <div style="font-weight:900; color:#fff; font-size:0.92rem; font-family:'Tajawal',sans-serif;">السندات</div>
+                <div style="font-size:0.7rem; color:rgba(255,255,255,0.6); font-family:'Inter';">Vouchers (سند)</div>
+            </div>
+        </div>
+        <div style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:24px; padding:0.3rem 1.2rem; direction:ltr;">
+            <span style="font-weight:900; color:#fff; font-size:1.1rem; font-family:'Inter';">{{ number_format($sondatTotal, 2) }}</span>
+            <span style="font-size:0.72rem; color:rgba(255,255,255,0.6); font-family:'Tajawal'; margin-right:3px;">د.ك</span>
+        </div>
+    </div>
+
 </div>
 @endif
 

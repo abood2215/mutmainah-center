@@ -1,5 +1,27 @@
 <div style="min-height:80vh; padding: 1.5rem 2rem;">
 
+@if(session('check_success'))
+@php $cs = session('check_success'); @endphp
+<div style="max-width:1400px; margin:0 auto 1rem; background:#e8f5e9; border:2px solid #4caf50; border-radius:10px; padding:14px 20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; font-family:'Tajawal',sans-serif;">
+    <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-size:1.5rem;">✅</span>
+        <div>
+            <div style="font-weight:900; color:#1b5e20; font-size:.95rem;">تم تحويل المريض بنجاح</div>
+            <div style="font-size:.83rem; color:#2e7d32; margin-top:2px;">
+                <strong>{{ $cs['patient'] }}</strong>
+                &nbsp;|&nbsp; العيادة: <strong>{{ $cs['clinic'] }}</strong>
+                &nbsp;|&nbsp; المبلغ: <strong>{{ number_format($cs['total'], 3) }} د.ك</strong>
+                &nbsp;|&nbsp; رقم الكشف: <strong>#{{ $cs['rec_id'] }}</strong>
+            </div>
+        </div>
+    </div>
+    <a href="{{ $cs['invoice_url'] }}" target="_blank"
+       style="background:#1b5e20; color:#fff; text-decoration:none; border-radius:6px; padding:8px 20px; font-family:'Tajawal',sans-serif; font-size:.85rem; font-weight:800; white-space:nowrap;">
+        🧾 طباعة الفاتورة
+    </a>
+</div>
+@endif
+
     <!-- الإطار الرئيسي (المحاط ببوردر والمحصور العرض) -->
     <div style="max-width: 1400px; margin: 0 auto; background: #fff; border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-sm); overflow: hidden; display: flex; flex-direction: column; animation: fadeIn 0.5s ease;">
         
@@ -127,9 +149,14 @@
                         </thead>
                         <tbody>
                             @forelse($checks as $check)
+                                @php
+                                    $isDone    = $check->confirm_id == 1;
+                                    $rowBg     = $selectedStId == $check->st_id ? '#fff9f9' : ($isDone ? 'transparent' : '#fffbf0');
+                                    $hoverBg   = $isDone ? '#fcfdfe' : '#fff8e6';
+                                @endphp
                                 <tr wire:key="check-{{ $check->id }}"
-                                    style="border-bottom:1px solid #f1f5f9; transition:all 0.2s; {{ $selectedStId == $check->st_id ? 'background:#fff9f9;' : '' }}"
-                                    onmouseover="this.style.background='#fcfdfe'" onmouseout="this.style.background='{{ $selectedStId == $check->st_id ? '#fff9f9' : 'transparent' }}'">
+                                    style="border-bottom:1px solid #f1f5f9; transition:all 0.2s; background:{{ $rowBg }};"
+                                    onmouseover="this.style.background='{{ $hoverBg }}'" onmouseout="this.style.background='{{ $rowBg }}'">
 
                                     <td style="padding:0.85rem 1rem; text-align:center; font-weight:800; color:var(--text-muted); font-size:0.85rem;">
                                         {{ ($checks->currentPage() - 1) * $checks->perPage() + $loop->iteration }}
@@ -164,8 +191,8 @@
                                     </td>
 
                                     <td style="padding:0.85rem 1rem; text-align:center;">
-                                        @if($check->status == 1)
-                                            <span style="background:#ecfdf5; color:#059669; font-weight:900; font-size:0.75rem; padding:0.25rem 0.75rem; border-radius:50px; border:1px solid #d1fae5;">تم الكشف</span>
+                                        @if($check->confirm_id == 1)
+                                            <span style="background:#ecfdf5; color:#059669; font-weight:900; font-size:0.75rem; padding:0.25rem 0.75rem; border-radius:50px; border:1px solid #d1fae5;">تم</span>
                                         @else
                                             <span style="background:#fff7ed; color:#ea580c; font-weight:900; font-size:0.75rem; padding:0.25rem 0.75rem; border-radius:50px; border:1px solid #ffedd5;">قيد الانتظار</span>
                                         @endif

@@ -12,11 +12,22 @@ class NewCheck extends Component
     public $patient;
     public array $clinics  = [];
     public array $services = [];
-    public string $selectedClinic  = '';
+
+    // حقول إضافة الخدمة
+    public string $filterClinic    = '';
+    public string $serviceSearch   = '';
     public string $selectedService = '';
-    public float  $price       = 0;
-    public string $notes       = '';
+    public string $qty             = '1';
+
+    // قائمة الخدمات المضافة
+    public array $items = [];
+
+    // بيانات الدفع
+    public string $totalDiscount = '0';
+    public int    $isFree        = 0; // 0=لا، 1=مجاني
+    public string $credit        = '';
     public string $paymentMethod = '1';
+    public string $notes         = '';
 
     #[Title('كشف جديد')]
     public function mount($id): void
@@ -31,61 +42,234 @@ class NewCheck extends Component
 
         abort_if(!$this->patient, 404);
 
-        $this->clinics  = DB::table('clinic')->orderBy('name')->get(['id', 'name'])->all();
-        $this->services = DB::table('ana')->limit(100)->get(['id', 'name', 'price', 'ccode'])->all();
+        $this->clinics = DB::table('clinic')->orderBy('name')->get(['id', 'name'])->all();
+        $this->loadServices();
     }
 
-    public function updatedSelectedClinic(string $value): void
+    public function updatedTotalDiscount(): void
     {
-        $query = DB::table('ana');
-        if ($value) {
-            $query->where(fn ($q) => $q->where('clinic_id', $value)->orWhereNull('clinic_id'));
-        }
-        $this->services        = $query->limit(100)->get(['id', 'name', 'price', 'ccode'])->all();
+        // تأكد أن القيمة رقم موجب
+        $val = (float)$this->totalDiscount;
+        $max = $this->getTotal();
+        if ($val < 0) $val = 0;
+        if ($val > $max) $val = $max;
+        $this->totalDiscount = (string)$val;
+    }
+
+    public function updatedFilterClinic(): void
+    {
         $this->selectedService = '';
-        $this->price           = 0;
+        $this->loadServices();
     }
 
-    public function updatedSelectedService(string $value): void
+    public function updatedServiceSearch(): void
     {
-        if ($value) {
-            $service     = DB::table('ana')->where('id', $value)->first();
-            $this->price = $service ? (float) $service->price : 0;
+        $this->loadServices();
+    }
+
+    private function loadServices(): void
+    {
+        // إذا لم تُختر عيادة بعد — القائمة فارغة
+        if (!$this->filterClinic) {
+            $this->services = [];
+            return;
         }
+
+        $q = DB::table('service')
+            ->where('clinic_id', $this->filterClinic)
+            ->where('state_id', 0);
+
+        if ($this->serviceSearch) {
+            $q->where(fn($q) => $q->where('name', 'like', '%'.$this->serviceSearch.'%')
+                                  ->orWhere('ccode', 'like', '%'.$this->serviceSearch.'%'));
+        }
+
+        $this->services = $q->orderBy('name')->limit(150)
+            ->get(['id', 'name', 'price', 'ccode', 'clinic_id'])
+            ->all();
+    }
+
+    public function addItem(): void
+    {
+        if (!$this->selectedService) return;
+
+        $svc = collect($this->services)->first(fn($s) => (int)$s->id === (int)$this->selectedService);
+
+        if (!$svc) {
+            $svc = DB::table('service')->where('id', $this->selectedService)
+                ->first(['id', 'name', 'price', 'ccode', 'clinic_id']);
+        }
+
+        if (!$svc) return;
+
+        $clinicId   = $this->filterClinic ?: ($svc->clinic_id ?? null);
+        $clinicName = '—';
+
+        if ($clinicId) {
+            $c = collect($this->clinics)->first(fn($c) => $c->id == $clinicId);
+            $clinicName = $c ? $c->name : '—';
+        }
+
+        // الكود: لا تعرض إذا كان نفس الاسم أو فارغ
+        $code = $svc->ccode ?? '';
+        if ($code === $svc->name || trim($code) === '') {
+            $code = '';
+        }
+
+        // qty جلسات = qty صفوف منفصلة بنفس السعر
+        $count = max(1, (int)$this->qty);
+        for ($i = 0; $i < $count; $i++) {
+            $this->items[] = [
+                'service_id'   => (int)$svc->id,
+                'service_name' => $svc->name,
+                'code'         => $code,
+                'clinic_id'    => $clinicId,
+                'clinic_name'  => $clinicName,
+                'price'        => round((float)$svc->price, 3),
+                'notes'        => '',
+                'insurance_val'=> 0,
+            ];
+        }
+
+        $this->selectedService = '';
+        $this->qty             = '1';
+    }
+
+    public function removeItem(int $index): void
+    {
+        array_splice($this->items, $index, 1);
+        $this->items = array_values($this->items);
+    }
+
+    public function getTotal(): float
+    {
+        return round(array_sum(array_column($this->items, 'price')), 3);
+    }
+
+    public function getInsuranceTotal(): float
+    {
+        return round(array_sum(array_column($this->items, 'insurance_val')), 3);
+    }
+
+    public function getPatientAmount(): float
+    {
+        $disc = $this->isFree ? $this->getTotal() : (float)$this->totalDiscount;
+        return max(0, round($this->getTotal() - $disc - $this->getInsuranceTotal(), 3));
     }
 
     public function save(): void
     {
-        $today = now()->format('j-n-Y');
+        if (empty($this->items)) return;
+
+        $today         = now()->format('j-n-Y');
+        $firstClinicId = $this->items[0]['clinic_id'] ?? 0;
+        $firstServiceId= $this->items[0]['service_id'] ?? 0;
 
         $recId = DB::table('rec')->insertGetId([
-            'rec_date'   => $today,
-            'rec_time'   => now()->format('H:i'),
-            'st_id'      => $this->patientId,
-            'clinic_id'  => $this->selectedClinic ?: null,
-            'confirm_id' => 1,
-            'state_id'   => 0,
-            'notes'      => $this->notes ?: null,
+            'rec_date'        => $today,
+            'rec_time'        => now()->format('H:i'),
+            'st_id'           => $this->patientId,
+            'clinic_id'       => $firstClinicId,
+            'service_id'      => $firstServiceId,
+            'confirm_id'      => 1,
+            'state_id'        => 1,
+            'notes'           => $this->notes ?: '',
+            // حقول إلزامية بقيم افتراضية
+            'c_id'            => 0,
+            'doc_id'          => 0,
+            'pstate_id'       => 0,
+            'type_id'         => 0,
+            'per_id'          => 0,
+            'order_id'        => 0,
+            'pharm_id'        => 0,
+            'user_id'         => 0,
+            'transfer_doc_id' => 0,
+            'new_service_id'  => 0,
+            'rev_id'          => 0,
+            'rev_days'        => 0,
+            'date_serial'     => 0,
+            'call_id'         => 0,
+            'dental_id'       => 0,
+            'serv_no'         => 0,
+            'sym'             => '',
+            'dia'             => '',
+            'pres'            => '',
+            'pdate'           => $today,
+            'pressure'        => '',
+            'heat'            => '',
+            'pulse'           => '',
+            'diab'            => '',
         ]);
 
-        if ($this->price > 0 && $this->selectedService) {
+        $payMethod = $this->isFree ? 7 : (int)$this->paymentMethod;
+        $totalDisc = $this->isFree ? $this->getTotal() : (float)$this->totalDiscount;
+
+        foreach ($this->items as $i => $item) {
             DB::table('kpayments')->insert([
-                'rec_id'         => $recId,
-                'pdate'          => $today,
-                'price'          => $this->price,
-                'payment_method' => (int) $this->paymentMethod,
-                'clinic_id'      => $this->selectedClinic ?: null,
-                'pdesc'          => $this->notes ?: null,
-                'acc_id'         => 0,
+                'rec_id'          => $recId,
+                'pdate'           => $today,
+                'price'           => $item['price'],
+                'discount'        => $i === 0 ? $totalDisc : 0,
+                'payment_method'  => $payMethod,
+                'clinic_id'       => $item['clinic_id'] ?? 0,
+                'pdesc'           => $item['service_name'],
+                'acc_id'          => 0,
+                // حقول إلزامية بدون default
+                'serial_no'       => 0,
+                'credit'          => $item['price'],
+                'net'             => $item['price'] - ($i === 0 ? $totalDisc : 0),
+                'user_id'         => 0,
+                'type_id'         => 0,
+                'client_id'       => 0,
+                'res_amount'      => 0,
+                'cash_discount'   => 0,
+                'ratio_discount'  => 0,
+                'importer_id'     => 0,
+                'c_id'            => 0,
+                'p_id'            => 0,
+                'bank'            => 0,
+                'branch'          => 0,
+                'check_no'        => 0,
+                'amount'          => $item['price'],
+                'pharm_id'        => 0,
+                'status'          => 0,
+                'p_amount'        => 0,
+                'c_amount'        => 0,
+                'com_id'          => 0,
+                'dis_id'          => 0,
+                'vno'             => 0,
+                'ptime'           => now()->format('H:i'),
+                'insur_amount'    => 0,
+                'pharmacy_id'     => 0,
+                'serv_no'         => 0,
+                'v_id'            => 0,
+                'date_serial'     => 0,
+                'interface_id'    => 0,
+                'ns'              => 0,
+                'clinic_type_id'  => 0,
             ]);
         }
 
-        session()->flash('success', 'تم تسجيل الكشف بنجاح!');
+        session()->flash('check_success', [
+            'rec_id'     => $recId,
+            'patient'    => $this->patient->full_name,
+            'clinic'     => $this->items[0]['clinic_name'] ?? '—',
+            'total'      => $this->getTotal(),
+            'invoice_url'=> route('finance.invoice-print', ['recId' => $recId]),
+        ]);
+
         $this->redirect(route('checks.index'), navigate: true);
     }
 
     public function render()
     {
-        return view('livewire.patients.new-check')->layout('layouts.app');
+        $total          = $this->getTotal();
+        $insuranceTotal = $this->getInsuranceTotal();
+        $discount       = $this->isFree ? $total : (float)$this->totalDiscount;
+        $patientAmount  = $this->getPatientAmount();
+
+        return view('livewire.patients.new-check', compact(
+            'total', 'insuranceTotal', 'discount', 'patientAmount'
+        ))->layout('layouts.app');
     }
 }

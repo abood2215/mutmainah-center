@@ -1,123 +1,499 @@
-<div style="min-height:80vh; padding:1.5rem 2rem;">
-<div style="max-width:1400px; margin:0 auto; background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow-sm); overflow:hidden; animation:fadeIn 0.5s ease;">
+<div class="nc-wrap">
 
-    <!-- رأس الإطار -->
-    <div style="padding:1.25rem 1.75rem; border-bottom:1px solid var(--border); background:#fafbfc; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
-        <div style="display:flex; align-items:center; gap:0.75rem;">
-            <div style="width:42px; height:42px; background:var(--primary-glow); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.4rem;">✨</div>
-            <div>
-                <h1 style="font-size:1.4rem; font-weight:900; color:var(--primary); margin:0; font-family:'Tajawal',sans-serif;">كشف جديد</h1>
-                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.1rem;">تسجيل زيارة جديدة للعميل</div>
-            </div>
-        </div>
-        <a href="{{ route('checks.index') }}" wire:navigate class="btn btn-secondary">⬅ العودة للكشوف</a>
+<style>
+.nc-wrap {
+    padding: 1rem 1.5rem;
+    min-height: 80vh;
+    font-family: 'Tajawal', sans-serif;
+}
+.nc-box {
+    max-width: 1300px;
+    margin: 0 auto;
+    background: #fff;
+    border: 2px solid #c0c0c0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+}
+
+/* ── رأس ── */
+.nc-head {
+    background: var(--primary);
+    padding: 10px 20px;
+    text-align: center;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 900;
+    letter-spacing: .5px;
+}
+
+/* ── معلومات المريض ── */
+.nc-patient {
+    background: #eef2fb;
+    border-bottom: 1px solid #cdd5e8;
+    padding: 8px 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+    align-items: center;
+    font-size: .83rem;
+}
+.nc-patient .lbl { font-weight: 800; color: var(--primary); white-space: nowrap; }
+.nc-patient .val { font-weight: 700; color: var(--navy); }
+.nc-patient .val.link { color: #0055cc; text-decoration: none; }
+.nc-patient .val.link:hover { text-decoration: underline; }
+.nc-patient .sep { color: #aaa; }
+
+/* ── صف الإضافة ── */
+.nc-add-row {
+    background: #f7f8fa;
+    border-bottom: 2px solid #c0c0c0;
+    padding: 10px 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+.nc-add-row .field-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+}
+.nc-add-row .field-group.grow { flex: 1; min-width: 160px; }
+.nc-add-row label {
+    font-size: .78rem;
+    font-weight: 800;
+    color: #444;
+    white-space: nowrap;
+}
+.nc-add-row label.red { color: var(--primary); }
+.nc-input {
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    padding: 5px 9px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: .83rem;
+    background: #fff;
+    outline: none;
+    transition: border .2s;
+}
+.nc-input:focus { border-color: var(--primary); }
+.nc-select { min-width: 140px; }
+.nc-qty { width: 52px; text-align: center; font-weight: 800; border: 2px solid var(--primary) !important; color: var(--primary); }
+
+.nc-btn-add {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 6px 22px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: .88rem;
+    font-weight: 900;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity .2s;
+}
+.nc-btn-add:hover { opacity: .88; }
+
+/* ── جدول الخدمات ── */
+.nc-table-wrap { overflow-x: auto; }
+.nc-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+.nc-table thead tr { background: var(--navy); }
+.nc-table thead th {
+    color: #fff;
+    padding: 7px 10px;
+    font-size: .78rem;
+    font-weight: 800;
+    white-space: nowrap;
+    border-left: 1px solid rgba(255,255,255,.12);
+}
+.nc-table thead th:last-child { border-left: none; }
+.nc-table tbody tr { border-bottom: 1px solid #e8e8e8; }
+.nc-table tbody tr:nth-child(even) { background: #fafafa; }
+.nc-table tbody tr:hover { background: #f0f4ff; }
+.nc-table td {
+    padding: 6px 10px;
+    font-size: .83rem;
+    vertical-align: middle;
+}
+.nc-table .td-num  { text-align: center; font-weight: 900; color: var(--primary); width: 36px; }
+.nc-table .td-name { font-weight: 700; color: var(--navy); }
+.nc-table .td-c    { text-align: center; color: #555; }
+.nc-table .td-price { text-align: center; font-weight: 800; color: #1b5e20; direction: ltr; }
+.nc-table .td-ins   { text-align: center; color: #1565c0; font-weight: 700; }
+.nc-table .td-notes input {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 3px 6px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: .78rem;
+}
+.nc-table .td-del { text-align: center; width: 60px; }
+.nc-del-btn {
+    background: #c0392b;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    padding: 3px 10px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: .76rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+.nc-del-btn:hover { background: #a93226; }
+.nc-empty td {
+    padding: 22px;
+    text-align: center;
+    color: #b0b0b0;
+    font-size: .86rem;
+    font-style: italic;
+}
+
+/* ── شريط الإجماليات ── */
+.nc-totals {
+    background: #eef0f8;
+    border-top: 2px solid var(--primary);
+    padding: 8px 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+    align-items: center;
+    font-size: .82rem;
+}
+.nc-totals .tot-item { display: flex; align-items: center; gap: 5px; }
+.nc-totals .tot-lbl  { font-weight: 800; color: #333; white-space: nowrap; }
+.nc-totals .tot-val  { font-weight: 900; font-size: .95rem; }
+.nc-totals .tv-sum   { color: var(--navy); }
+.nc-totals .tv-disc  { color: #e65100; }
+.nc-totals .tv-ins   { color: #1565c0; }
+.nc-totals .tv-pat   { color: #1b5e20; }
+
+/* ── قسم الدفع ── */
+.nc-payment {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid #ddd;
+}
+.nc-pay-left  { padding: 16px 20px; border-left: 1px solid #ddd; }
+.nc-pay-right { padding: 16px 20px; background: #fdf6ec; }
+
+.nc-field-row { margin-bottom: 12px; }
+.nc-field-row label {
+    display: block;
+    font-size: .8rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+}
+.nc-field-row label.lbl-pri { color: var(--primary); }
+.nc-field-row label.lbl-gold { color: #7a4400; }
+.nc-field-row .nc-input-full {
+    width: 100%;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    padding: 7px 10px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: .88rem;
+    background: #fff;
+    box-sizing: border-box;
+}
+.nc-field-row .nc-input-full:focus { border-color: var(--primary); outline: none; }
+.nc-pay-right .nc-input-full { border-color: #c8941a; background: #fffdf7; }
+.nc-pay-right .nc-input-full:focus { border-color: var(--primary); }
+
+.nc-free-badge {
+    display: inline-block;
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: .8rem;
+    font-weight: 800;
+    margin-right: 6px;
+}
+.nc-amount-box {
+    background: var(--primary);
+    color: #fff;
+    border-radius: 6px;
+    padding: 10px 16px;
+    text-align: center;
+    margin-top: 14px;
+}
+.nc-amount-box .ab-lbl { font-size: .76rem; font-weight: 700; opacity: .85; }
+.nc-amount-box .ab-val { font-size: 1.5rem; font-weight: 900; }
+.nc-amount-box .ab-cur { font-size: .8rem; font-weight: 700; opacity: .75; }
+
+/* ── شريط الأزرار ── */
+.nc-footer {
+    background: #2e6da4;
+    padding: 10px 18px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    justify-content: space-between;
+    border-top: 2px solid #c8941a;
+}
+.nc-footer .btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.nc-footer .warn { color: #ff8a65; font-size: .78rem; font-weight: 800; }
+
+.nc-btn {
+    border: none;
+    border-radius: 5px;
+    padding: 8px 20px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: .86rem;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.nc-btn-ref  { background: #27ae60; color: #fff; }
+.nc-btn-ref:disabled { background: #888; cursor: not-allowed; }
+.nc-btn-ref:not(:disabled):hover { background: #229954; }
+.nc-btn-rst  { background: #607d8b; color: #fff; }
+.nc-btn-back { background: rgba(255,255,255,.15); color: #fff; text-decoration: none; display: inline-flex; align-items: center; }
+.nc-btn-back:hover { background: rgba(255,255,255,.25); }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .nc-wrap { padding: .75rem; }
+    .nc-payment { grid-template-columns: 1fr; }
+    .nc-pay-left { border-left: none; border-bottom: 1px solid #ddd; }
+    .nc-totals { gap: 6px 14px; font-size: .78rem; }
+    .nc-footer { flex-direction: column; align-items: flex-start; }
+    .nc-add-row .field-group.grow { min-width: 100%; }
+}
+@media (max-width: 480px) {
+    .nc-patient { font-size: .76rem; gap: 4px 10px; }
+    .nc-btn { padding: 7px 14px; font-size: .8rem; }
+}
+</style>
+
+<div class="nc-box">
+
+    {{-- رأس --}}
+    <div class="nc-head">كشف جديد &nbsp;:&nbsp; New Check</div>
+
+    {{-- بيانات المريض --}}
+    <div class="nc-patient">
+        <span class="lbl">Patient : المراجع</span>
+        <a href="{{ route('patients.show', $patient->id) }}" class="val link">
+            {{ $patient->full_name }}*{{ $patient->file_id }}
+        </a>
+        <span class="sep">|</span>
+        <span class="lbl">Phone : الجوال</span>
+        <span class="val">{{ $patient->phone ?: '—' }}</span>
+        <span class="sep">|</span>
+        <span class="lbl">Insurance : التأمين</span>
+        <span class="val" style="color:var(--primary);">{{ $patient->insurance ?? 'على نفقته' }}</span>
     </div>
 
-    @if(session()->has('success'))
-    <div style="margin:1.25rem 1.75rem; background:#e8f5e9; color:var(--success); padding:0.9rem 1.25rem; border-radius:8px; font-weight:700; border:1px solid #c8e6c9; display:flex; align-items:center; gap:0.5rem;">
-        ✅ {{ session('success') }}
+    {{-- صف الإضافة --}}
+    <div class="nc-add-row">
+        {{-- العيادة --}}
+        <div class="field-group">
+            <label class="red">Clinic : العيادة</label>
+            <select wire:model.live="filterClinic" class="nc-input nc-select">
+                <option value="">— اختر العيادة —</option>
+                @foreach($clinics as $clinic)
+                    <option value="{{ $clinic->id }}">{{ $clinic->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        {{-- بحث --}}
+        <div class="field-group grow">
+            <label>Name or Code : الاسم او الكود</label>
+            <input type="text" wire:model.live.debounce.300ms="serviceSearch"
+                   placeholder="ابحث..." class="nc-input" style="flex:1; min-width:100px;">
+        </div>
+
+        {{-- قائمة الخدمات --}}
+        <div class="field-group grow">
+            <select wire:model="selectedService" class="nc-input" style="min-width:180px; flex:1;"
+                    @if(!$filterClinic) disabled style="min-width:180px; flex:1; background:#f0f0f0; color:#999;" @endif>
+                @if(!$filterClinic)
+                    <option value="">← اختر العيادة أولاً</option>
+                @else
+                    <option value="">— اختر الخدمة ({{ count($services) }}) —</option>
+                    @foreach($services as $svc)
+                        <option value="{{ $svc->id }}">{{ $svc->name }} — {{ number_format($svc->price, 3) }} د.ك</option>
+                    @endforeach
+                @endif
+            </select>
+        </div>
+
+        {{-- الكمية --}}
+        <div class="field-group">
+            <input type="number" wire:model="qty" min="1" max="99" class="nc-input nc-qty">
+            <label style="font-size:.8rem; color:#555; font-weight:700;">No</label>
+        </div>
+
+        {{-- إضافة --}}
+        <button wire:click="addItem" type="button" class="nc-btn-add">
+            إضافة : Add
+        </button>
     </div>
-    @endif
 
-    <!-- بيانات العميل -->
-    <div style="margin:0 1.75rem 1.25rem; border:1px solid var(--border); border-radius:12px; overflow:hidden;">
-        <div style="background:var(--navy); padding:0.55rem 1.25rem;">
-            <span style="color:#fff; font-weight:900; font-size:0.88rem;">بيانات العميل</span>
+    {{-- جدول الخدمات --}}
+    <div class="nc-table-wrap">
+        <table class="nc-table">
+            <thead>
+                <tr>
+                    <th style="width:36px; text-align:center;">#</th>
+                    <th style="text-align:right;">Service : الخدمة</th>
+                    <th style="text-align:center; width:100px;">Code : الكود</th>
+                    <th style="text-align:center; width:130px;">Clinic : العيادة</th>
+                    <th style="text-align:center; width:95px;">Price : السعر</th>
+                    <th style="text-align:center; width:120px;">Notes : الملاحظات</th>
+                    <th style="text-align:center; width:80px;">Insur : التأمين</th>
+                    <th style="text-align:center; width:60px;">Del : حذف</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($items as $i => $item)
+                <tr>
+                    <td class="td-num">{{ $i + 1 }}</td>
+                    <td class="td-name">{{ $item['service_name'] }}</td>
+                    <td class="td-c">{{ $item['code'] ?: '—' }}</td>
+                    <td class="td-c">{{ $item['clinic_name'] }}</td>
+                    <td class="td-price">{{ number_format($item['price'], 3) }}</td>
+                    <td class="td-notes">
+                        <input type="text" value="{{ $item['notes'] }}"
+                               wire:change="$set('items.{{ $i }}.notes', $event.target.value)">
+                    </td>
+                    <td class="td-ins">{{ number_format($item['insurance_val'], 3) }}</td>
+                    <td class="td-del">
+                        <button wire:click="removeItem({{ $i }})" type="button" class="nc-del-btn">حذف</button>
+                    </td>
+                </tr>
+                @empty
+                <tr class="nc-empty">
+                    <td colspan="8">لم تتم إضافة أي خدمة بعد — اختر خدمة من الأعلى وانقر "إضافة"</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    {{-- شريط الإجماليات --}}
+    <div class="nc-totals">
+        <div class="tot-item">
+            <span class="tot-lbl">Sum : الإجمالي ::</span>
+            <span class="tot-val tv-sum">{{ number_format($total, 3) }}</span>
         </div>
-        <div style="padding:0.85rem 1.25rem; background:#f8fafc; display:flex; flex-wrap:wrap; gap:1.5rem; align-items:center;">
-            <div style="display:flex; gap:0.4rem; align-items:center;">
-                <span style="font-size:0.78rem; color:var(--text-muted); font-weight:700;">الاسم:</span>
-                <span style="font-weight:900; color:var(--navy); font-size:1rem;">{{ $patient->full_name }}</span>
-                <span style="font-size:0.78rem; color:var(--text-muted);">(#{{ $patient->file_id }})</span>
-            </div>
-            <div style="display:flex; gap:0.4rem; align-items:center;">
-                <span style="font-size:0.78rem; color:var(--text-muted); font-weight:700;">الجوال:</span>
-                <span style="font-weight:700; color:var(--text-dim);">{{ $patient->phone ?: '—' }}</span>
-            </div>
-            <div style="display:flex; gap:0.4rem; align-items:center;">
-                <span style="font-size:0.78rem; color:var(--text-muted); font-weight:700;">الهوية:</span>
-                <span style="font-weight:700; color:var(--text-dim);">{{ $patient->ssn ?: '—' }}</span>
-            </div>
-            <div style="display:flex; gap:0.4rem; align-items:center;">
-                <span style="font-size:0.78rem; color:var(--text-muted); font-weight:700;">التأمين:</span>
-                <span style="font-weight:700; color:var(--text-dim);">{{ $patient->insurance ?: 'بدون تأمين' }}</span>
-            </div>
+        <div class="tot-item">
+            <span class="tot-lbl">Discount : الخصم ::</span>
+            <span class="tot-val tv-disc">{{ number_format($discount, 3) }}</span>
+        </div>
+        <div class="tot-item">
+            <span class="tot-lbl">Insurance : التأمين ::</span>
+            <span class="tot-val tv-ins">{{ number_format($insuranceTotal, 3) }}</span>
+        </div>
+        <div class="tot-item">
+            <span class="tot-lbl">Patient : المراجع ::</span>
+            <span class="tot-val tv-pat">{{ number_format($patientAmount, 3) }}</span>
         </div>
     </div>
 
-    <!-- النموذج -->
-    <div style="padding:0 1.75rem 1.75rem;">
+    {{-- قسم الدفع --}}
+    <div class="nc-payment">
 
-        <!-- اختيار العيادة والخدمة -->
-        <div style="border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:1.25rem;">
-            <div style="background:var(--primary); padding:0.55rem 1.25rem;">
-                <span style="color:#fff; font-weight:900; font-size:0.88rem;">تفاصيل الكشف</span>
+        {{-- يسار: خصم + مجاني + ملاحظات --}}
+        <div class="nc-pay-left">
+            <div class="nc-field-row">
+                <label class="lbl-pri">
+                    Discount : خصم إجمالي الفاتورة &nbsp;<span style="color:#c00;">*</span>
+                </label>
+                <input type="number" wire:model.blur="totalDiscount" step="0.001" min="0"
+                       @if($isFree) readonly @endif
+                       class="nc-input-full"
+                       style="{{ $isFree ? 'background:#eee;' : '' }}">
             </div>
-            <div style="padding:1.25rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-                <div>
-                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">العيادة</label>
-                    <select wire:model.live="selectedClinic" class="form-input">
-                        <option value="">— اختر العيادة —</option>
-                        @foreach($clinics as $clinic)
-                            <option value="{{ $clinic->id }}">{{ $clinic->name }}</option>
-                        @endforeach
+
+            <div class="nc-field-row">
+                <label class="lbl-pri">
+                    Free : مجاني &nbsp;<span style="color:#c00;">*</span>
+                </label>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <select wire:model.live="isFree" class="nc-input-full" style="width:auto; min-width:100px;">
+                        <option value="0">لا</option>
+                        <option value="1">✓ مجاني</option>
                     </select>
+                    @if($isFree)
+                        <span class="nc-free-badge">مجاني — {{ number_format($total, 3) }} د.ك</span>
+                    @endif
                 </div>
-                <div>
-                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">الخدمة</label>
-                    <select wire:model.live="selectedService" class="form-input">
-                        <option value="">— اختر الخدمة —</option>
-                        @foreach($services as $service)
-                            <option value="{{ $service->id }}">{{ $service->name }} @if($service->ccode)({{ $service->ccode }})@endif — {{ number_format($service->price, 3) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">المبلغ</label>
-                    <input type="number" wire:model="price" step="0.001" class="form-input" style="font-weight:800; font-size:1rem; color:var(--navy);">
-                </div>
-                <div>
-                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">طريقة الدفع</label>
-                    <select wire:model="paymentMethod" class="form-input">
-                        <option value="1">نقد</option>
-                        <option value="2">شيك</option>
-                        <option value="3">شبكة (كي نت)</option>
-                        <option value="4">تحويل بنكي</option>
-                        <option value="6">فيزا</option>
-                        <option value="7">مجاني</option>
-                    </select>
-                </div>
-                <div style="grid-column:span 2;">
-                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">ملاحظات</label>
-                    <textarea wire:model="notes" rows="3" class="form-input" style="resize:vertical;" placeholder="أي ملاحظات إضافية..."></textarea>
-                </div>
+            </div>
+
+            <div class="nc-field-row">
+                <label class="lbl-pri">ملاحظات الكشف</label>
+                <textarea wire:model="notes" rows="3" placeholder="أي ملاحظات..."
+                          class="nc-input-full" style="resize:vertical;"></textarea>
             </div>
         </div>
 
-        <!-- ملخص المبلغ -->
-        @if($price > 0)
-        <div style="border:1px solid #d1fae5; border-radius:12px; padding:1rem 1.25rem; margin-bottom:1.25rem; background:#f0fdf4; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
-            <div style="font-weight:800; color:var(--success); font-size:0.95rem;">✅ المبلغ المطلوب دفعه</div>
-            <div style="font-size:2rem; font-weight:900; color:var(--success);">
-                {{ number_format($price, 3) }} <span style="font-size:0.9rem; font-weight:700; opacity:0.7;">د.ك</span>
+        {{-- يمين: بيانات الدفع --}}
+        <div class="nc-pay-right">
+            <div class="nc-field-row">
+                <label class="lbl-gold">Credit : المبلغ المدفوع</label>
+                <input type="number" wire:model="credit" step="0.001" min="0"
+                       placeholder="{{ number_format($patientAmount, 3) }}"
+                       class="nc-input-full">
+            </div>
+
+            <div class="nc-field-row">
+                <label class="lbl-gold">P Method : طريقة الدفع</label>
+                <select wire:model="paymentMethod"
+                        @if($isFree) disabled @endif
+                        class="nc-input-full"
+                        style="{{ $isFree ? 'background:#eee; opacity:.7;' : '' }}">
+                    <option value="1">نقد</option>
+                    <option value="2">شيك</option>
+                    <option value="3">شبكة (كي نت)</option>
+                    <option value="4">تحويل بنكي</option>
+                    <option value="6">فيزا</option>
+                    <option value="7">مجاني</option>
+                </select>
+            </div>
+
+            <div class="nc-amount-box">
+                <div class="ab-lbl">المبلغ على العميل</div>
+                <div class="ab-val">{{ number_format($patientAmount, 3) }} <span class="ab-cur">د.ك</span></div>
             </div>
         </div>
-        @endif
 
-        <!-- أزرار الإجراء -->
-        <div style="display:flex; gap:1rem; align-items:center; justify-content:flex-start;">
-            <button wire:click="save" wire:loading.attr="disabled" class="btn btn-primary" style="padding:0.7rem 3rem; font-size:1rem;">
-                <span wire:loading.remove wire:target="save">💾 حفظ الكشف</span>
+    </div>
+
+    {{-- شريط الأزرار --}}
+    <div class="nc-footer">
+        <div class="btns">
+            <button wire:click="save" wire:loading.attr="disabled" type="button"
+                    @if(empty($items)) disabled @endif
+                    class="nc-btn nc-btn-ref">
+                <span wire:loading.remove wire:target="save">🧾 تحويل المريض : Referral</span>
                 <span wire:loading wire:target="save">⏳ جارٍ الحفظ...</span>
             </button>
-            <a href="{{ route('checks.index') }}" wire:navigate class="btn btn-secondary" style="padding:0.7rem 1.5rem;">إلغاء</a>
+
+            <button wire:click="$refresh" type="button" class="nc-btn nc-btn-rst">
+                استعادة : Reset
+            </button>
+
+            <a href="{{ route('checks.index') }}" wire:navigate class="nc-btn nc-btn-back">
+                ⬅ العودة
+            </a>
         </div>
 
-    </div>
-
-    <!-- تحذير سفلي -->
-    <div style="background:var(--navy); color:rgba(255,255,255,0.7); padding:0.75rem 1.75rem; font-size:0.82rem; font-weight:700; display:flex; align-items:center; gap:0.5rem; border-top:3px solid var(--gold);">
-        ⚠️ يرجى عدم تكرار الضغط على زر الحفظ أثناء معالجة الطلب لضمان دقة البيانات
+        <span class="warn">
+            أثناء التحميل : لا تضغط زر تحويل المريض ولا تقوم بتحديث المتصفح : No Click Duplication
+        </span>
     </div>
 
 </div>

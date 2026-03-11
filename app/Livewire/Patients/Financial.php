@@ -21,44 +21,70 @@ class Financial extends Component
 
     public function render()
     {
+        // طرق الدفع المجانية (لا تُحتسب في أي مجموع مالي)
+        $freeMethods = [4, 7]; // 4=مجاني، 7=مجاني via isFree
+
         // حساب المريض في acck (مرتبط بـ stu_id)
         $acck   = DB::table('acck')->where('stu_id', $this->patientId)->first();
         $acckId = $acck?->id;
 
-        // الإيداعات على الحساب (مدفوعات مباشرة للحساب)
+        // الإيداعات على الحساب: كل السجلات المرتبطة بحساب العميل (acc_id)
+        // نستخدم COALESCE لأن بعض السجلات تخزّن القيمة في amount وبعضها في price
         $deposits = $acckId
             ? DB::table('kpayments')
                 ->where('acc_id', $acckId)
-                ->where('status', 1)
-                ->get(['id', 'pdate', 'pdesc', 'amount', 'payment_method'])
+                ->whereIn('status', [1])
+                ->select(
+                    'id', 'pdate', 'pdesc', 'payment_method',
+                    DB::raw('COALESCE(NULLIF(amount,0), NULLIF(price,0), 0) as dep_amount')
+                )
+                ->orderBy('id')
+                ->get()
             : collect();
 
-        $totalDeposited = $deposits->sum('amount');
+        $totalDeposited = $deposits->sum('dep_amount');
 
-        // الخدمات المحتسبة عبر الكشوف
+        // جميع الخدمات المرتبطة بكشوف العميل
         $services = DB::table('kpayments as k')
             ->join('rec as r', 'r.id', '=', 'k.rec_id')
             ->where('r.st_id', $this->patientId)
-            ->select('k.id', 'k.pdate', 'k.pdesc', 'k.price', 'k.payment_method', 'k.rec_id')
+            ->select(
+                'k.id', 'k.pdate', 'k.pdesc', 'k.price', 'k.net',
+                'k.discount', 'k.payment_method', 'k.rec_id'
+            )
             ->orderBy('k.id', 'desc')
             ->get();
 
-        // الخدمات المحتسبة على الحساب فقط (method=5 = آجل)
-        $totalCharged = $services->where('payment_method', 5)->sum('price');
+        // الخدمات الآجلة (على الحساب) — method=5
+        $deferredServices = $services->where('payment_method', 5);
+        $totalDeferred    = $deferredServices->sum('price');
+        $totalDiscount    = $deferredServices->sum('discount');
+        $totalCharged     = max(0, $totalDeferred - $totalDiscount);
 
-        // الرصيد المتبقي = الإيداعات - المحتسب على الحساب
+        // الخدمات المدفوعة نقداً أو K-Net أو فيزا مباشرة (ما عدا آجل ومجاني)
+        $totalDirectPaid = $services
+            ->filter(fn($s) => ! in_array($s->payment_method, [5, ...$freeMethods]) && $s->price > 0)
+            ->sum('price');
+
+        // إجمالي الخدمات المُقدَّمة الفعلية (تستثني المجانية)
+        $totalServices = $services
+            ->filter(fn($s) => ! in_array($s->payment_method, $freeMethods) || $s->price > 0)
+            ->whereNotIn('payment_method', $freeMethods)
+            ->sum('price');
+
+        // الرصيد المتبقي = الإيداعات − الخدمات الآجلة الصافية
         $balance = $totalDeposited - $totalCharged;
 
-        // إجمالي جميع الخدمات (للعرض)
-        $totalServices = $services->sum('price');
-
         return view('livewire.patients.financial', [
-            'deposits'       => $deposits,
-            'services'       => $services,
-            'totalDeposited' => $totalDeposited,
-            'totalCharged'   => $totalCharged,
-            'totalServices'  => $totalServices,
-            'balance'        => $balance,
+            'deposits'        => $deposits,
+            'services'        => $services,
+            'totalDeposited'  => $totalDeposited,
+            'totalDiscount'   => $totalDiscount,
+            'totalDeferred'   => $totalDeferred,
+            'totalDirectPaid' => $totalDirectPaid,
+            'totalCharged'    => $totalCharged,
+            'totalServices'   => $totalServices,
+            'balance'         => $balance,
         ])->layout('layouts.app');
     }
 }

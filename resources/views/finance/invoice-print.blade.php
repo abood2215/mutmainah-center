@@ -294,9 +294,9 @@ body {
                 <tr>
                     <td class="num">{{ $i + 1 }}</td>
                     <td class="r">{{ $item->pdesc ?? '—' }}</td>
-                    <td>{{ $item->pdesc ?? '—' }}</td>
-                    <td class="price">{{ number_format($item->price, 2) }}</td>
-                    <td>{{ number_format($item->insurance_val ?? 0, 0) }}</td>
+                    <td>—</td>
+                    <td class="price">{{ number_format($item->price, 3) }}</td>
+                    <td>{{ number_format($item->insurance_val ?? 0, 3) }}</td>
                 </tr>
                 @empty
                 <tr class="empty">
@@ -307,13 +307,13 @@ body {
                 <tr class="totals-row">
                     <td colspan="2" style="text-align:right !important;">
                         الإجمالي :
-                        <span class="t-big">{{ number_format($total, 0) }} د.ك</span>
+                        <span class="t-big">{{ number_format($total, 3) }} د.ك</span>
                         &nbsp;&nbsp;
-                        <span style="font-size:11px; color:#666; font-weight:700;">خصم: {{ number_format($totalDiscount, 2) }}</span>
+                        <span style="font-size:11px; color:#666; font-weight:700;">خصم: {{ number_format($totalDiscount, 3) }}</span>
                     </td>
                     <td>
                         <span style="font-size:11px; color:#555;">العميل</span><br>
-                        <strong style="color:#1b5e20;">{{ number_format($clientAmount, 0) }}</strong>
+                        <strong style="color:#1b5e20;">{{ number_format($clientAmount, 3) }}</strong>
                     </td>
                     <td colspan="2">
                         <span style="font-size:11px; color:#555;">التأمين</span><br>
@@ -328,9 +328,9 @@ body {
     <div class="pay-row">
         <span class="lbl">وسيلة الدفع :</span>
         <span class="val">{{ $paymentLabel }}</span>
-        @if($invoice?->pdesc)
+        @if($rec->notes)
             <span class="lbl" style="margin-right:12px;">ملاحظات :</span>
-            <span class="val">{{ $invoice->pdesc }}</span>
+            <span class="val">{{ $rec->notes }}</span>
         @endif
     </div>
 

@@ -39,12 +39,11 @@ class Index extends Component
             ->leftJoin('kstu as a', 'a.id', '=', 'r.st_id')
             ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
             ->leftJoinSub($paymentsAgg, 'k', 'k.rec_id', '=', 'r.id')
-            ->where('r.confirm_id', 1)
             ->select(
                 'r.id',
                 'r.rec_date',
                 'r.rec_time',
-                'r.state_id as status',
+                'r.confirm_id',
                 'r.st_id',
                 'r.clinic_id',
                 'a.full_name as patient_name',
