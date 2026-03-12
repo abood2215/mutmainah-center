@@ -586,10 +586,10 @@
                     <span class="nav-icon">⚙️</span> الإعدادات
                 </a>
                 <ul class="dd-menu">
-                    <li><a href="#"><span>🔬</span> الخدمات</a></li>
+
                     <li><a href="{{ route('clinics.index') }}" wire:navigate><span>🏥</span> العيادات</a></li>
                     <li><a href="{{ route('employees.index') }}" wire:navigate><span>👨‍⚕️</span> الموظفين</a></li>
-                    <li><a href="#"><span>💼</span> الوظائف</a></li>
+
                     <li><a href="{{ route('system.users') }}" wire:navigate><span>👤</span> المستخدمين</a></li>
                 </ul>
             </li>

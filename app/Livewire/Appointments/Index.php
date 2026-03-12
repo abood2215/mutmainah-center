@@ -61,7 +61,9 @@ class Index extends Component
                 'r.rec_date',
                 'r.rec_time',
                 'r.state_id as status',
+                'r.st_id',
                 'a.full_name as patient_name',
+                'a.phone as patient_phone',
                 'c.name as clinic_name'
             );
 
@@ -79,7 +81,10 @@ class Index extends Component
             $query->where('r.clinic_id', $this->selectedClinic);
         }
 
-        $appointments = $query->orderBy('r.rec_date', 'desc')->orderBy('r.rec_time', 'asc')->paginate(20);
+        $appointments = $query
+            ->orderByRaw("STR_TO_DATE(r.rec_date, '%e-%c-%Y') ASC")
+            ->orderBy('r.rec_time', 'asc')
+            ->paginate(20);
         $clinics      = DB::table('clinic')->orderBy('name')->get();
 
         $todayCount = DB::table('rec')

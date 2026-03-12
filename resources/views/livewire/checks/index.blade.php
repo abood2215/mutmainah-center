@@ -150,9 +150,8 @@
                         <tbody>
                             @forelse($checks as $check)
                                 @php
-                                    $isDone    = $check->confirm_id == 1;
-                                    $rowBg     = $selectedStId == $check->st_id ? '#fff9f9' : ($isDone ? 'transparent' : '#fffbf0');
-                                    $hoverBg   = $isDone ? '#fcfdfe' : '#fff8e6';
+                                    $rowBg     = $selectedStId == $check->st_id ? '#fff9f9' : 'transparent';
+                                    $hoverBg   = '#fcfdfe';
                                 @endphp
                                 <tr wire:key="check-{{ $check->id }}"
                                     style="border-bottom:1px solid #f1f5f9; transition:all 0.2s; background:{{ $rowBg }};"
@@ -191,11 +190,7 @@
                                     </td>
 
                                     <td style="padding:0.85rem 1rem; text-align:center;">
-                                        @if($check->confirm_id == 1)
-                                            <span style="background:#ecfdf5; color:#059669; font-weight:900; font-size:0.75rem; padding:0.25rem 0.75rem; border-radius:50px; border:1px solid #d1fae5;">تم</span>
-                                        @else
-                                            <span style="background:#fff7ed; color:#ea580c; font-weight:900; font-size:0.75rem; padding:0.25rem 0.75rem; border-radius:50px; border:1px solid #ffedd5;">قيد الانتظار</span>
-                                        @endif
+                                        <span style="background:#ecfdf5; color:#059669; font-weight:900; font-size:0.75rem; padding:0.25rem 0.75rem; border-radius:50px; border:1px solid #d1fae5;">اكتمل ✓</span>
                                     </td>
 
                                     <td style="padding:0.85rem 1rem; text-align:center;">
