@@ -1,4 +1,4 @@
-<div style="min-height:80vh; padding:1.5rem 2rem;">
+<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem;">
 <div style="max-width:1100px; margin:0 auto; background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow-sm); overflow:hidden; animation:fadeIn 0.5s ease;">
 
     <!-- رأس الإطار -->
@@ -138,7 +138,7 @@
                     <span class="card-title">🏥 بيانات التأمين</span>
                 </div>
                 <div class="card-body">
-                    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem;">
+                    <div class="pg-3col" style="display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem;">
 
                         <!-- شركة التأمين -->
                         <div>

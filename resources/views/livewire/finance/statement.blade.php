@@ -1,4 +1,4 @@
-<div style="min-height:80vh; padding:1.5rem 2rem; display:flex; flex-direction:column; align-items:center;">
+<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem; display:flex; flex-direction:column; align-items:center;">
 @php
 $days   = range(1, 31);
 $months = [1=>'يناير',2=>'فبراير',3=>'مارس',4=>'أبريل',5=>'مايو',6=>'يونيو',
@@ -182,7 +182,7 @@ $years  = range(2000, now()->year + 1);
 
     {{-- ملخص مالي --}}
     @php $totalAll = collect($rows)->sum('amount'); @endphp
-    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0; border-bottom:1px solid #e2e8f0;">
+    <div class="pg-3col" style="display:grid; grid-template-columns:repeat(3,1fr); gap:0; border-bottom:1px solid #e2e8f0;">
         <div style="padding:0.85rem 1.25rem; text-align:center; border-left:1px solid #e2e8f0;">
             <div style="font-size:0.72rem; color:#6b7280; font-weight:700; font-family:'Tajawal',sans-serif; margin-bottom:0.25rem;">إجمالي المحصّل</div>
             <div style="font-size:1.3rem; font-weight:900; color:#16a34a; font-family:'Inter';">{{ number_format($totalCredit, 3) }} <span style="font-size:0.75rem;">د.ك</span></div>

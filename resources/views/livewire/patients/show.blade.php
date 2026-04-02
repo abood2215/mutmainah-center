@@ -1,4 +1,4 @@
-<div style="min-height:80vh; padding:2rem; display:flex; align-items:flex-start; justify-content:center;">
+<div class="pg-outer" style="min-height:80vh; padding:2rem; display:flex; align-items:flex-start; justify-content:center;">
 <div style="width:100%; max-width:750px; animation:fadeIn 0.4s ease;">
 
 <div id="print-area">

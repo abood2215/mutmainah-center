@@ -14,3 +14,23 @@ if (!function_exists('fmt_date')) {
         }
     }
 }
+
+if (!function_exists('fmt_date_ar')) {
+    /**
+     * إظهار التاريخ بصيغة عربية واضحة (d-m-Y) مثل 31-03-2026
+     */
+    function fmt_date_ar(?string $date): string
+    {
+        if (!$date) return '—';
+        try {
+            return \Carbon\Carbon::createFromFormat('j-n-Y', $date)->format('d-m-Y');
+        } catch (\Throwable) {
+            // إذا كان ISO أو صيغة أخرى
+            try {
+                return \Carbon\Carbon::parse($date)->format('d-m-Y');
+            } catch (\Throwable) {
+                return $date;
+            }
+        }
+    }
+}

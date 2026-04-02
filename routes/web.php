@@ -53,29 +53,94 @@ Route::middleware('auth.employee')->group(function () {
         $patient = DB::table('kstu as k')
             ->leftJoin('kcom as c', 'c.id', '=', 'k.com_id')
             ->where('k.id', $rec->st_id)
-            ->select('k.full_name', 'k.file_id', 'c.name as insurance')
+            ->select('k.full_name', 'k.file_id', 'k.pno as policy_no', 'c.name as insurance')
             ->first();
 
         $clinic     = DB::table('clinic')->where('id', $rec->clinic_id)->first();
         $clinicName = $clinic?->name ?? '—';
 
+        // صف header لجلب ptime و user_id (بدون فلتر السعر لدعم الخدمات المجانية)
+        $invoiceHeader = DB::table('kpayments')->where('rec_id', $recId)->first();
+
         $items = DB::table('kpayments')
             ->where('rec_id', $recId)
-            ->where('price', '>', 0)
-            ->get();
+            ->where('price', '>=', 0)
+            ->get()
+            ->flatMap(function ($item) {
+                $desc = html_entity_decode($item->pdesc ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                $desc = strip_tags($desc);
+                $desc = str_replace("\xc2\xa0", ' ', $desc);
+                $parts = array_values(array_filter(array_map('trim', preg_split('/\s*\*\s*/', $desc))));
 
-        $invoice         = $items->first();
+                // استخرج الأجزاء التي تحتوي أرقام (= خدمات) وتجاهل اسم المريض
+                $svcParts = array_values(array_filter($parts, fn($p) => preg_match('/\d/', $p)));
+
+                if (count($svcParts) <= 1) {
+                    // خدمة واحدة — السلوك الأصلي
+                    $item->pdesc_clean = $parts[0] ?? trim($desc) ?: '—';
+                    return [$item];
+                }
+
+                // عدة خدمات مدمجة — نفكها لصفوف منفصلة
+                // المرور الأول: استخرج الأسعار المعروفة من النص
+                $knownPrices  = [];
+                $totalKnown   = 0;
+                foreach ($svcParts as $i => $part) {
+                    if (preg_match('/([\d.]+)\s*(?:د\.ك|د\.ك\.|KD|D\.K)/ui', $part, $m)) {
+                        $knownPrices[$i] = (float) $m[1];
+                        $totalKnown     += (float) $m[1];
+                    }
+                }
+                // وزّع الباقي على الخدمات بدون سعر
+                $unknownCount    = count($svcParts) - count($knownPrices);
+                $remainingPrice  = round($item->price - $totalKnown, 3);
+                $pricePerUnknown = $unknownCount > 0 ? round($remainingPrice / $unknownCount, 3) : 0;
+
+                $expanded = [];
+                foreach ($svcParts as $i => $part) {
+                    $unitPrice = $knownPrices[$i] ?? $pricePerUnknown;
+                    $name      = isset($knownPrices[$i])
+                        ? trim(preg_replace('/\s*[-–]\s*[\d.]+\s*(?:د\.ك|د\.ك\.|KD|D\.K).*/ui', '', $part))
+                        : $part;
+
+                    $row = clone $item;
+                    $row->pdesc_clean = $name ?: $part;
+                    $row->price       = $unitPrice;
+                    // الخصم الأصلي على الصف الأول فقط
+                    $row->discount    = $i === 0 ? (float)($item->discount ?? 0) : 0;
+                    $expanded[]       = $row;
+                }
+                return $expanded;
+            });
+
+        $invoice         = $invoiceHeader;
         $total           = $items->sum('price');
         $totalDiscount   = $items->sum('discount');
-        $clientAmount    = $total - $totalDiscount;
-        $insuranceAmount = 0;
+        $insuranceAmount = $items->sum('insur_amount');
+        $clientAmount    = $total - $totalDiscount - $insuranceAmount;
 
         $paymentLabels = [
             1=>'نقدا', 3=>'شبكة', 4=>'تحويل بنكي', 5=>'سند',
             6=>'فيزا', 11=>'Myfatoorah', 12=>'stcpay', 14=>'دفع سريع',
         ];
         $paymentLabel = $paymentLabels[$invoice?->payment_method ?? 1] ?? 'نقدا';
-        $cashierName  = 'محمود طه /ح 4';
+
+        // اسم الكاشير من kpayments.user_id → employees
+        $cashierUserId = $invoice?->user_id ?? 0;
+        $cashierEmp = $cashierUserId
+            ? DB::table('employees')->where('id', $cashierUserId)->first(['first_name','middle_initial','user_name'])
+            : null;
+        if ($cashierEmp && trim(($cashierEmp->first_name ?? '') . ($cashierEmp->middle_initial ?? ''))) {
+            $cashierName = trim(($cashierEmp->first_name ?? '') . ' ' . ($cashierEmp->middle_initial ?? ''));
+        } elseif ($cashierEmp && $cashierEmp->user_name) {
+            $cashierName = $cashierEmp->user_name;
+        } else {
+            // fallback: ابحث عن user_name في employees بغض النظر
+            $byUserId = $cashierUserId
+                ? DB::table('employees')->where('id', $cashierUserId)->value('user_name')
+                : null;
+            $cashierName = $byUserId ?? auth()->user()?->getName() ?? '';
+        }
 
         return view('finance.invoice-print', compact(
             'rec', 'patient', 'clinicName', 'items',
@@ -95,6 +160,73 @@ Route::middleware('auth.employee')->group(function () {
     // System
     Route::get('/system/users',    \App\Livewire\System\Users::class)->name('system.users');
     Route::get('/system/settings', \App\Livewire\System\Settings::class)->name('system.settings');
+
+    // Backup — مدير النظام ونجيبة فقط
+    Route::get('/system/backup', function () {
+        $authId = auth()->user()?->getAuthIdentifier();
+        if (!in_array($authId, [107, 189])) abort(403);
+
+        $dbName = config('database.connections.mysql.database');
+        $tables = DB::select('SHOW TABLES');
+        $now    = now()->format('Y-m-d_H-i');
+
+        $callback = function () use ($dbName, $tables) {
+            set_time_limit(0);
+            $out = fopen('php://output', 'w');
+
+            fwrite($out, "-- ====================================================\n");
+            fwrite($out, "--  مركز مطمئنة الاستشاري — نسخة احتياطية\n");
+            fwrite($out, "--  قاعدة البيانات : {$dbName}\n");
+            fwrite($out, "--  التاريخ        : " . now()->format('Y-m-d H:i:s') . "\n");
+            fwrite($out, "-- ====================================================\n\n");
+            fwrite($out, "SET FOREIGN_KEY_CHECKS=0;\n");
+            fwrite($out, "SET NAMES utf8mb4;\n\n");
+
+            foreach ($tables as $tableRow) {
+                $table = array_values((array)$tableRow)[0];
+
+                $create    = DB::select("SHOW CREATE TABLE `{$table}`");
+                $createSql = $create[0]->{'Create Table'} ?? '';
+
+                fwrite($out, "-- ----------------------------------------------------\n");
+                fwrite($out, "-- جدول: {$table}\n");
+                fwrite($out, "-- ----------------------------------------------------\n");
+                fwrite($out, "DROP TABLE IF EXISTS `{$table}`;\n");
+                fwrite($out, $createSql . ";\n\n");
+
+                $total = DB::table($table)->count();
+                if ($total > 0) {
+                    $columns = DB::getSchemaBuilder()->getColumnListing($table);
+                    $colList = implode(', ', array_map(fn($c) => "`{$c}`", $columns));
+
+                    DB::table($table)->orderByRaw('1')->chunk(500, function ($rows) use ($out, $table, $colList) {
+                        $values = [];
+                        foreach ($rows as $row) {
+                            $escaped = array_map(function ($val) {
+                                if ($val === null) return 'NULL';
+                                return "'" . addslashes((string)$val) . "'";
+                            }, (array)$row);
+                            $values[] = '(' . implode(', ', $escaped) . ')';
+                        }
+                        fwrite($out, "INSERT INTO `{$table}` ({$colList}) VALUES\n");
+                        fwrite($out, implode(",\n", $values) . ";\n");
+                        ob_flush();
+                        flush();
+                    });
+                    fwrite($out, "\n");
+                }
+            }
+
+            fwrite($out, "SET FOREIGN_KEY_CHECKS=1;\n");
+            fclose($out);
+        };
+
+        return response()->stream($callback, 200, [
+            'Content-Type'        => 'application/octet-stream',
+            'Content-Disposition' => "attachment; filename=\"backup_mutmainah_{$now}.sql\"",
+            'X-Accel-Buffering'   => 'no',
+        ]);
+    })->name('system.backup');
 
 });
 

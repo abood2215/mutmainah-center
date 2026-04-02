@@ -1,5 +1,5 @@
 <div>
-<div style="min-height:80vh; padding:1.5rem 2rem;">
+<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem;">
 <div style="max-width:1400px; margin:0 auto; animation:fadeIn 0.4s ease;">
 
     <!-- رأس الصفحة -->

@@ -1,4 +1,4 @@
-<div style="min-height:80vh; padding:1.5rem 2rem;">
+<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem;">
 <div style="max-width:1400px; margin:0 auto; background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow-sm); overflow:hidden; animation:fadeIn 0.5s ease;">
 
     <!-- رأس الإطار -->
@@ -16,10 +16,10 @@
     </div>
 
     <!-- المحتوى -->
-    <div style="padding:1.75rem; display:flex; flex-direction:column; gap:1.25rem;">
+    <div class="pg-inner" style="padding:1.75rem; display:flex; flex-direction:column; gap:1.25rem;">
 
         <!-- بطاقات الإحصائيات -->
-        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.25rem;">
+        <div class="dash-stats" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.25rem;">
 
             <div class="card" style="padding:1.25rem; display:flex; align-items:center; gap:1rem;">
                 <div style="width:52px; height:52px; background:rgba(26,26,46,0.08); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.6rem; flex-shrink:0;">👥</div>
@@ -63,7 +63,7 @@
         </div>
 
         <!-- جدول + عيادات + روابط -->
-        <div style="display:grid; grid-template-columns:2fr 1fr; gap:1.25rem;">
+        <div class="pg-2col" style="display:grid; grid-template-columns:2fr 1fr; gap:1.25rem;">
 
             <!-- أحدث كشوف اليوم -->
             <div class="card">

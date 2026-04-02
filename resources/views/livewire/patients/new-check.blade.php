@@ -27,7 +27,7 @@
     letter-spacing: .5px;
 }
 
-/* ── معلومات المريض ── */
+/* ── معلومات العميل ── */
 .nc-patient {
     background: #eef2fb;
     border-bottom: 1px solid #cdd5e8;
@@ -269,6 +269,8 @@
     .nc-totals { gap: 6px 14px; font-size: .78rem; }
     .nc-footer { flex-direction: column; align-items: flex-start; }
     .nc-add-row .field-group.grow { min-width: 100%; }
+    .nc-add-row .field-group { flex: 1 1 100%; }
+    .nc-select { min-width: 0 !important; width: 100%; }
 }
 @media (max-width: 480px) {
     .nc-patient { font-size: .76rem; gap: 4px 10px; }
@@ -281,7 +283,7 @@
     {{-- رأس --}}
     <div class="nc-head">كشف جديد &nbsp;:&nbsp; New Check</div>
 
-    {{-- بيانات المريض --}}
+    {{-- بيانات العميل --}}
     <div class="nc-patient">
         <span class="lbl">Patient : المراجع</span>
         <a href="{{ route('patients.show', $patient->id) }}" class="val link">
@@ -478,7 +480,7 @@
             <button wire:click="save" wire:loading.attr="disabled" type="button"
                     @if(empty($items)) disabled @endif
                     class="nc-btn nc-btn-ref">
-                <span wire:loading.remove wire:target="save">🧾 تحويل المريض : Referral</span>
+                <span wire:loading.remove wire:target="save">🧾 تحويل العميل : Referral</span>
                 <span wire:loading wire:target="save">⏳ جارٍ الحفظ...</span>
             </button>
 
@@ -492,7 +494,7 @@
         </div>
 
         <span class="warn">
-            أثناء التحميل : لا تضغط زر تحويل المريض ولا تقوم بتحديث المتصفح : No Click Duplication
+            أثناء التحميل : لا تضغط زر تحويل العميل ولا تقوم بتحديث المتصفح : No Click Duplication
         </span>
     </div>
 

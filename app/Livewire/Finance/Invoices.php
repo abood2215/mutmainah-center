@@ -211,6 +211,7 @@ class Invoices extends Component
             'paymentLabels'  => self::PAYMENT_LABELS,
             'clinicName'     => $clinicName,
             'dateLabel'      => $dateLabel,
+            'currentUserName' => auth()->user()?->getName() ?? '',
         ])->layout('layouts.app');
     }
 }

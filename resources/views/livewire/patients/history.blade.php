@@ -1,4 +1,4 @@
-<div style="min-height:80vh; padding:1.5rem 2rem;">
+<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem;">
 <div style="max-width:1400px; margin:0 auto; animation:fadeIn 0.5s ease;">
 
 <div id="print-area" style="background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow-sm); overflow:hidden;">
@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <div style="padding:1.75rem;">
+    <div class="pg-inner" style="padding:1.75rem;">
 
         @if(session()->has('success'))
         <div class="no-print" style="background:#e8f5e9; color:#2e7d32; padding:0.9rem 1.25rem; border-radius:8px; margin-bottom:1.25rem; font-weight:700; border:1px solid #c8e6c9;">✅ {{ session('success') }}</div>
@@ -58,13 +58,13 @@
             </div>
 
             {{-- نسخة الشاشة (حقول قابلة للتعديل) --}}
-            <div class="no-print" style="padding:1.25rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+            <div class="no-print pg-2col" style="padding:1.25rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
                 <div>
                     <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">الشكوى الحالية</label>
                     <textarea wire:model="current_complaint" style="width:100%; height:90px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
                 <div>
-                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">العلاجات النفسية المستخدمة حاليا ومدى تحسنها</label>
+                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">التدخلات الاستشارية المستخدمة ومدى التحسن</label>
                     <textarea wire:model="psychiatric_treatments" style="width:100%; height:90px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
                 <div>
@@ -92,7 +92,7 @@
                     <textarea wire:model="recommendations" style="width:100%; height:80px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
                 <div style="grid-column:span 2;">
-                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">الخطة العلاجية المستقبلية</label>
+                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">خطة المتابعة الاستشارية</label>
                     <textarea wire:model="future_plan" style="width:100%; height:80px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
             </div>
@@ -102,7 +102,7 @@
                 @php
                 $printFields = [
                     'الشكوى الحالية'                              => $current_complaint,
-                    'العلاجات النفسية المستخدمة حاليا ومدى تحسنها' => $psychiatric_treatments,
+                    'التدخلات الاستشارية المستخدمة ومدى التحسن' => $psychiatric_treatments,
                     'الانطباع'                                    => $impression,
                     'الخطة'                                       => $plan,
                     'الملاحظات على المستوى الشخصي'               => $personal_history,
@@ -111,7 +111,7 @@
                 $printFieldsFull = [
                     'الأمراض النفسية في الأسرة'    => $family_history,
                     'التوصيات / الملاحظات'         => $recommendations,
-                    'الخطة العلاجية المستقبلية'    => $future_plan,
+                    'خطة المتابعة الاستشارية'    => $future_plan,
                 ];
                 @endphp
                 @foreach($printFields as $label => $value)
@@ -148,7 +148,7 @@
                             <th style="padding:0.7rem 0.9rem; font-weight:800; color:var(--text-dim);">العيادة</th>
                             <th style="padding:0.7rem 0.9rem; font-weight:800; color:var(--text-dim);">الأخصائي</th>
                             <th style="padding:0.7rem 0.9rem; font-weight:800; color:var(--text-dim);">الوصف</th>
-                            <th style="padding:0.7rem 0.9rem; font-weight:800; color:var(--text-dim);">التشخيص</th>
+                            <th style="padding:0.7rem 0.9rem; font-weight:800; color:var(--text-dim);">تقييم الحالة</th>
                             <th style="padding:0.7rem 0.9rem; font-weight:800; color:var(--text-dim);">الأعراض</th>
                             <th style="padding:0.7rem 0.9rem; font-weight:800; color:var(--text-dim);">توصية</th>
                         </tr>

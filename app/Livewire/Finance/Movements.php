@@ -285,6 +285,7 @@ class Movements extends Component
                     DB::raw('COALESCE(NULLIF(k.amount,0), NULLIF(k.price,0), 0) as mov_amount'),
                     's.full_name as patient_name',
                     's.id as patient_id',
+                    'a.name as acck_name',
                     DB::raw("CONCAT(IFNULL(e.first_name,''), IF(e.middle_initial IS NOT NULL AND e.middle_initial != '', CONCAT(' ', e.middle_initial), '')) as emp_name")
                 )
                 ->orderByRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') DESC, k.id DESC")

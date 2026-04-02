@@ -1,4 +1,4 @@
-<div style="min-height:80vh; padding:1.5rem 2rem; display:flex; justify-content:center; align-items:flex-start;">
+<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem; display:flex; justify-content:center; align-items:flex-start;">
 <div style="width:100%; max-width:680px; animation:fadeIn 0.4s ease;">
 
 @php

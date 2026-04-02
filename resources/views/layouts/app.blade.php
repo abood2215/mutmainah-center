@@ -473,51 +473,167 @@
             min-width: 20px;
         }
 
+        /* ═══ MOBILE DRAWER ═══ */
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 900;
+            animation: fadeIn 0.2s ease;
+        }
+        .mobile-overlay.open { display: block; }
+
         /* ═══ RESPONSIVE ═══ */
         @media (max-width: 1024px) {
             .topbar-nav { display: none; }
             .mobile-toggle { display: flex; }
 
+            /* الدرور الجانبي */
             .topbar-nav.mobile-active {
                 display: flex;
                 flex-direction: column;
                 position: fixed;
-                top: 58px;
-                left: 0; right: 0;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                width: 280px;
                 background: var(--navy);
-                border-bottom: 1px solid rgba(255,255,255,0.1);
-                padding: 0.75rem;
+                padding: 0;
                 z-index: 1000;
-                gap: 0.25rem;
-                animation: slideDown 0.25s ease;
+                gap: 0;
+                overflow-y: auto;
+                animation: slideInDrawer 0.28s ease;
+                box-shadow: -4px 0 24px rgba(0,0,0,0.35);
             }
 
-            .topbar-nav.mobile-active li { width: 100%; }
-            .topbar-nav.mobile-active > li > a {
-                padding: 0.85rem 1rem;
-                border-radius: 8px;
-                border-bottom: none;
+            @keyframes slideInDrawer {
+                from { transform: translateX(100%); opacity: 0.5; }
+                to   { transform: translateX(0);    opacity: 1; }
             }
-            .topbar-nav.mobile-active .dd-menu {
-                position: static;
+
+            /* رأس الدرور */
+            .topbar-nav.mobile-active::before {
+                content: 'مركز مطمئنة الاستشاري';
                 display: block;
-                background: rgba(255,255,255,0.04);
+                padding: 1.1rem 1.2rem;
+                font-size: 0.9rem;
+                font-weight: 900;
+                color: var(--gold);
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                letter-spacing: 0.5px;
+                flex-shrink: 0;
+            }
+
+            .topbar-nav.mobile-active > li {
+                width: 100%;
+                height: auto;
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: stretch;
+                border-bottom: 1px solid rgba(255,255,255,0.06);
+            }
+
+            .topbar-nav.mobile-active > li > a {
+                flex: 1;
+                padding: 0.9rem 1.2rem;
+                border-radius: 0;
+                border-bottom: none;
+                font-size: 0.92rem;
+                justify-content: flex-start;
+                height: auto;
+            }
+
+            /* زر السهم المنفصل */
+            .dd-arrow-btn {
+                display: none;
+                width: 46px;
+                background: rgba(255,255,255,0.07);
+                border: none;
+                border-right: 1px solid rgba(255,255,255,0.08);
+                color: rgba(255,255,255,0.5);
+                font-size: 1.1rem;
+                cursor: pointer;
+                align-items: center;
+                justify-content: center;
+                transition: background 0.2s, color 0.2s;
+                flex-shrink: 0;
+            }
+            .topbar-nav.mobile-active .dd-arrow-btn { display: flex; }
+            .topbar-nav.mobile-active > li.dd-open .dd-arrow-btn {
+                background: rgba(200,148,26,0.2);
+                color: var(--gold);
+                transform: rotate(90deg);
+            }
+
+            /* القائمة الفرعية — تمتد بعرض كامل تحت الصف */
+            .topbar-nav.mobile-active .dd-menu {
+                display: none;
+                position: static;
+                width: 100%;
+                flex-basis: 100%;
+                background: rgba(0,0,0,0.25);
                 box-shadow: none;
                 border: none;
-                border-radius: 8px;
-                margin-top: 0.25rem;
+                border-radius: 0;
+                margin: 0;
+                min-width: unset;
             }
+
+            .topbar-nav.mobile-active > li.dd-open .dd-menu {
+                display: block;
+                animation: slideDown 0.2s ease;
+            }
+
             .topbar-nav.mobile-active .dd-menu li a {
                 color: rgba(255,255,255,0.65);
-                border-bottom-color: rgba(255,255,255,0.06);
+                border-bottom-color: rgba(255,255,255,0.05);
+                padding-right: 2.2rem;
+                font-size: 0.88rem;
+            }
+
+            .topbar-nav.mobile-active .dd-menu li a:hover,
+            .topbar-nav.mobile-active .dd-menu li a:active {
+                background: rgba(255,255,255,0.08);
+                color: #fff;
             }
         }
 
         @media (max-width: 768px) {
-            .page-content { padding: 1rem; }
-            .topbar { padding: 0 1rem; }
+            .page-content { padding: 0.85rem; }
+            .topbar { padding: 0 0.85rem; }
             .user-name { display: none; }
             .topbar-date { display: none; }
+
+            /* جداول: scroll أفقي */
+            .card { overflow-x: auto; }
+            table { min-width: 600px; }
+
+            /* ─── Dashboard ─── */
+            .dash-stats { grid-template-columns: repeat(2, 1fr) !important; }
+
+            /* ─── Page Responsive Helpers ─── */
+            .pg-outer   { padding: 0.6rem !important; }
+            .pg-inner   { padding: 0.85rem !important; }
+
+            /* شبكات 2 / 3 أعمدة → عمود واحد */
+            .pg-2col    { grid-template-columns: 1fr !important; }
+            .pg-2col > * { grid-column: span 1 !important; }
+            .pg-3col    { grid-template-columns: 1fr !important; }
+            .pg-autogrid { grid-template-columns: 1fr !important; max-width: 100% !important; }
+
+            /* شريط الفلاتر flex → عمود */
+            .pg-filter  { flex-direction: column !important; align-items: stretch !important; }
+            .pg-filter > * { width: 100% !important; max-width: 100% !important; min-width: 0 !important; flex: none !important; }
+            .pg-filter input, .pg-filter select { width: 100% !important; min-width: 0 !important; max-width: none !important; }
+
+            /* حقل بحث بعرض ثابت */
+            .pg-sw      { width: 100% !important; max-width: 100% !important; }
+        }
+
+        @media (max-width: 480px) {
+            .page-content { padding: 0.6rem; }
+            .topbar-brand .t-name { font-size: 1rem; }
         }
     </style>
 </head>
@@ -537,62 +653,62 @@
 
         <ul class="topbar-nav" id="topNav">
             <li class="{{ request()->routeIs('checks.*') ? 'active' : '' }}">
-                <a href="{{ route('checks.index') }}" wire:navigate>
+                <a href="{{ route('checks.index') }}">
                     <span class="nav-icon">📋</span> الكشوف
                 </a>
             </li>
 
             <li class="{{ request()->routeIs('patients.*') ? 'active' : '' }}">
-                <a href="{{ route('patients.index') }}" wire:navigate>
+                <a href="{{ route('patients.index') }}">
                     <span class="nav-icon">👥</span> العملاء
                 </a>
             </li>
 
             <li class="{{ request()->routeIs('appointments.*') ? 'active' : '' }}">
-                <a href="{{ route('appointments.index') }}" wire:navigate>
+                <a href="{{ route('appointments.index') }}">
                     <span class="nav-icon">📅</span> المواعيد
                 </a>
             </li>
 
             <li class="{{ request()->routeIs('finance.*') ? 'active' : '' }}">
-                <a href="{{ route('finance.movements') }}" wire:navigate>
+                <a href="{{ route('finance.movements') }}">
                     <span class="nav-icon">💰</span> المالية
                 </a>
                 <ul class="dd-menu">
-                    <li><a href="{{ route('finance.movements') }}" wire:navigate><span>💳</span> حركات مالية</a></li>
-                    <li><a href="{{ route('finance.statement') }}" wire:navigate><span>📄</span> بيان حساب</a></li>
-                    <li><a href="#"><span>📤</span> المصروفات</a></li>
-                    <li><a href="#"><span>📱</span> رسائل نصية</a></li>
+                    <li><a href="{{ route('finance.movements') }}"><span>💳</span> حركات مالية</a></li>
+                    <li><a href="{{ route('finance.statement') }}"><span>📄</span> بيان حساب</a></li>
                 </ul>
             </li>
 
             <li class="{{ request()->routeIs('finance.reports') ? 'active' : '' }}">
-                <a href="{{ route('finance.reports') }}" wire:navigate>
+                <a href="{{ route('finance.reports') }}">
                     <span class="nav-icon">📊</span> التقارير
                 </a>
                 <ul class="dd-menu">
-                    <li><a href="{{ route('finance.invoices') }}"                   wire:navigate><span>💳</span> الفواتير</a></li>
-                    <li><a href="{{ route('finance.vouchers') }}"                   wire:navigate><span>📑</span> السندات</a></li>
-                    <li><a href="{{ route('finance.reports') }}?type=pb"           wire:navigate><span>💰</span> أرصدة العملاء</a></li>
-                    <li><a href="{{ route('finance.reports') }}?type=services"     wire:navigate><span>🔬</span> الخدمات</a></li>
-                    <li><a href="{{ route('finance.reports') }}?type=appointments" wire:navigate><span>📅</span> المواعيد</a></li>
-                    <li><a href="{{ route('finance.reports') }}?type=clinics"      wire:navigate><span>🏛️</span> العيادات</a></li>
-                    <li><a href="{{ route('finance.reports') }}?type=pfs"          wire:navigate><span>📊</span> البيان المالي</a></li>
+                    <li><a href="{{ route('finance.invoices') }}"><span>💳</span> الفواتير</a></li>
+                    <li><a href="{{ route('finance.vouchers') }}"><span>📑</span> السندات</a></li>
+                    <li><a href="{{ route('finance.reports') }}?type=pb"><span>💰</span> أرصدة العملاء</a></li>
+                    <li><a href="{{ route('finance.reports') }}?type=services"><span>🔬</span> الخدمات</a></li>
+                    <li><a href="{{ route('finance.reports') }}?type=appointments"><span>📅</span> المواعيد</a></li>
+                    <li><a href="{{ route('finance.reports') }}?type=clinics"><span>🏛️</span> العيادات</a></li>
+                    <li><a href="{{ route('finance.reports') }}?type=pfs"><span>📊</span> البيان المالي</a></li>
                 </ul>
             </li>
 
+            @php $authId = auth()->user()?->getAuthIdentifier(); @endphp
+            @if(in_array($authId, [107, 189]))
             <li class="{{ request()->routeIs('system.*') ? 'active' : '' }}">
-                <a href="{{ route('system.settings') }}" wire:navigate>
+                <a href="{{ route('system.settings') }}">
                     <span class="nav-icon">⚙️</span> الإعدادات
                 </a>
                 <ul class="dd-menu">
-
-                    <li><a href="{{ route('clinics.index') }}" wire:navigate><span>🏥</span> العيادات</a></li>
-                    <li><a href="{{ route('employees.index') }}" wire:navigate><span>👨‍⚕️</span> الموظفين</a></li>
-
-                    <li><a href="{{ route('system.users') }}" wire:navigate><span>👤</span> المستخدمين</a></li>
+                    <li><a href="{{ route('clinics.index') }}"><span>🏥</span> العيادات</a></li>
+                    <li><a href="{{ route('employees.index') }}"><span>👨‍⚕️</span> الموظفين</a></li>
+                    <li><a href="{{ route('system.users') }}"><span>👤</span> المستخدمين</a></li>
+                    <li><a href="{{ route('system.backup') }}"><span>💾</span> باك اب</a></li>
                 </ul>
             </li>
+            @endif
         </ul>
 
         <div class="topbar-right">
@@ -626,6 +742,9 @@
             </div>
         </div>
     </header>
+
+    <!-- Overlay للدرور -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
 
     <!-- ═══════ CONTENT ═══════ -->
     <main class="page-content">
@@ -695,12 +814,56 @@
     </style>
 
     <script>
-        const mobileBtn = document.getElementById('mobileMenuBtn');
-        const topNav    = document.getElementById('topNav');
+        const mobileBtn     = document.getElementById('mobileMenuBtn');
+        const topNav        = document.getElementById('topNav');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+
+        function openDrawer() {
+            topNav.classList.add('mobile-active');
+            mobileOverlay.classList.add('open');
+            mobileBtn.innerText = '✕';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDrawer() {
+            topNav.classList.remove('mobile-active');
+            mobileOverlay.classList.remove('open');
+            mobileBtn.innerText = '☰';
+            document.body.style.overflow = '';
+            topNav.querySelectorAll(':scope > li.dd-open').forEach(l => l.classList.remove('dd-open'));
+        }
 
         mobileBtn.addEventListener('click', () => {
-            topNav.classList.toggle('mobile-active');
-            mobileBtn.innerText = topNav.classList.contains('mobile-active') ? '✕' : '☰';
+            topNav.classList.contains('mobile-active') ? closeDrawer() : openDrawer();
+        });
+
+        mobileOverlay.addEventListener('click', closeDrawer);
+
+        // أزرار السهم لفتح القوائم الفرعية في الدرور
+        topNav.querySelectorAll(':scope > li').forEach(li => {
+            const ddMenu = li.querySelector('.dd-menu');
+            if (!ddMenu || li.querySelector('.dd-arrow-btn')) return;
+
+            const btn = document.createElement('button');
+            btn.type      = 'button';
+            btn.className = 'dd-arrow-btn';
+            btn.innerHTML = '&#8249;';
+            li.insertBefore(btn, ddMenu);
+
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const isOpen = li.classList.contains('dd-open');
+                topNav.querySelectorAll(':scope > li.dd-open').forEach(l => l.classList.remove('dd-open'));
+                if (!isOpen) li.classList.add('dd-open');
+            });
+        });
+
+        // أغلق الدرور فقط — دع المتصفح يتنقل بشكل طبيعي
+        topNav.querySelectorAll('a[href]').forEach(function(a) {
+            a.addEventListener('click', function() {
+                closeDrawer();
+            });
         });
 
         function toggleUserMenu() {

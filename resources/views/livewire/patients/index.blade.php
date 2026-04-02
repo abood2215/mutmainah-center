@@ -1,4 +1,4 @@
-<div style="min-height:80vh; padding:2.5rem 2rem; display:flex; flex-direction:column; align-items:center; background:var(--bg);">
+<div class="pg-outer" style="min-height:80vh; padding:2.5rem 2rem; display:flex; flex-direction:column; align-items:center; background:var(--bg);">
 
 {{-- ═══ بطاقة البحث ═══ --}}
 <div style="width:100%; max-width:580px; animation:fadeIn 0.45s ease;">

@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>فاتورة {{ $invoice->vno ?? $rec->id }}</title>
+<title>فاتورة {{ $rec->id }}</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800;900&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -77,7 +77,7 @@ body {
     margin-bottom: 16px;
 }
 .info-table td {
-    padding: 8px 12px;
+    padding: 7px 12px;
     font-size: 13px;
     border: 1px solid #e0e0e0;
     vertical-align: middle;
@@ -126,8 +126,6 @@ body {
 .srv-table td.num { font-weight: 900; color: #8b1c2b; }
 .srv-table td.price { font-weight: 800; color: #1b5e20; direction: ltr; }
 
-.srv-table .empty td { color: #9e9e9e; text-align: center; padding: 20px; }
-
 /* ─── صف الإجماليات ─── */
 .totals-row {
     background: #f5f5f5;
@@ -144,10 +142,10 @@ body {
 }
 .totals-row .t-big { font-size: 16px; font-weight: 900; color: #8b1c2b; }
 
-/* ─── وسيلة الدفع ─── */
-.pay-row {
+/* ─── وسيلة الدفع / ملاحظات ─── */
+.pay-row, .notes-row {
     margin: 0 20px;
-    padding: 9px 14px;
+    padding: 8px 14px;
     border: 1px solid #e0e0e0;
     border-top: none;
     background: #fafafa;
@@ -156,8 +154,33 @@ body {
     align-items: center;
     font-size: 13px;
 }
-.pay-row .lbl { font-weight: 800; color: #8b1c2b; }
-.pay-row .val { font-weight: 700; background: #fff; border: 1px solid #e0e0e0; padding: 2px 12px; border-radius: 4px; }
+.pay-row .lbl, .notes-row .lbl { font-weight: 800; color: #8b1c2b; white-space: nowrap; }
+.pay-row .val  { font-weight: 700; background: #fff; border: 1px solid #e0e0e0; padding: 2px 12px; border-radius: 4px; }
+.notes-row .val { font-weight: 600; color: #333; flex: 1; }
+
+/* ─── التوقيعات ─── */
+.sign-row {
+    margin: 0 20px;
+    padding: 10px 14px;
+    border: 1px solid #e0e0e0;
+    border-top: none;
+    background: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    gap: 8px;
+}
+.sign-row .cashier { font-weight: 800; color: #8b1c2b; }
+.sign-row .sign-box {
+    text-align: center;
+    font-weight: 700;
+    color: #555;
+    flex: 1;
+    border-right: 1px dashed #ddd;
+    padding: 0 10px;
+}
+.sign-row .sign-box:last-child { border-right: none; }
 
 /* ─── التذييل ─── */
 .footer {
@@ -227,7 +250,7 @@ body {
         </div>
         <div class="inv-no-box">
             <div class="lbl">رقم الفاتورة</div>
-            <div class="num">{{ $invoice->vno ?? $rec->id }}</div>
+            <div class="num">{{ $rec->id }}</div>
             <div class="lbl">Invoice No</div>
         </div>
     </div>
@@ -235,7 +258,7 @@ body {
     {{-- شريط عنوان --}}
     <div class="inv-bar">
         <span class="title">الفاتورة &nbsp; INVOICE</span>
-        <span class="date">{{ fmt_date($rec->rec_date) }}</span>
+        <span class="date">{{ fmt_date_ar($rec->rec_date) }}</span>
     </div>
 
     {{-- بيانات العميل --}}
@@ -243,37 +266,58 @@ body {
         <table class="info-table">
             <tr>
                 <td class="lbl">الاسم</td>
-                <td class="val big" colspan="3">{{ $patient->full_name }}</td>
+                <td class="val big" colspan="3">{{ $patient->full_name ?? '—' }}</td>
             </tr>
             <tr>
                 <td class="lbl">رقم الملف</td>
-                <td class="val blue">{{ $patient->file_id }}</td>
+                <td class="val blue">{{ $patient->file_id ?? '—' }}</td>
                 <td class="lbl">التاريخ</td>
-                <td class="val ltr">{{ fmt_date($rec->rec_date) }}</td>
+                <td class="val ltr">{{ fmt_date_ar($rec->rec_date) }}</td>
             </tr>
             <tr>
                 <td class="lbl">الوقت</td>
                 <td class="val ltr">
-                    @if($rec->rec_time)
-                        @php
-                            $t = preg_replace('/^(\d+):(\d)$/', '$1:0$2', trim($rec->rec_time));
-                            echo \Carbon\Carbon::createFromFormat('H:i', substr($t,0,5))->format('h:i A');
-                        @endphp
-                    @else — @endif
+                    @php
+                        $displayTime = '—';
+                        $pt = trim($invoice->ptime ?? $rec->rec_time ?? '');
+                        if ($pt) {
+                            if (preg_match('/AM|PM/i', $pt)) {
+                                // صيغة النظام الأصلي: "06:54 PM"
+                                $displayTime = strtoupper($pt);
+                            } else {
+                                // صيغة 24 ساعة: "9:30" أو "14:00"
+                                $t = preg_replace('/^(\d+):(\d)$/', '$1:0$2', $pt);
+                                try {
+                                    $displayTime = \Carbon\Carbon::createFromFormat('G:i', substr($t,0,5))->format('h:i A');
+                                } catch(\Exception $e) {
+                                    $displayTime = $pt;
+                                }
+                            }
+                        }
+                        echo $displayTime;
+                    @endphp
                 </td>
                 <td class="lbl">رقم الإحالة</td>
-                <td class="val">{{ $invoice->serial_no ?? '—' }}</td>
+                <td class="val ltr">{{ $invoice->serial_no ?? '—' }}</td>
             </tr>
             <tr>
                 <td class="lbl">الشركة</td>
                 <td class="val">{{ $patient->insurance ?? 'على نفقته' }}</td>
-                <td class="lbl">العيادة</td>
-                <td class="val">{{ $clinicName }}</td>
+                <td class="lbl">رقم البوليصة</td>
+                <td class="val ltr">{{ $patient->policy_no ?: '—' }}</td>
             </tr>
             <tr>
+                <td class="lbl">المكتب</td>
+                <td class="val">{{ $clinicName }}</td>
                 <td class="lbl">المستشار</td>
-                <td class="val" colspan="3">{{ $clinicName }}</td>
+                <td class="val">{{ $clinicName }}</td>
             </tr>
+            @if($cashierName)
+            <tr>
+                <td class="lbl">الاستقبال</td>
+                <td class="val" colspan="3">{{ $cashierName }}</td>
+            </tr>
+            @endif
         </table>
     </div>
 
@@ -283,24 +327,24 @@ body {
             <thead>
                 <tr>
                     <th style="width:36px;">م</th>
-                    <th class="r">الخدمة</th>
-                    <th>الكود</th>
-                    <th style="width:95px;">السعر</th>
-                    <th style="width:80px;">التأمين %</th>
+                    <th class="r">الخدمة : Service</th>
+                    <th>الكود : Code</th>
+                    <th style="width:95px;">السعر : Price</th>
+                    <th style="width:80px;">التأمين % : % Insur</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($items as $i => $item)
                 <tr>
                     <td class="num">{{ $i + 1 }}</td>
-                    <td class="r">{{ $item->pdesc ?? '—' }}</td>
-                    <td>—</td>
+                    <td class="r">{{ $item->pdesc_clean ?? '—' }}</td>
+                    <td>{{ $item->pdesc_clean ?? '—' }}</td>
                     <td class="price">{{ number_format($item->price, 3) }}</td>
-                    <td>{{ number_format($item->insurance_val ?? 0, 3) }}</td>
+                    <td>{{ number_format($item->insur_amount ?? 0, 0) }}</td>
                 </tr>
                 @empty
-                <tr class="empty">
-                    <td colspan="5">لا توجد خدمات مسجلة</td>
+                <tr>
+                    <td colspan="5" style="text-align:center; padding:20px; color:#9e9e9e;">لا توجد خدمات مسجلة</td>
                 </tr>
                 @endforelse
 
@@ -328,11 +372,14 @@ body {
     <div class="pay-row">
         <span class="lbl">وسيلة الدفع :</span>
         <span class="val">{{ $paymentLabel }}</span>
-        @if($rec->notes)
-            <span class="lbl" style="margin-right:12px;">ملاحظات :</span>
-            <span class="val">{{ $rec->notes }}</span>
-        @endif
     </div>
+
+    {{-- ملاحظات --}}
+    <div class="notes-row">
+        <span class="lbl">ملاحظات :</span>
+        <span class="val">{{ $rec->notes ?? '' }}</span>
+    </div>
+
 
     {{-- تذييل --}}
     <div class="footer">

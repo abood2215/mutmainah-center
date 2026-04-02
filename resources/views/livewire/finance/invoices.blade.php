@@ -1,4 +1,4 @@
-<div style="min-height:80vh; padding:1.5rem 2rem;">
+<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem;">
 <div style="max-width:1500px; margin:0 auto; animation:fadeIn 0.5s ease;">
 
 {{-- زر الطباعة (يظهر فقط بعد البحث) --}}
@@ -26,7 +26,7 @@ $years  = range(2000, now()->year + 1);
         <span style="color:#fbbf24; font-size:1.1rem; font-weight:900; font-family:'Tajawal',sans-serif;">🧾 تقارير الفواتير : Invoices Reports</span>
     </div>
 
-    <div style="display:grid; grid-template-columns:auto 1fr; gap:0.55rem 1.25rem; align-items:center; max-width:700px; margin:0 auto;">
+    <div class="pg-autogrid" style="display:grid; grid-template-columns:auto 1fr; gap:0.55rem 1.25rem; align-items:center; max-width:700px; margin:0 auto;">
 
         {{-- العيادة --}}
         <label style="color:#fbbf24; font-weight:800; font-size:0.88rem; white-space:nowrap;">العيادة : Clinic</label>
@@ -203,7 +203,7 @@ $years  = range(2000, now()->year + 1);
                     <td style="padding:0.4rem 0.55rem; text-align:left; color:#c62828; border-left:1px solid #eee; font-size:0.8rem; direction:ltr;">{{ number_format($inv->discount ?? 0, 2) }}</td>
                     <td style="padding:0.4rem 0.55rem; text-align:left; color:#888; border-left:1px solid #eee; font-size:0.8rem; direction:ltr;">{{ number_format($inv->tax_value ?? 0, 2) }}</td>
                     <td style="padding:0.4rem 0.55rem; text-align:left; font-weight:900; color:var(--primary); border-left:1px solid #eee; font-size:0.86rem; direction:ltr;">{{ number_format($inv->net, 2) }}</td>
-                    <td style="padding:0.4rem 0.55rem; text-align:center; color:#555; font-size:0.77rem;">{{ trim($inv->rep_name) ?: '—' }}</td>
+                    <td style="padding:0.4rem 0.55rem; text-align:center; color:#555; font-size:0.77rem;">{{ trim($inv->rep_name) ?: $currentUserName ?: '—' }}</td>
                 </tr>
                 @empty
                 <tr>

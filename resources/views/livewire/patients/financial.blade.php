@@ -1,4 +1,4 @@
-<div style="min-height:80vh; padding:1.5rem 2rem;">
+<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem;">
 <div style="max-width:1400px; margin:0 auto; animation:fadeIn 0.5s ease;">
 
 <div id="print-area" style="background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow-sm); overflow:hidden;">
@@ -19,10 +19,10 @@
     </div>
  <!-- المحتوى -->
     <!-- المحتوى -->
-    <div style="padding:1.75rem;">
+    <div class="pg-inner" style="padding:1.75rem;">
 
         <!-- بطاقات الإحصائيات - صف علوي -->
-        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-bottom:1rem;">
+        <div class="pg-3col" style="display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-bottom:1rem;">
             <div style="background:linear-gradient(135deg,#fff8e1,#fffde7); border:1px solid #ffe082; border-radius:12px; padding:1.25rem 1.5rem;">
                 <div style="color:#e65100; font-size:0.78rem; font-weight:800; letter-spacing:1px; margin-bottom:0.5rem;">إجمالي الخدمات | TOTAL SERVICES</div>
                 <div style="font-size:1.9rem; font-weight:900; color:#bf360c; font-family:'Inter';">{{ number_format($totalServices, 3) }} <span style="font-size:0.85rem; color:#ff8f00; font-weight:600;">د.ك</span></div>

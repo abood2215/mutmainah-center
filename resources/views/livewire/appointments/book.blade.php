@@ -1,4 +1,4 @@
-<div style="min-height:80vh; padding:1.5rem 2rem;">
+<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem;">
 <div style="max-width:1100px; margin:0 auto; background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow-sm); animation:fadeIn 0.5s ease;">
 
     <!-- رأس الصفحة -->
@@ -29,7 +29,7 @@
                 <span style="background:rgba(255,255,255,0.25); color:#fff; font-size:0.72rem; font-weight:900; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">١</span>
                 <span style="color:#fff; font-weight:900; font-size:0.9rem;">اختيار العيادة والتاريخ</span>
             </div>
-            <div style="padding:1.25rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+            <div class="pg-2col" style="padding:1.25rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
                 <div>
                     <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">العيادة *</label>
                     <select wire:model.live="selectedClinic" class="form-input">

@@ -1,4 +1,4 @@
-<div style="min-height:80vh; padding:1.5rem 2rem;">
+<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem;">
 <div style="max-width:1400px; margin:0 auto; animation:fadeIn 0.4s ease;">
 
 {{-- رسالة نجاح --}}
@@ -43,7 +43,7 @@
                 الحركات المدخلة &nbsp;:&nbsp; <span style="color:var(--gold);">Movements Display</span>
             </div>
 
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem 1.25rem;">
+            <div class="pg-2col" style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem 1.25rem;">
 
                 {{-- التصنيف --}}
                 <div style="display:flex; align-items:center; gap:0.75rem;">
@@ -179,10 +179,10 @@
                                 <a href="{{ route('patients.financial-statement', $mov->patient_id) }}" wire:navigate
                                     style="color:var(--navy); text-decoration:none; transition:color 0.15s;"
                                     onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--navy)'">
-                                    {{ $mov->patient_name ?? '—' }}
+                                    {{ $mov->acck_name ?? $mov->patient_name ?? '—' }}
                                 </a>
                                 @else
-                                    <span style="color:var(--text-muted);">—</span>
+                                    <span style="color:var(--text-muted);">{{ $mov->acck_name ?? '—' }}</span>
                                 @endif
                             </td>
 
@@ -323,7 +323,7 @@
             </div>
 
             {{-- المبلغ وطريقة الدفع --}}
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+            <div class="pg-2col" style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
                 <div>
                     <label style="display:block; font-size:0.78rem; font-weight:800; color:#9ca3af; letter-spacing:1px; margin-bottom:0.4rem;">المبلغ (د.ك)</label>
                     <input type="number" wire:model="newAmount" min="0" step="0.001"

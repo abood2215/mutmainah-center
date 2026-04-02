@@ -1,4 +1,4 @@
-<div style="min-height:80vh; padding: 1.5rem 2rem;">
+<div class="pg-outer" style="min-height:80vh; padding: 1.5rem 2rem;">
 
 @if(session('check_success'))
 @php $cs = session('check_success'); @endphp
@@ -6,7 +6,7 @@
     <div style="display:flex; align-items:center; gap:12px;">
         <span style="font-size:1.5rem;">✅</span>
         <div>
-            <div style="font-weight:900; color:#1b5e20; font-size:.95rem;">تم تحويل المريض بنجاح</div>
+            <div style="font-weight:900; color:#1b5e20; font-size:.95rem;">تم تحويل العميل بنجاح</div>
             <div style="font-size:.83rem; color:#2e7d32; margin-top:2px;">
                 <strong>{{ $cs['patient'] }}</strong>
                 &nbsp;|&nbsp; العيادة: <strong>{{ $cs['clinic'] }}</strong>
@@ -37,11 +37,11 @@
         </div>
 
         <!-- محتوى الإطار -->
-        <div style="padding: 1.75rem;">
+        <div class="pg-inner" style="padding: 1.75rem;">
 
             <!-- فلاتر البحث -->
             <div style="margin-bottom: 1.5rem; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem;">
-                <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
+                <div class="pg-filter" style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
                     <div style="position: relative; flex: 1; min-width: 220px; max-width: 360px;">
                         <input type="text" wire:model.live.debounce.400ms="search"
                             placeholder="بحث باسم العميل أو رقم الكشف..."
