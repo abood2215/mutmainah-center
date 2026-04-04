@@ -22,16 +22,19 @@ class Index extends Component
             return;
         }
 
-        $searchTerm = '%' . $this->search . '%';
+        $q = trim($this->search);
+        $like = '%' . $q . '%';
 
         $this->suggestions = DB::table('kstu')
-            ->select('id', 'file_id', 'full_name as name', 'phone')
-            ->where(function($q) use ($searchTerm) {
-                $q->where('full_name', 'like', $searchTerm)
-                  ->orWhere('file_id', 'like', $searchTerm)
-                  ->orWhere('phone', 'like', $searchTerm);
+            ->select('id', 'file_id', 'full_name as name', 'phone', 'ssn')
+            ->where(function($query) use ($like, $q) {
+                $query->where('full_name', 'like', $like)
+                      ->orWhere('phone', 'like', $like)
+                      ->orWhere('ssn', 'like', $like)
+                      ->orWhereRaw('CAST(file_id AS CHAR) LIKE ?', [$like])
+                      ->orWhereRaw('CAST(id AS CHAR) LIKE ?', [$like]);
             })
-            ->limit(8)
+            ->limit(10)
             ->get();
     }
 
@@ -40,8 +43,9 @@ class Index extends Component
     {
         $patients = collect();
 
-        if ($this->searchPerformed) {
-            $searchTerm = '%' . $this->search . '%';
+        if ($this->searchPerformed && strlen(trim($this->search)) >= 1) {
+            $q    = trim($this->search);
+            $like = '%' . $q . '%';
 
             $patients = DB::table('kstu')
                 ->select(
@@ -52,11 +56,12 @@ class Index extends Component
                     'ssn as identity_number',
                     'reg_date as created_at'
                 )
-                ->where(function($q) use ($searchTerm) {
-                    $q->where('full_name', 'like', $searchTerm)
-                      ->orWhere('file_id', 'like', $searchTerm)
-                      ->orWhere('phone', 'like', $searchTerm)
-                      ->orWhere('ssn', 'like', $searchTerm);
+                ->where(function($query) use ($like, $q) {
+                    $query->where('full_name', 'like', $like)
+                          ->orWhere('phone', 'like', $like)
+                          ->orWhere('ssn', 'like', $like)
+                          ->orWhereRaw('CAST(file_id AS CHAR) LIKE ?', [$like])
+                          ->orWhereRaw('CAST(id AS CHAR) LIKE ?', [$like]);
                 })
                 ->orderBy('id', 'desc')
                 ->paginate(15);
