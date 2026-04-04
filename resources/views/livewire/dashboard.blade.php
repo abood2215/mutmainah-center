@@ -1,24 +1,8 @@
-<style>
-@media (max-width: 768px) {
-    .db-outer { padding: 0.75rem !important; }
-    .db-header { padding: 0.85rem 1rem !important; flex-direction: column !important; align-items: flex-start !important; gap: 0.75rem !important; }
-    .db-inner { padding: 1rem !important; gap: 1rem !important; }
-    .db-stats { grid-template-columns: repeat(2, 1fr) !important; gap: 0.75rem !important; }
-    .db-2col { grid-template-columns: 1fr !important; gap: 1rem !important; }
-    .db-right-col { flex-direction: column !important; gap: 1rem !important; }
-    .db-footer { padding: 0.75rem 1rem !important; flex-direction: column !important; gap: 0.5rem !important; font-size: 0.72rem !important; }
-    .db-check-row { flex-wrap: wrap !important; gap: 0.4rem !important; }
-}
-@media (max-width: 480px) {
-    .db-stats { grid-template-columns: 1fr !important; }
-    .db-card-stat { padding: 1rem !important; }
-}
-</style>
-<div class="pg-outer db-outer" style="min-height:80vh; padding:1.5rem 2rem;">
+<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem;">
 <div style="max-width:1400px; margin:0 auto; background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow-sm); overflow:hidden; animation:fadeIn 0.5s ease;">
 
     <!-- رأس الإطار -->
-    <div class="db-header" style="padding:1.25rem 1.75rem; border-bottom:1px solid var(--border); background:#fafbfc; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+    <div style="padding:1.25rem 1.75rem; border-bottom:1px solid var(--border); background:#fafbfc; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
         <div style="display:flex; align-items:center; gap:0.75rem;">
             <div style="width:42px; height:42px; background:var(--primary-glow); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.4rem;">👋</div>
             <div>
@@ -32,10 +16,10 @@
     </div>
 
     <!-- المحتوى -->
-    <div class="pg-inner db-inner" style="padding:1.75rem; display:flex; flex-direction:column; gap:1.25rem;">
+    <div class="pg-inner" style="padding:1.75rem; display:flex; flex-direction:column; gap:1.25rem;">
 
         <!-- بطاقات الإحصائيات -->
-        <div class="dash-stats db-stats" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.25rem;">
+        <div class="dash-stats" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.25rem;">
 
             <div class="card" style="padding:1.25rem; display:flex; align-items:center; gap:1rem;">
                 <div style="width:52px; height:52px; background:rgba(26,26,46,0.08); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.6rem; flex-shrink:0;">👥</div>
@@ -79,7 +63,7 @@
         </div>
 
         <!-- جدول + عيادات + روابط -->
-        <div class="pg-2col db-2col" style="display:grid; grid-template-columns:2fr 1fr; gap:1.25rem;">
+        <div class="pg-2col" style="display:grid; grid-template-columns:2fr 1fr; gap:1.25rem;">
 
             <!-- أحدث كشوف اليوم -->
             <div class="card">
@@ -116,7 +100,7 @@
             </div>
 
             <!-- يمين: عيادات + روابط -->
-            <div class="db-right-col" style="display:flex; flex-direction:column; gap:1.25rem;">
+            <div style="display:flex; flex-direction:column; gap:1.25rem;">
 
                 <div class="card">
                     <div class="card-header">
@@ -161,7 +145,7 @@
     </div>
 
     <!-- شريط سفلي -->
-    <div class="db-footer" style="background:var(--navy); color:rgba(255,255,255,0.5); padding:0.65rem 1.75rem; font-size:0.78rem; font-weight:700; display:flex; align-items:center; gap:0.5rem; border-top:3px solid var(--gold);">
+    <div style="background:var(--navy); color:rgba(255,255,255,0.5); padding:0.65rem 1.75rem; font-size:0.78rem; font-weight:700; display:flex; align-items:center; gap:0.5rem; border-top:3px solid var(--gold);">
         <span style="color:var(--gold);">●</span> مركز مطمئنة الاستشاري &mdash; نظام إدارة المركز
     </div>
 

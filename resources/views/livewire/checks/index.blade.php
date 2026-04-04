@@ -1,22 +1,4 @@
-<style>
-@media (max-width: 768px) {
-    .ch-outer { padding: 0.6rem !important; }
-    .ch-header { padding: 0.85rem 1rem !important; flex-direction: column !important; align-items: flex-start !important; }
-    .ch-inner { padding: 1rem !important; }
-    .ch-filter { flex-direction: column !important; align-items: stretch !important; }
-    .ch-filter > div { min-width: 0 !important; max-width: 100% !important; width: 100% !important; }
-    .ch-filter input[type="date"],
-    .ch-filter select { width: 100% !important; }
-    .ch-filter button { width: 100% !important; justify-content: center !important; }
-    .ch-patient-actions { flex-wrap: wrap !important; gap: 0.4rem !important; }
-    .ch-footer { padding: 0.75rem 1rem !important; flex-direction: column !important; gap: 0.75rem !important; }
-    .ch-footer-stats { flex-direction: column !important; gap: 0.5rem !important; }
-}
-@media (max-width: 480px) {
-    .ch-success-banner { flex-direction: column !important; }
-}
-</style>
-<div class="pg-outer ch-outer" style="min-height:80vh; padding: 1.5rem 2rem;">
+<div class="pg-outer" style="min-height:80vh; padding: 1.5rem 2rem;">
 
 @if(session('check_success'))
 @php $cs = session('check_success'); @endphp
@@ -44,7 +26,7 @@
     <div style="max-width: 1400px; margin: 0 auto; background: #fff; border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-sm); overflow: hidden; display: flex; flex-direction: column; animation: fadeIn 0.5s ease;">
         
         <!-- رأس الإطار: العنوان والتاريخ -->
-        <div class="ch-header" style="padding: 1.25rem 1.75rem; border-bottom: 1px solid var(--border); background: #fafbfc; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+        <div style="padding: 1.25rem 1.75rem; border-bottom: 1px solid var(--border); background: #fafbfc; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
             <div style="display: flex; align-items: center; gap: 0.75rem;">
                 <div style="width: 42px; height: 42px; background: var(--primary-glow); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">📋</div>
                 <h1 style="font-size:1.4rem; font-weight:900; color:var(--primary); margin:0; font-family:'Tajawal',sans-serif;">سجل الكشوفات</h1>
@@ -55,11 +37,11 @@
         </div>
 
         <!-- محتوى الإطار -->
-        <div class="pg-inner ch-inner" style="padding: 1.75rem;">
+        <div class="pg-inner" style="padding: 1.75rem;">
 
             <!-- فلاتر البحث -->
             <div style="margin-bottom: 1.5rem; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem;">
-                <div class="pg-filter ch-filter" style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
+                <div class="pg-filter" style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
                     <div style="position: relative; flex: 1; min-width: 220px; max-width: 360px;">
                         <input type="text" wire:model.live.debounce.400ms="search"
                             placeholder="بحث باسم العميل أو رقم الكشف..."
@@ -137,7 +119,7 @@
                 </div>
 
                 <!-- شريط الإجراءات السريعة -->
-                <div class="ch-patient-actions" style="background:#f1f5f9; padding:0.6rem 1rem; display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap; border-top: 1px solid #e2e8f0;">
+                <div style="background:#f1f5f9; padding:0.6rem 1rem; display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap; border-top: 1px solid #e2e8f0;">
                     <a href="{{ route('patients.new-check', $selectedPatient->id) }}" wire:navigate class="btn btn-primary" style="padding: 0.4rem 1rem; border-radius: 6px; font-size: 0.8rem;">
                         ➕ كشف جديد
                     </a>
@@ -242,8 +224,8 @@
         </div>
 
         <!-- شريط الإحصائيات (تذييل الإطار) -->
-        <div class="ch-footer" style="background:var(--navy); padding:1rem 2rem; display:flex; align-items:center; justify-content:space-between; color:#fff; flex-wrap:wrap; gap:1.5rem; border-top: 4px solid var(--gold);">
-            <div class="ch-footer-stats" style="display:flex; align-items:center; gap:1.5rem;">
+        <div style="background:var(--navy); padding:1rem 2rem; display:flex; align-items:center; justify-content:space-between; color:#fff; flex-wrap:wrap; gap:1.5rem; border-top: 4px solid var(--gold);">
+            <div style="display:flex; align-items:center; gap:1.5rem;">
                 <div wire:click="openWaitingModal"
                     style="display:flex; align-items:center; gap:0.6rem; cursor:pointer; padding:0.4rem 0.8rem; border-radius:8px; transition:background 0.2s;"
                     onmouseover="this.style.background='rgba(251,191,36,0.15)'"

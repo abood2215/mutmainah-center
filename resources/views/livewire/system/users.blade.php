@@ -1,24 +1,8 @@
-<style>
-@media (max-width: 768px) {
-    .su-outer { padding: 0.6rem !important; }
-    .su-header { flex-direction: column !important; align-items: flex-start !important; gap: 0.75rem !important; }
-    .su-header button { width: 100% !important; justify-content: center !important; }
-    .su-filters { flex-direction: column !important; align-items: stretch !important; }
-    .su-filters select { width: 100% !important; }
-    .su-confirm-bar { flex-direction: column !important; gap: 0.75rem !important; }
-    .su-confirm-btns { width: 100% !important; }
-    .su-confirm-btns button { width: 100% !important; }
-    .su-edit-inputs { flex-direction: column !important; gap: 0.4rem !important; }
-    .su-edit-inputs input { width: 100% !important; }
-    .su-actions { flex-direction: column !important; gap: 0.35rem !important; }
-    .su-actions button { width: 100% !important; }
-}
-</style>
-<div class="pg-outer su-outer" style="min-height:80vh; padding:1.5rem 2rem;">
+<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem;">
 <div style="max-width:1200px; margin:0 auto; animation:fadeIn 0.4s ease;">
 
     <!-- رأس الصفحة -->
-    <div class="su-header" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
         <div>
             <h1 style="font-size:1.5rem; font-weight:900; color:var(--primary); margin:0; font-family:'Tajawal',sans-serif;">إدارة المستخدمين</h1>
             <div style="font-size:0.83rem; color:var(--text-muted); margin-top:0.2rem; font-weight:600;">
@@ -71,7 +55,7 @@
     <div style="background:#fff; border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
 
         <!-- فلاتر -->
-        <div class="su-filters" style="padding:0.85rem 1.25rem; background:#f8fafc; border-bottom:1px solid var(--border); display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
+        <div style="padding:0.85rem 1.25rem; background:#f8fafc; border-bottom:1px solid var(--border); display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
             <div style="position:relative; flex:1; min-width:200px;">
                 <input type="text" wire:model.live.debounce.300ms="search"
                     placeholder="بحث بالاسم أو اسم المستخدم..."

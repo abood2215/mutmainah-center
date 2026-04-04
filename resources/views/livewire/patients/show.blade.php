@@ -1,16 +1,5 @@
-<style>
-@media (max-width: 768px) {
-    .ps-outer { padding: 0.75rem !important; }
-    .ps-wrap { max-width: 100% !important; }
-    .ps-card-header { padding: 0.85rem 1rem !important; flex-direction: column !important; align-items: flex-start !important; gap: 0.5rem !important; }
-    .ps-table-scroll { overflow-x: auto; }
-    .ps-action-bar { flex-wrap: wrap !important; gap: 0.4rem !important; }
-    .ps-action-bar a,
-    .ps-action-bar button { font-size: 0.8rem !important; padding: 0.4rem 0.75rem !important; }
-}
-</style>
-<div class="pg-outer ps-outer" style="min-height:80vh; padding:2rem; display:flex; align-items:flex-start; justify-content:center;">
-<div class="ps-wrap" style="width:100%; max-width:750px; animation:fadeIn 0.4s ease;">
+<div class="pg-outer" style="min-height:80vh; padding:2rem; display:flex; align-items:flex-start; justify-content:center;">
+<div style="width:100%; max-width:750px; animation:fadeIn 0.4s ease;">
 
 <div id="print-area">
 
@@ -21,7 +10,7 @@
     <div style="border-radius:14px; overflow:hidden; border:2px solid var(--primary); box-shadow:0 10px 30px rgba(139,28,43,0.12);">
 
         {{-- رأس البطاقة --}}
-        <div class="ps-card-header" style="background:var(--primary); padding:1.1rem 1.5rem; display:flex; align-items:center; justify-content:space-between;">
+        <div style="background:var(--primary); padding:1.1rem 1.5rem; display:flex; align-items:center; justify-content:space-between;">
             <span style="color:#fff; font-weight:900; font-size:1.15rem; display:flex; align-items:center; gap:0.6rem;">
                 👤 ملف العميل:
                 <span style="font-weight:400; opacity:0.9;">{{ $patient->full_name }}</span>
@@ -32,7 +21,7 @@
         </div>
 
         {{-- جدول البيانات --}}
-        <div class="ps-table-scroll" style="background:#fff; overflow-x:auto;">
+        <div style="background:#fff; overflow-x:auto;">
             <table style="width:100%; border-collapse:collapse;">
                 <thead>
                     <tr style="background:#fff9f9; border-bottom:1px solid #fcecee;">
@@ -68,7 +57,7 @@
         </div>
 
         {{-- شريط الأزرار --}}
-        <div class="no-print ps-action-bar" style="background:#f1f5f9; padding:1rem 1.25rem; display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; border-top:1px solid #e2e8f0;">
+        <div class="no-print" style="background:#f1f5f9; padding:1rem 1.25rem; display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; border-top:1px solid #e2e8f0;">
             <a href="{{ route('patients.new-check', $patient->id) }}" wire:navigate class="btn btn-primary" style="padding:0.5rem 1.25rem; font-size:0.9rem;">
                 ➕ كشف جديد
             </a>

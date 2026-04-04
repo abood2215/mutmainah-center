@@ -1,19 +1,4 @@
-<style>
-@media (max-width: 768px) {
-    .inv-outer { padding: 0.75rem !important; }
-    .inv-filter-form { padding: 1rem !important; }
-    .inv-filter-grid { grid-template-columns: 1fr !important; }
-    .inv-filter-grid label { white-space: normal !important; }
-    .inv-filter-grid > div { direction: ltr; }
-    .inv-filter-grid select { flex: 1 !important; }
-    .inv-links { flex-wrap: wrap !important; gap: 0.5rem !important; }
-    .inv-print-btn { display: none !important; }
-}
-@media (max-width: 480px) {
-    .inv-filter-form .btn-row { flex-direction: column !important; gap: 0.5rem !important; }
-}
-</style>
-<div class="pg-outer inv-outer" style="min-height:80vh; padding:1.5rem 2rem;">
+<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem;">
 <div style="max-width:1500px; margin:0 auto; animation:fadeIn 0.5s ease;">
 
 {{-- زر الطباعة (يظهر فقط بعد البحث) --}}
@@ -41,7 +26,7 @@ $years  = range(2000, now()->year + 1);
         <span style="color:#fbbf24; font-size:1.1rem; font-weight:900; font-family:'Tajawal',sans-serif;">🧾 تقارير الفواتير : Invoices Reports</span>
     </div>
 
-    <div class="pg-autogrid inv-filter-grid" style="display:grid; grid-template-columns:auto 1fr; gap:0.55rem 1.25rem; align-items:center; max-width:700px; margin:0 auto;">
+    <div class="pg-autogrid" style="display:grid; grid-template-columns:auto 1fr; gap:0.55rem 1.25rem; align-items:center; max-width:700px; margin:0 auto;">
 
         {{-- العيادة --}}
         <label style="color:#fbbf24; font-weight:800; font-size:0.88rem; white-space:nowrap;">العيادة : Clinic</label>

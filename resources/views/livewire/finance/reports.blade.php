@@ -1,17 +1,4 @@
-<style>
-@media (max-width: 768px) {
-    .rp-outer { padding: 0.75rem !important; }
-    .rp-header { padding: 0.85rem 1rem !important; flex-direction: column !important; align-items: flex-start !important; gap: 0.5rem !important; }
-    .rp-filter-bar { flex-direction: column !important; align-items: stretch !important; }
-    .rp-filter-bar input[type="date"],
-    .rp-filter-bar select,
-    .rp-filter-bar input[type="text"] { width: 100% !important; }
-    .rp-filter-bar > div { width: 100% !important; }
-    .rp-summary { flex-direction: column !important; gap: 0.5rem !important; }
-    .rp-body { padding: 1rem !important; }
-}
-</style>
-<div class="pg-outer rp-outer" style="min-height:80vh; padding:1.5rem 2rem;">
+<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem;">
 <div style="max-width:1400px; margin:0 auto; background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow-sm); overflow:hidden; animation:fadeIn 0.5s ease;">
 
     @php
@@ -32,7 +19,7 @@
     @endphp
 
     <!-- رأس الإطار -->
-    <div class="rp-header" style="padding:1.25rem 1.75rem; border-bottom:1px solid var(--border); background:#fafbfc; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+    <div style="padding:1.25rem 1.75rem; border-bottom:1px solid var(--border); background:#fafbfc; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
         <div style="display:flex; align-items:center; gap:0.75rem;">
             <div style="width:42px; height:42px; background:var(--primary-glow); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.4rem;">{{ $current['icon'] }}</div>
             <h1 style="font-size:1.4rem; font-weight:900; color:var(--primary); margin:0; font-family:'Tajawal',sans-serif;">تقرير {{ $current['label'] }}</h1>
@@ -40,11 +27,11 @@
         <button wire:click="resetFilters" class="btn btn-secondary">🔄 مسح الفلاتر</button>
     </div>
 
-    <div class="rp-body" style="padding:1.75rem;">
+    <div style="padding:1.75rem;">
 
         <!-- فلاتر -->
         <div style="border:1px solid var(--border); border-radius:12px; padding:1rem 1.25rem; margin-bottom:1.25rem; background:#f8fafc;">
-            <div class="rp-filter-bar" style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:flex-end;">
+            <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:flex-end;">
                 <div>
                     <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); margin-bottom:0.3rem;">من تاريخ</div>
                     <input type="date" wire:model="dateFrom" class="form-input" style="width:160px;">
@@ -85,7 +72,7 @@
 
         <!-- ملخص -->
         @if(!empty($summary))
-        <div class="rp-summary" style="display:flex; gap:0.75rem; margin-bottom:1.25rem; flex-wrap:wrap;">
+        <div style="display:flex; gap:0.75rem; margin-bottom:1.25rem; flex-wrap:wrap;">
             @if(isset($summary['total']))
             <div class="badge" style="background:var(--primary); color:#fff; padding:0.6rem 1.5rem; border-radius:10px; font-weight:900; font-size:0.92rem;">الإجمالي: {{ number_format($summary['total'], 0) }}</div>
             @endif

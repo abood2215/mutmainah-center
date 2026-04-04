@@ -571,57 +571,6 @@
             gap: 0.5rem;
         }
 
-        /* ═══ SUB PANEL ═══ */
-        .sub-panel {
-            display: none;
-            position: fixed;
-            bottom: 60px;
-            right: 0; left: 0;
-            z-index: 799;
-            justify-content: center;
-        }
-        .sub-panel.open { display: flex; }
-
-        .sub-panel-inner {
-            background: var(--navy);
-            border: 1px solid rgba(200,148,26,0.35);
-            border-bottom: none;
-            border-radius: 12px 12px 0 0;
-            padding: 0.75rem 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            width: 100%;
-            animation: slideUp 0.18s ease;
-        }
-
-        .sub-panel-title {
-            color: var(--gold);
-            font-size: 0.8rem;
-            font-weight: 800;
-            width: 100%;
-            margin-bottom: 0.3rem;
-        }
-
-        .sub-panel-link {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.4rem;
-            padding: 0.6rem 0.75rem;
-            background: rgba(255,255,255,0.07);
-            color: rgba(255,255,255,0.85);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 700;
-            border-radius: 8px;
-            -webkit-tap-highlight-color: transparent;
-            min-width: 120px;
-        }
-        .sub-panel-link:active { background: rgba(200,148,26,0.25); color: var(--gold); }
-
         .more-link {
             display: flex;
             align-items: center;
@@ -647,62 +596,39 @@
         }
 
         @media (max-width: 768px) {
-            .page-content { padding: 0.6rem !important; }
+            .page-content { padding: 0.85rem; }
             .topbar { padding: 0 0.85rem; }
             .user-name { display: none; }
             .topbar-date { display: none; }
 
             /* جداول: scroll أفقي */
             .card { overflow-x: auto; }
-            table { min-width: 550px; }
+            table { min-width: 600px; }
 
             /* ─── Dashboard ─── */
-            .dash-stats { grid-template-columns: repeat(2, 1fr) !important; gap: 0.75rem !important; }
+            .dash-stats { grid-template-columns: repeat(2, 1fr) !important; }
 
             /* ─── Page Responsive Helpers ─── */
-            .pg-outer   { padding: 0.5rem !important; }
+            .pg-outer   { padding: 0.6rem !important; }
             .pg-inner   { padding: 0.85rem !important; }
+
+            /* شبكات 2 / 3 أعمدة → عمود واحد */
             .pg-2col    { grid-template-columns: 1fr !important; }
             .pg-2col > * { grid-column: span 1 !important; }
             .pg-3col    { grid-template-columns: 1fr !important; }
             .pg-autogrid { grid-template-columns: 1fr !important; max-width: 100% !important; }
+
+            /* شريط الفلاتر flex → عمود */
             .pg-filter  { flex-direction: column !important; align-items: stretch !important; }
             .pg-filter > * { width: 100% !important; max-width: 100% !important; min-width: 0 !important; flex: none !important; }
             .pg-filter input, .pg-filter select { width: 100% !important; min-width: 0 !important; max-width: none !important; }
+
+            /* حقل بحث بعرض ثابت */
             .pg-sw      { width: 100% !important; max-width: 100% !important; }
-
-            /* ─── رؤوس الكروت: flex-wrap تلقائي ─── */
-            [style*="justify-content:space-between"],
-            [style*="justify-content: space-between"] {
-                flex-wrap: wrap !important;
-            }
-
-            /* ─── حقول بعرض ثابت → كامل ─── */
-            input[style*="width:160px"], input[style*="width: 160px"],
-            input[style*="width:200px"], input[style*="width: 200px"],
-            select[style*="width:160px"], select[style*="width: 160px"],
-            select[style*="width:200px"], select[style*="width: 200px"],
-            select[style*="width:240px"], select[style*="width: 240px"] {
-                width: 100% !important; min-width: 0 !important;
-            }
-
-            /* ─── min-width ثابتة → 0 ─── */
-            [style*="min-width:220px"], [style*="min-width: 220px"],
-            [style*="min-width:200px"], [style*="min-width: 200px"],
-            [style*="min-width:240px"], [style*="min-width: 240px"] {
-                min-width: 0 !important; width: 100% !important;
-            }
-
-            /* ─── padding كبيرة → أصغر ─── */
-            [style*="padding:1.75rem"], [style*="padding: 1.75rem"] { padding: 0.85rem !important; }
-            [style*="padding:1.5rem 1.75rem"], [style*="padding: 1.5rem 1.75rem"],
-            [style*="padding:1.25rem 1.75rem"], [style*="padding: 1.25rem 1.75rem"] { padding: 0.75rem 1rem !important; }
-            [style*="padding:1.5rem 2rem"], [style*="padding: 1.5rem 2rem"] { padding: 0.5rem !important; }
         }
 
         @media (max-width: 480px) {
-            .page-content { padding: 0.4rem !important; }
-            .dash-stats { grid-template-columns: 1fr !important; }
+            .page-content { padding: 0.6rem; }
             .topbar-brand .t-name { font-size: 1rem; }
         }
     </style>
@@ -833,22 +759,13 @@
         <a href="{{ route('appointments.index') }}" class="btm-nav-item {{ request()->routeIs('appointments.*') ? 'active' : '' }}">
             <span class="bi">📅</span><span>المواعيد</span>
         </a>
-        <button class="btm-nav-item {{ request()->routeIs('finance.*') ? 'active' : '' }}" onclick="toggleSubPanel('financePanel')">
+        <a href="{{ route('finance.movements') }}" class="btm-nav-item {{ request()->routeIs('finance.*') ? 'active' : '' }}">
             <span class="bi">💰</span><span>المالية</span>
-        </button>
+        </a>
         <button class="btm-nav-item {{ request()->routeIs('finance.reports','finance.invoices','finance.vouchers','system.*','clinics.*','employees.*') ? 'active' : '' }}" onclick="toggleMore()">
             <span class="bi">⋯</span><span>المزيد</span>
         </button>
     </nav>
-
-    <!-- ═══════ SUB PANEL: المالية ═══════ -->
-    <div class="sub-panel" id="financePanel">
-        <div class="sub-panel-inner">
-            <div class="sub-panel-title">💰 المالية</div>
-            <a href="{{ route('finance.movements') }}" class="sub-panel-link">💳 حركات مالية</a>
-            <a href="{{ route('finance.statement') }}" class="sub-panel-link">📄 بيان حساب</a>
-        </div>
-    </div>
 
     <!-- ═══════ MORE PANEL ═══════ -->
     <div class="more-panel" id="morePanel">
@@ -862,6 +779,7 @@
                 <a href="{{ route('finance.reports') }}" class="more-link">📊 التقارير</a>
                 <a href="{{ route('finance.invoices') }}" class="more-link">💳 الفواتير</a>
                 <a href="{{ route('finance.vouchers') }}" class="more-link">📑 السندات</a>
+                <a href="{{ route('finance.statement') }}" class="more-link">📄 بيان حساب</a>
                 <a href="{{ route('finance.reports') }}?type=pb" class="more-link">💰 أرصدة العملاء</a>
                 <a href="{{ route('finance.reports') }}?type=services" class="more-link">🔬 الخدمات</a>
                 <a href="{{ route('finance.reports') }}?type=clinics" class="more-link">🏛 العيادات</a>
@@ -934,30 +852,9 @@
     </style>
 
     <script>
-        function closeAllPanels() {
-            document.getElementById('morePanel').classList.remove('open');
-            document.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('open'));
-        }
-
         function toggleMore() {
-            const isOpen = document.getElementById('morePanel').classList.contains('open');
-            closeAllPanels();
-            if (!isOpen) document.getElementById('morePanel').classList.add('open');
+            document.getElementById('morePanel').classList.toggle('open');
         }
-
-        function toggleSubPanel(id) {
-            const panel = document.getElementById(id);
-            const isOpen = panel.classList.contains('open');
-            closeAllPanels();
-            if (!isOpen) panel.classList.add('open');
-        }
-
-        // إغلاق عند الضغط خارج الـ panel
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.sub-panel') && !e.target.closest('.btm-nav')) {
-                document.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('open'));
-            }
-        });
 
         function toggleUserMenu() {
             document.getElementById('userDdMenu').classList.toggle('open');

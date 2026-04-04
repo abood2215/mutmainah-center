@@ -1,23 +1,4 @@
-<style>
-@media (max-width: 768px) {
-    .mv-wrap  { padding: 0.6rem !important; }
-    .mv-inner { padding: 1rem !important; }
-    .mv-head  { padding: 0.85rem 1rem !important; flex-direction: column !important; align-items: flex-start !important; }
-    .mv-filter-row { flex-direction: column !important; align-items: stretch !important; }
-    .mv-filter-row label { min-width: unset !important; white-space: normal !important; }
-    .mv-filter-row select,
-    .mv-filter-row input { width: 100% !important; }
-    .mv-btn-row { width: 100% !important; }
-    .mv-btn-row button,
-    .mv-btn-row a { width: 100% !important; justify-content: center !important; }
-    .mv-filter-grid { grid-template-columns: 1fr !important; }
-    .mv-results-header { flex-direction: column !important; align-items: flex-start !important; gap: 0.75rem !important; }
-    .mv-results-search input { width: 100% !important; }
-    .mv-modal-box { max-width: 100% !important; margin: 0.5rem !important; width: calc(100% - 1rem) !important; }
-    .mv-modal-grid { grid-template-columns: 1fr !important; }
-}
-</style>
-<div class="pg-outer mv-wrap" style="min-height:80vh; padding:1.5rem 2rem;">
+<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem;">
 <div style="max-width:1400px; margin:0 auto; animation:fadeIn 0.4s ease;">
 
 {{-- رسالة نجاح --}}
@@ -32,7 +13,7 @@
 <div style="background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow-sm); overflow:hidden;">
 
     {{-- رأس الصفحة --}}
-    <div class="mv-head" style="padding:1.1rem 1.75rem; border-bottom:1px solid var(--border); background:#fafbfc; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+    <div style="padding:1.1rem 1.75rem; border-bottom:1px solid var(--border); background:#fafbfc; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
         <div style="display:flex; align-items:center; gap:0.75rem;">
             <div style="width:42px; height:42px; background:var(--primary-glow); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.4rem;">💳</div>
             <div>
@@ -40,7 +21,7 @@
                 <div style="font-size:0.72rem; color:var(--text-muted); font-weight:700; letter-spacing:1px;">FINANCIAL MOVEMENTS</div>
             </div>
         </div>
-        <div class="mv-btn-row" style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+        <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
             <button wire:click="openAddModal"
                 style="padding:0.55rem 1.25rem; background:var(--primary); color:#fff; border:none; border-radius:8px; font-family:'Tajawal',sans-serif; font-weight:800; font-size:0.88rem; cursor:pointer; display:flex; align-items:center; gap:0.4rem; box-shadow:0 3px 10px rgba(139,28,43,0.25); transition:all 0.2s;"
                 onmouseover="this.style.background='#6e1522'" onmouseout="this.style.background='var(--primary)'">
@@ -54,7 +35,7 @@
         </div>
     </div>
 
-    <div class="mv-inner" style="padding:1.5rem 1.75rem;">
+    <div style="padding:1.5rem 1.75rem;">
 
         {{-- ═══ فلتر البحث ═══ --}}
         <div style="background:linear-gradient(135deg, var(--navy) 0%, #252550 100%); border-radius:12px; padding:1.5rem; margin-bottom:1.5rem; border:2px solid rgba(200,148,26,0.3);">
@@ -62,10 +43,10 @@
                 الحركات المدخلة &nbsp;:&nbsp; <span style="color:var(--gold);">Movements Display</span>
             </div>
 
-            <div class="pg-2col mv-filter-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem 1.25rem;">
+            <div class="pg-2col" style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem 1.25rem;">
 
                 {{-- التصنيف --}}
-                <div class="mv-filter-row" style="display:flex; align-items:center; gap:0.75rem;">
+                <div style="display:flex; align-items:center; gap:0.75rem;">
                     <label style="color:rgba(255,255,255,0.8); font-size:0.82rem; font-weight:800; white-space:nowrap; min-width:115px; text-align:right;">التصنيف : Class</label>
                     <select style="flex:1; padding:0.55rem 0.9rem; border:1.5px solid rgba(200,148,26,0.4); border-radius:8px; font-family:'Tajawal',sans-serif; font-size:0.88rem; background:#1e1e3a; color:#fff; outline:none; cursor:pointer;">
                         <option value="1" style="background:#1e1e3a;">مطمئنة الكويت</option>
@@ -73,7 +54,7 @@
                 </div>
 
                 {{-- نوع الحركة --}}
-                <div class="mv-filter-row" style="display:flex; align-items:center; gap:0.75rem;">
+                <div style="display:flex; align-items:center; gap:0.75rem;">
                     <label style="color:rgba(255,255,255,0.8); font-size:0.82rem; font-weight:800; white-space:nowrap; min-width:115px; text-align:right;">نوع الحركة : Type</label>
                     <select wire:model="filterType"
                         style="flex:1; padding:0.55rem 0.9rem; border:1.5px solid rgba(200,148,26,0.4); border-radius:8px; font-family:'Tajawal',sans-serif; font-size:0.88rem; background:#1e1e3a; color:#fff; outline:none; cursor:pointer;">
@@ -84,14 +65,14 @@
                 </div>
 
                 {{-- من تاريخ --}}
-                <div class="mv-filter-row" style="display:flex; align-items:center; gap:0.75rem;">
+                <div style="display:flex; align-items:center; gap:0.75rem;">
                     <label style="color:rgba(255,255,255,0.8); font-size:0.82rem; font-weight:800; white-space:nowrap; min-width:115px; text-align:right;">من تاريخ : From</label>
                     <input type="date" wire:model="fromDate"
                         style="flex:1; padding:0.55rem 0.9rem; border:1.5px solid rgba(200,148,26,0.4); border-radius:8px; font-family:'Tajawal',sans-serif; font-size:0.88rem; background:#1e1e3a; color:#fff; outline:none; cursor:pointer; color-scheme:dark;">
                 </div>
 
                 {{-- حتى تاريخ --}}
-                <div class="mv-filter-row" style="display:flex; align-items:center; gap:0.75rem;">
+                <div style="display:flex; align-items:center; gap:0.75rem;">
                     <label style="color:rgba(255,255,255,0.8); font-size:0.82rem; font-weight:800; white-space:nowrap; min-width:115px; text-align:right;">حتى تاريخ : To</label>
                     <input type="date" wire:model="toDate"
                         style="flex:1; padding:0.55rem 0.9rem; border:1.5px solid rgba(200,148,26,0.4); border-radius:8px; font-family:'Tajawal',sans-serif; font-size:0.88rem; background:#1e1e3a; color:#fff; outline:none; cursor:pointer; color-scheme:dark;">

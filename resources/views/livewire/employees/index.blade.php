@@ -1,24 +1,13 @@
-<style>
-@media (max-width: 768px) {
-    .em-outer { padding: 0.6rem !important; }
-    .em-header { padding: 0.85rem 1rem !important; flex-direction: column !important; align-items: flex-start !important; gap: 0.75rem !important; }
-    .em-search-box { width: 100% !important; }
-    .em-search-box input { width: 100% !important; }
-    .em-table-wrap { overflow-x: auto; }
-    .em-modal { max-width: 100% !important; }
-    .em-modal-grid { grid-template-columns: 1fr !important; }
-}
-</style>
-<div class="pg-outer em-outer" style="min-height:80vh; padding:1.5rem 2rem;">
+<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem;">
 <div style="max-width:1400px; margin:0 auto; background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow-sm); overflow:hidden; animation:fadeIn 0.5s ease;">
 
     <!-- رأس الإطار -->
-    <div class="em-header" style="padding:1.25rem 1.75rem; border-bottom:1px solid var(--border); background:#fafbfc; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+    <div style="padding:1.25rem 1.75rem; border-bottom:1px solid var(--border); background:#fafbfc; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
         <div style="display:flex; align-items:center; gap:0.75rem;">
             <div style="width:42px; height:42px; background:var(--primary-glow); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.4rem;">👨‍⚕️</div>
             <h1 style="font-size:1.4rem; font-weight:900; color:var(--primary); margin:0; font-family:'Tajawal',sans-serif;">الموظفين : Employees</h1>
         </div>
-        <div class="pg-sw em-search-box" style="position:relative; width:240px;">
+        <div class="pg-sw" style="position:relative; width:240px;">
             <input type="text" wire:model.live.debounce.400ms="search"
                 placeholder="بحث بالاسم أو الرقم..."
                 style="width:100%; padding:0.55rem 2.5rem 0.55rem 0.9rem; border:1.5px solid var(--border); border-radius:8px; font-family:'Tajawal',sans-serif; font-size:0.9rem; outline:none; transition:border-color 0.2s;"
@@ -28,7 +17,7 @@
     </div>
 
     <!-- الجدول -->
-    <div class="em-table-wrap" style="overflow-x:auto;">
+    <div style="overflow-x:auto;">
         <table style="width:100%; border-collapse:collapse; font-family:'Tajawal',sans-serif; font-size:0.92rem;">
             <thead>
                 <tr style="background:#e8e8e8; border-bottom:1px solid #ccc;">

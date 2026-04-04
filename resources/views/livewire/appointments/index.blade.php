@@ -1,25 +1,9 @@
-<style>
-@media (max-width: 768px) {
-    .ap-outer { padding: 0.75rem !important; }
-    .ap-page-header { flex-direction: column !important; align-items: flex-start !important; gap: 0.75rem !important; }
-    .ap-page-header a { width: 100% !important; justify-content: center !important; }
-    .ap-stats { grid-template-columns: repeat(2, 1fr) !important; gap: 0.75rem !important; }
-    .ap-filters { flex-direction: column !important; align-items: stretch !important; }
-    .ap-filters input[type="text"],
-    .ap-filters select,
-    .ap-filters input[type="date"] { width: 100% !important; }
-    .ap-modal { max-width: 100% !important; margin: 0.5rem !important; }
-}
-@media (max-width: 480px) {
-    .ap-stats { grid-template-columns: 1fr !important; }
-}
-</style>
 <div>
-<div class="pg-outer ap-outer" style="min-height:80vh; padding:1.5rem 2rem;">
+<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem;">
 <div style="max-width:1400px; margin:0 auto; animation:fadeIn 0.4s ease;">
 
     <!-- رأس الصفحة -->
-    <div class="ap-page-header" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
         <div>
             <h1 style="font-size:1.5rem; font-weight:900; color:var(--primary); margin:0; font-family:'Tajawal',sans-serif;">جدول المواعيد</h1>
             <div style="font-size:0.83rem; color:var(--text-muted); margin-top:0.2rem; font-weight:600;">
@@ -34,7 +18,7 @@
     </div>
 
     <!-- إحصائيات سريعة -->
-    <div class="ap-stats" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin-bottom:1.5rem;">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin-bottom:1.5rem;">
         <div style="background:#fff; border:1px solid var(--border); border-radius:12px; padding:1rem 1.25rem; display:flex; align-items:center; gap:1rem; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
             <div style="width:44px; height:44px; background:#fef3c7; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0;">📋</div>
             <div>
@@ -72,7 +56,7 @@
     <div style="background:#fff; border:1px solid var(--border); border-radius:14px; box-shadow:0 1px 6px rgba(0,0,0,0.06); overflow:hidden;">
 
         <!-- فلاتر -->
-        <div class="ap-filters" style="padding:1rem 1.25rem; border-bottom:1px solid var(--border); background:#fafbfc; display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
+        <div style="padding:1rem 1.25rem; border-bottom:1px solid var(--border); background:#fafbfc; display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
             <div style="position:relative; flex:1; min-width:220px;">
                 <input type="text" wire:model.live.debounce.300ms="search"
                     placeholder="بحث باسم العميل..."

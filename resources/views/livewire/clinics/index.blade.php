@@ -1,20 +1,8 @@
-<style>
-@media (max-width: 768px) {
-    .cl-outer { padding: 0.75rem !important; }
-    .cl-header { flex-direction: column !important; align-items: flex-start !important; gap: 0.5rem !important; }
-    .cl-add-row { flex-direction: column !important; gap: 0.5rem !important; }
-    .cl-add-row input { width: 100% !important; }
-    .cl-add-row button { width: 100% !important; }
-    .cl-clinic-row { flex-wrap: wrap !important; gap: 0.5rem !important; }
-    .cl-edit-row { flex-direction: column !important; gap: 0.4rem !important; }
-    .cl-edit-row input { width: 100% !important; }
-}
-</style>
-<div class="pg-outer cl-outer" style="min-height:80vh; padding:1.5rem 2rem;">
+<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem;">
 <div style="max-width:900px; margin:0 auto; animation:fadeIn 0.4s ease;">
 
     <!-- رأس الصفحة -->
-    <div class="cl-header" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
         <div>
             <h1 style="font-size:1.5rem; font-weight:900; color:var(--primary); margin:0; font-family:'Tajawal',sans-serif;">إدارة العيادات</h1>
             <div style="font-size:0.83rem; color:var(--text-muted); margin-top:0.2rem; font-weight:600;">
@@ -40,7 +28,7 @@
         <div style="background:var(--primary); padding:0.7rem 1.25rem; border-radius:14px 14px 0 0;">
             <span style="color:#fff; font-weight:800; font-size:0.9rem;">➕ إضافة عيادة جديدة</span>
         </div>
-        <div class="cl-add-row" style="padding:1.1rem 1.25rem; display:flex; gap:0.75rem; align-items:center;">
+        <div style="padding:1.1rem 1.25rem; display:flex; gap:0.75rem; align-items:center;">
             <input type="text" wire:model="newName" wire:keydown.enter="addClinic"
                 placeholder="اكتب اسم العيادة الجديدة..."
                 class="form-input" style="flex:1;">
