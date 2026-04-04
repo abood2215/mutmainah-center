@@ -27,7 +27,7 @@ class Index extends Component
 
         $this->suggestions = DB::table('kstu')
             ->select('id', 'file_id', 'full_name as name', 'phone', 'ssn')
-            ->where(function($query) use ($like) {
+            ->where(function($query) use ($like, $q) {
                 $query->where('full_name', 'like', $like)
                       ->orWhere('phone', 'like', $like)
                       ->orWhere('ssn', 'like', $like)
@@ -35,7 +35,9 @@ class Index extends Component
                       ->orWhereRaw('CAST(id AS CHAR) LIKE ?', [$like]);
             })
             ->limit(10)
-            ->get();
+            ->get()
+            ->map(fn($r) => (array) $r)
+            ->toArray();
     }
 
     #[Title('إدارة العملاء')]
