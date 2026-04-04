@@ -473,130 +473,126 @@
             min-width: 20px;
         }
 
-        /* ═══ MOBILE DRAWER ═══ */
-        .mobile-overlay {
+        /* ═══ BOTTOM NAV (موبايل) ═══ */
+        .btm-nav {
+            display: none;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            height: 60px;
+            background: var(--navy);
+            border-top: 2px solid rgba(200,148,26,0.35);
+            z-index: 500;
+            box-shadow: 0 -3px 16px rgba(0,0,0,0.25);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        .btm-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+            font-size: 0.58rem;
+            font-weight: 700;
+            gap: 0.12rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            transition: color 0.15s;
+        }
+        .btm-nav-item .bi { font-size: 1.3rem; line-height: 1; }
+        .btm-nav-item.active { color: var(--gold); }
+        .btm-nav-item:active  { color: var(--gold); }
+
+        /* ═══ MORE PANEL ═══ */
+        .more-panel {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 900;
-            animation: fadeIn 0.2s ease;
+            z-index: 800;
         }
-        .mobile-overlay.open { display: block; }
+        .more-panel.open { display: block; }
+
+        .more-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .more-sheet {
+            position: absolute;
+            bottom: 60px; left: 0; right: 0;
+            background: var(--navy);
+            border-radius: 18px 18px 0 0;
+            border-top: 2px solid rgba(200,148,26,0.35);
+            padding: 1rem 1rem 1.25rem;
+            animation: slideUp 0.22s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to   { transform: translateY(0); }
+        }
+
+        .more-sheet-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.85rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .more-sheet-title {
+            color: var(--gold);
+            font-size: 0.88rem;
+            font-weight: 800;
+        }
+
+        .more-sheet-close {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: rgba(255,255,255,0.7);
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .more-links {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .more-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 0.9rem;
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+            background: rgba(255,255,255,0.06);
+            border-radius: 10px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .more-link:active { background: rgba(200,148,26,0.2); color: var(--gold); }
 
         /* ═══ RESPONSIVE ═══ */
         @media (max-width: 1024px) {
-            .topbar-nav { display: none; }
-            .mobile-toggle { display: flex; }
-
-            /* الدرور الجانبي */
-            .topbar-nav.mobile-active {
-                display: flex;
-                flex-direction: column;
-                position: fixed;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                width: 280px;
-                background: var(--navy);
-                padding: 0;
-                z-index: 1000;
-                gap: 0;
-                overflow-y: auto;
-                animation: slideInDrawer 0.28s ease;
-                box-shadow: -4px 0 24px rgba(0,0,0,0.35);
-            }
-
-            @keyframes slideInDrawer {
-                from { transform: translateX(100%); opacity: 0.5; }
-                to   { transform: translateX(0);    opacity: 1; }
-            }
-
-            /* رأس الدرور */
-            .topbar-nav.mobile-active::before {
-                content: 'مركز مطمئنة الاستشاري';
-                display: block;
-                padding: 1.1rem 1.2rem;
-                font-size: 0.9rem;
-                font-weight: 900;
-                color: var(--gold);
-                border-bottom: 1px solid rgba(255,255,255,0.1);
-                letter-spacing: 0.5px;
-                flex-shrink: 0;
-            }
-
-            .topbar-nav.mobile-active > li {
-                width: 100%;
-                height: auto;
-                flex-direction: row;
-                flex-wrap: wrap;
-                align-items: stretch;
-                border-bottom: 1px solid rgba(255,255,255,0.06);
-            }
-
-            .topbar-nav.mobile-active > li > a {
-                flex: 1;
-                padding: 0.9rem 1.2rem;
-                border-radius: 0;
-                border-bottom: none;
-                font-size: 0.92rem;
-                justify-content: flex-start;
-                height: auto;
-            }
-
-            /* زر السهم المنفصل */
-            .dd-arrow-btn {
-                display: none;
-                width: 46px;
-                background: rgba(255,255,255,0.07);
-                border: none;
-                border-right: 1px solid rgba(255,255,255,0.08);
-                color: rgba(255,255,255,0.5);
-                font-size: 1.1rem;
-                cursor: pointer;
-                align-items: center;
-                justify-content: center;
-                transition: background 0.2s, color 0.2s;
-                flex-shrink: 0;
-            }
-            .topbar-nav.mobile-active .dd-arrow-btn { display: flex; }
-            .topbar-nav.mobile-active > li.dd-open .dd-arrow-btn {
-                background: rgba(200,148,26,0.2);
-                color: var(--gold);
-                transform: rotate(90deg);
-            }
-
-            /* القائمة الفرعية — تمتد بعرض كامل تحت الصف */
-            .topbar-nav.mobile-active .dd-menu {
-                display: none;
-                position: static;
-                width: 100%;
-                flex-basis: 100%;
-                background: rgba(0,0,0,0.25);
-                box-shadow: none;
-                border: none;
-                border-radius: 0;
-                margin: 0;
-                min-width: unset;
-            }
-
-            .topbar-nav.mobile-active > li.dd-open .dd-menu {
-                display: block;
-                animation: slideDown 0.2s ease;
-            }
-
-            .topbar-nav.mobile-active .dd-menu li a {
-                color: rgba(255,255,255,0.65);
-                border-bottom-color: rgba(255,255,255,0.05);
-                padding-right: 2.2rem;
-                font-size: 0.88rem;
-            }
-
-            .topbar-nav.mobile-active .dd-menu li a:hover,
-            .topbar-nav.mobile-active .dd-menu li a:active {
-                background: rgba(255,255,255,0.08);
-                color: #fff;
-            }
+            .topbar-nav  { display: none !important; }
+            .mobile-toggle { display: none !important; }
+            .btm-nav { display: flex; }
+            .page-content { padding-bottom: 72px; }
+            .page-footer  { padding-bottom: 8px; margin-bottom: 60px; }
         }
 
         @media (max-width: 768px) {
@@ -648,8 +644,6 @@
                 <div class="t-gold">المركز الاستشاري</div>
             </div>
         </a>
-
-        <button class="mobile-toggle" id="mobileMenuBtn">☰</button>
 
         <ul class="topbar-nav" id="topNav">
             <li class="{{ request()->routeIs('checks.*') ? 'active' : '' }}">
@@ -743,9 +737,6 @@
         </div>
     </header>
 
-    <!-- Overlay للدرور -->
-    <div class="mobile-overlay" id="mobileOverlay"></div>
-
     <!-- ═══════ CONTENT ═══════ -->
     <main class="page-content">
         {{ $slot }}
@@ -755,6 +746,53 @@
     <footer class="page-footer">
         جميع الحقوق محفوظة &copy; {{ date('Y') }} &mdash; <strong>مركز مطمئنة الاستشاري</strong>
     </footer>
+
+    <!-- ═══════ BOTTOM NAV (موبايل فقط) ═══════ -->
+    @php $authId = auth()->user()?->getAuthIdentifier(); @endphp
+    <nav class="btm-nav">
+        <a href="{{ route('checks.index') }}" class="btm-nav-item {{ request()->routeIs('checks.*') ? 'active' : '' }}">
+            <span class="bi">📋</span><span>الكشوف</span>
+        </a>
+        <a href="{{ route('patients.index') }}" class="btm-nav-item {{ request()->routeIs('patients.*') ? 'active' : '' }}">
+            <span class="bi">👥</span><span>العملاء</span>
+        </a>
+        <a href="{{ route('appointments.index') }}" class="btm-nav-item {{ request()->routeIs('appointments.*') ? 'active' : '' }}">
+            <span class="bi">📅</span><span>المواعيد</span>
+        </a>
+        <a href="{{ route('finance.movements') }}" class="btm-nav-item {{ request()->routeIs('finance.*') ? 'active' : '' }}">
+            <span class="bi">💰</span><span>المالية</span>
+        </a>
+        <button class="btm-nav-item {{ request()->routeIs('finance.reports','finance.invoices','finance.vouchers','system.*','clinics.*','employees.*') ? 'active' : '' }}" onclick="toggleMore()">
+            <span class="bi">⋯</span><span>المزيد</span>
+        </button>
+    </nav>
+
+    <!-- ═══════ MORE PANEL ═══════ -->
+    <div class="more-panel" id="morePanel">
+        <div class="more-backdrop" onclick="toggleMore()"></div>
+        <div class="more-sheet">
+            <div class="more-sheet-header">
+                <span class="more-sheet-title">القائمة الكاملة</span>
+                <button class="more-sheet-close" onclick="toggleMore()">✕</button>
+            </div>
+            <div class="more-links">
+                <a href="{{ route('finance.reports') }}" class="more-link">📊 التقارير</a>
+                <a href="{{ route('finance.invoices') }}" class="more-link">💳 الفواتير</a>
+                <a href="{{ route('finance.vouchers') }}" class="more-link">📑 السندات</a>
+                <a href="{{ route('finance.statement') }}" class="more-link">📄 بيان حساب</a>
+                <a href="{{ route('finance.reports') }}?type=pb" class="more-link">💰 أرصدة العملاء</a>
+                <a href="{{ route('finance.reports') }}?type=services" class="more-link">🔬 الخدمات</a>
+                <a href="{{ route('finance.reports') }}?type=clinics" class="more-link">🏛 العيادات</a>
+                <a href="{{ route('finance.reports') }}?type=pfs" class="more-link">📈 البيان المالي</a>
+                @if(in_array($authId, [107, 189]))
+                <a href="{{ route('clinics.index') }}" class="more-link">🏥 العيادات</a>
+                <a href="{{ route('employees.index') }}" class="more-link">👨‍⚕️ الموظفين</a>
+                <a href="{{ route('system.users') }}" class="more-link">👤 المستخدمين</a>
+                <a href="{{ route('system.backup') }}" class="more-link">💾 باك اب</a>
+                @endif
+            </div>
+        </div>
+    </div>
 
     @livewireScripts
 
@@ -814,57 +852,9 @@
     </style>
 
     <script>
-        const mobileBtn     = document.getElementById('mobileMenuBtn');
-        const topNav        = document.getElementById('topNav');
-        const mobileOverlay = document.getElementById('mobileOverlay');
-
-        function openDrawer() {
-            topNav.classList.add('mobile-active');
-            mobileOverlay.classList.add('open');
-            mobileBtn.innerText = '✕';
-            document.body.style.overflow = 'hidden';
+        function toggleMore() {
+            document.getElementById('morePanel').classList.toggle('open');
         }
-
-        function closeDrawer() {
-            topNav.classList.remove('mobile-active');
-            mobileOverlay.classList.remove('open');
-            mobileBtn.innerText = '☰';
-            document.body.style.overflow = '';
-            topNav.querySelectorAll(':scope > li.dd-open').forEach(l => l.classList.remove('dd-open'));
-        }
-
-        mobileBtn.addEventListener('click', () => {
-            topNav.classList.contains('mobile-active') ? closeDrawer() : openDrawer();
-        });
-
-        mobileOverlay.addEventListener('click', closeDrawer);
-
-        // أزرار السهم لفتح القوائم الفرعية في الدرور
-        topNav.querySelectorAll(':scope > li').forEach(li => {
-            const ddMenu = li.querySelector('.dd-menu');
-            if (!ddMenu || li.querySelector('.dd-arrow-btn')) return;
-
-            const btn = document.createElement('button');
-            btn.type      = 'button';
-            btn.className = 'dd-arrow-btn';
-            btn.innerHTML = '&#8249;';
-            li.insertBefore(btn, ddMenu);
-
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                const isOpen = li.classList.contains('dd-open');
-                topNav.querySelectorAll(':scope > li.dd-open').forEach(l => l.classList.remove('dd-open'));
-                if (!isOpen) li.classList.add('dd-open');
-            });
-        });
-
-        // أغلق الدرور فقط — دع المتصفح يتنقل بشكل طبيعي
-        topNav.querySelectorAll('a[href]').forEach(function(a) {
-            a.addEventListener('click', function() {
-                closeDrawer();
-            });
-        });
 
         function toggleUserMenu() {
             document.getElementById('userDdMenu').classList.toggle('open');
