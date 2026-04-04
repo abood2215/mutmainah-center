@@ -37,7 +37,11 @@
       "Bash(find resources/views/components -empty -type d -delete)",
       "Bash(ls *.php *.txt *.md)",
       "Bash(rm -f check_*.php clean_*.php clean_*.txt compare_*.php debug_*.php find_*.php full_check.php list_*.php test_*.php DATABASE_REPORT.md TODO.md)",
-      "Bash(ls *.php *.md)"
+      "Bash(ls *.php *.md)",
+      "Read(//mnt/c/Program Files/**)",
+      "Read(//mnt/c/laragon/bin/**)",
+      "Read(//mnt/c/xampp/mysql/bin/**)",
+      "Read(//mnt/**)"
     ]
   }
 }
