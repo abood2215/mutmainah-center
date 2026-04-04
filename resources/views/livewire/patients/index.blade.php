@@ -48,7 +48,7 @@
                 @if(!empty($suggestions))
                 <div style="position:absolute; top:calc(100% + 6px); left:0; right:0; background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 16px 40px rgba(0,0,0,0.12); z-index:9999; overflow:hidden; animation:dropIn 0.15s ease;">
                     @foreach($suggestions as $s)
-                    <a href="{{ route('patients.medical-history', $s->id) }}" wire:navigate
+                    <a href="{{ route('patients.show', $s->id) }}" wire:navigate
                         style="padding:0.7rem 1.1rem; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f3f4f6; text-decoration:none; transition:background 0.15s;"
                         onmouseover="this.style.background='#fef5f5'" onmouseout="this.style.background='#fff'">
                         <div>
