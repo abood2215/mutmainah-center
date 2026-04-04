@@ -1,31 +1,29 @@
 <style>
-@media (max-width: 768px) {
-    .st-outer { padding: 0.5rem !important; }
-    /* الكارت الرئيسي */
-    .st-outer > div { padding: 0 !important; }
-    /* تحويل الجدول لـ block */
-    .st-outer table,
-    .st-outer tbody,
-    .st-outer tr,
-    .st-outer td { display: block !important; width: 100% !important; }
-    .st-outer tr { border-bottom: 1px solid rgba(255,255,255,0.1) !important; padding: 0.1rem 0; }
-    .st-outer td { padding: 0.4rem 1rem !important; width: auto !important; }
-    .st-outer td:first-child { font-size: 0.78rem !important; padding-bottom: 0.1rem !important; }
-    .st-outer td:last-child { padding-top: 0.1rem !important; }
-    /* الـ selects في الـ date row */
-    .st-outer td div[style*="display:flex"],
-    .st-outer td div[style*="display: flex"] { flex-wrap: wrap !important; }
-    .st-outer td select { min-width: 60px !important; font-size: 0.8rem !important; }
-    /* الأزرار */
-    .st-outer div[style*="justify-content:center"] button,
-    .st-outer div[style*="justify-content: center"] button,
-    .st-outer div[style*="justify-content:center"] a,
-    .st-outer div[style*="justify-content: center"] a { flex: 1 !important; justify-content: center !important; }
-    /* جدول النتائج */
-    .st-result-table { overflow-x: auto; display: block; }
+.st-filter-card { background:#fff; border-radius:14px; border:1px solid #e5e7eb; box-shadow:0 4px 20px rgba(0,0,0,0.07); overflow:visible; width:100%; max-width:660px; }
+.st-filter-head { background:var(--primary); padding:0.85rem 1.5rem; border-radius:13px 13px 0 0; text-align:center; }
+.st-filter-head h2 { color:#fff; font-size:1rem; font-weight:900; margin:0; font-family:'Tajawal',sans-serif; }
+.st-filter-body { padding:1.25rem 1.5rem; display:flex; flex-direction:column; gap:1rem; }
+.st-field-label { font-size:0.82rem; font-weight:800; color:#374151; margin-bottom:0.3rem; font-family:'Tajawal',sans-serif; }
+.st-input { width:100%; padding:0.5rem 0.75rem; border:1px solid #d1d5db; border-radius:8px; font-family:'Tajawal',sans-serif; font-size:0.9rem; color:#1a1a2e; outline:none; background:#fff; transition:border-color 0.2s; }
+.st-input:focus { border-color:var(--primary); }
+.st-input.selected { border-color:#16a34a; background:#f0fdf4; }
+.st-select { padding:0.45rem 0.5rem; border:1px solid #d1d5db; border-radius:7px; background:#fff; font-family:'Tajawal',sans-serif; font-size:0.85rem; color:#1a1a2e; outline:none; cursor:pointer; }
+.st-date-row { display:flex; gap:0.4rem; direction:ltr; }
+.st-date-row .st-select:first-child { flex:1; }
+.st-date-row .st-select:nth-child(2) { flex:2; }
+.st-date-row .st-select:last-child { flex:2; }
+.st-filter-footer { padding:0.85rem 1.5rem; border-top:1px solid #f1f5f9; display:flex; justify-content:center; gap:0.75rem; flex-wrap:wrap; }
+.st-suggestions { position:absolute; top:calc(100% + 2px); right:0; left:0; background:#fff; border:1px solid #e5e7eb; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.13); z-index:200; max-height:220px; overflow-y:auto; }
+.st-suggestion-item { padding:0.55rem 1rem; cursor:pointer; border-bottom:1px solid #f9fafb; display:flex; justify-content:space-between; align-items:center; gap:0.5rem; font-family:'Tajawal',sans-serif; }
+.st-suggestion-item:hover { background:#fef5f5; }
+@media (max-width:600px) {
+    .st-filter-body { padding:1rem; gap:0.85rem; }
+    .st-filter-footer { padding:0.75rem 1rem; }
+    .pg-3col { grid-template-columns:1fr !important; }
+    .st-result-table { overflow-x:auto; display:block; }
 }
 </style>
-<div class="pg-outer st-outer" style="min-height:80vh; padding:1.5rem 2rem; display:flex; flex-direction:column; align-items:center;">
+<div class="pg-outer st-outer" style="min-height:80vh; padding:1.25rem 1rem; display:flex; flex-direction:column; align-items:center; gap:1.5rem;">
 @php
 $days   = range(1, 31);
 $months = [1=>'يناير',2=>'فبراير',3=>'مارس',4=>'أبريل',5=>'مايو',6=>'يونيو',
@@ -34,123 +32,92 @@ $years  = range(2000, now()->year + 1);
 @endphp
 
 {{-- بطاقة الفلتر --}}
-<div style="width:100%; max-width:680px; animation:fadeIn 0.4s ease;">
-<div style="border-radius:14px; overflow:visible; border:2px solid var(--gold); box-shadow:0 8px 25px rgba(0,0,0,0.12);">
+<div class="st-filter-card" style="animation:fadeIn 0.4s ease;">
 
-    {{-- رأس --}}
-    <div style="background:var(--navy); padding:0.9rem 1.5rem; text-align:center; border-radius:12px 12px 0 0;">
-        <span style="color:#fbbf24; font-size:1.05rem; font-weight:900; font-family:'Tajawal',sans-serif;">
-            بيان الحساب : Account Statement
-        </span>
+    <div class="st-filter-head">
+        <h2>بيان الحساب</h2>
     </div>
 
-    <div style="background:var(--navy);">
-        <table style="width:100%; border-collapse:collapse;">
+    <div class="st-filter-body">
 
-            {{-- حقل البحث الموحد --}}
-            <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
-                <td style="padding:0.75rem 1.25rem; text-align:left; font-weight:900; color:#fbbf24; font-size:0.88rem; width:200px;">
-                    Account : الحساب
-                </td>
-                <td style="padding:0.65rem 1.25rem; position:relative;">
-                    <input type="text" wire:model.live.debounce.300ms="searchQuery"
-                        placeholder="هوية / رقم ملف / هاتف ..."
-                        autocomplete="off"
-                        style="width:100%; padding:0.45rem 0.65rem; border:1px solid {{ $patientId ? '#4ade80' : 'rgba(255,255,255,0.3)' }}; border-radius:5px; background:rgba(255,255,255,0.95); color:#1a1a2e; font-family:'Tajawal',sans-serif; font-size:0.9rem; outline:none; direction:ltr;">
+        {{-- حقل البحث --}}
+        <div style="position:relative;">
+            <div class="st-field-label">العميل</div>
+            <input type="text" wire:model.live.debounce.300ms="searchQuery"
+                placeholder="ابحث بالاسم / الهوية / رقم الملف / الهاتف"
+                autocomplete="off"
+                class="st-input {{ $patientId ? 'selected' : '' }}">
 
-                    @if($suggestions)
-                    <div style="position:absolute; top:calc(100% - 4px); right:1.25rem; left:1.25rem; background:#fff; border:1px solid #e5e7eb; border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,0.18); z-index:200; max-height:220px; overflow-y:auto;">
-                        @foreach($suggestions as $s)
-                        <div wire:click="selectPatient({{ $s->id }})"
-                            style="padding:0.55rem 1rem; cursor:pointer; border-bottom:1px solid #f9fafb; display:flex; justify-content:space-between; align-items:center; gap:0.5rem;"
-                            onmouseover="this.style.background='#fef5f5'" onmouseout="this.style.background='#fff'">
-                            <span style="font-weight:800; color:#1a1a2e; font-size:0.88rem; font-family:'Tajawal',sans-serif;">{{ $s->full_name }}</span>
-                            <span style="display:flex; gap:0.5rem; flex-shrink:0;">
-                                <span style="font-size:0.72rem; color:#1565c0; font-weight:700; background:#eff6ff; padding:0.15rem 0.4rem; border-radius:4px;">#{{ $s->file_id ?? $s->id }}</span>
-                                @if($s->ssn)<span style="font-size:0.72rem; color:#6b7280; font-weight:600; direction:ltr;">{{ $s->ssn }}</span>@endif
-                            </span>
-                        </div>
-                        @endforeach
-                    </div>
-                    @endif
+            @if($suggestions)
+            <div class="st-suggestions">
+                @foreach($suggestions as $s)
+                <div wire:click="selectPatient({{ $s->id }})" class="st-suggestion-item">
+                    <span style="font-weight:800; color:#1a1a2e; font-size:0.88rem;">{{ $s->full_name }}</span>
+                    <span style="display:flex; gap:0.5rem; flex-shrink:0;">
+                        <span style="font-size:0.72rem; color:#1565c0; font-weight:700; background:#eff6ff; padding:0.15rem 0.4rem; border-radius:4px;">#{{ $s->file_id ?? $s->id }}</span>
+                        @if($s->ssn)<span style="font-size:0.72rem; color:#6b7280; font-weight:600; direction:ltr;">{{ $s->ssn }}</span>@endif
+                    </span>
+                </div>
+                @endforeach
+            </div>
+            @endif
 
-                    @if($patientId)
-                    <div style="margin-top:0.3rem; font-size:0.76rem; color:#4ade80; font-weight:700; font-family:'Tajawal',sans-serif;">
-                        ✓ تم اختيار العميل — اضغط بحث
-                    </div>
-                    @endif
-                </td>
-            </tr>
+            @if($patientId)
+            <div style="margin-top:0.3rem; font-size:0.76rem; color:#16a34a; font-weight:800; font-family:'Tajawal',sans-serif;">
+                ✓ تم اختيار العميل — اضغط بحث
+            </div>
+            @endif
+        </div>
 
-            {{-- من تاريخ --}}
-            <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
-                <td style="padding:0.75rem 1.25rem; text-align:left; font-weight:900; color:#fbbf24; font-size:0.88rem;">
-                    From : من تاريخ
-                </td>
-                <td style="padding:0.65rem 1.25rem;">
-                    <div style="display:flex; gap:0.35rem; direction:ltr;">
-                        <select wire:model="day" style="padding:0.4rem 0.4rem; border:1px solid rgba(255,255,255,0.3); border-radius:5px; background:rgba(255,255,255,0.95); font-size:0.85rem; flex:1; outline:none;">
-                            @foreach($days as $d)<option value="{{ $d }}">{{ $d }}</option>@endforeach
-                        </select>
-                        <select wire:model="month" style="padding:0.4rem 0.4rem; border:1px solid rgba(255,255,255,0.3); border-radius:5px; background:rgba(255,255,255,0.95); font-family:'Tajawal',sans-serif; font-size:0.85rem; flex:2; outline:none;">
-                            @foreach($months as $n => $name)<option value="{{ $n }}">{{ $name }}</option>@endforeach
-                        </select>
-                        <select wire:model="year" style="padding:0.4rem 0.4rem; border:1px solid rgba(255,255,255,0.3); border-radius:5px; background:rgba(255,255,255,0.95); font-size:0.85rem; flex:2; outline:none;">
-                            @foreach($years as $y)<option value="{{ $y }}">{{ $y }}</option>@endforeach
-                        </select>
-                    </div>
-                </td>
-            </tr>
+        {{-- من تاريخ --}}
+        <div>
+            <div class="st-field-label">من تاريخ</div>
+            <div class="st-date-row">
+                <select wire:model="day" class="st-select">
+                    @foreach($days as $d)<option value="{{ $d }}" @selected((int)$day===$d)>{{ $d }}</option>@endforeach
+                </select>
+                <select wire:model="month" class="st-select">
+                    @foreach($months as $n => $name)<option value="{{ $n }}" @selected((int)$month===$n)>{{ $name }}</option>@endforeach
+                </select>
+                <select wire:model="year" class="st-select">
+                    @foreach($years as $y)<option value="{{ $y }}" @selected((int)$year===$y)>{{ $y }}</option>@endforeach
+                </select>
+            </div>
+        </div>
 
-            {{-- حتى تاريخ --}}
-            <tr>
-                <td style="padding:0.75rem 1.25rem; text-align:left; font-weight:900; color:#fbbf24; font-size:0.88rem;">
-                    To : حتى تاريخ
-                </td>
-                <td style="padding:0.65rem 1.25rem;">
-                    <div style="display:flex; gap:0.35rem; direction:ltr;">
-                        <select wire:model="toDay" style="padding:0.4rem 0.4rem; border:1px solid rgba(255,255,255,0.3); border-radius:5px; background:rgba(255,255,255,0.95); font-size:0.85rem; flex:1; outline:none;">
-                            @foreach($days as $d)<option value="{{ $d }}">{{ $d }}</option>@endforeach
-                        </select>
-                        <select wire:model="toMonth" style="padding:0.4rem 0.4rem; border:1px solid rgba(255,255,255,0.3); border-radius:5px; background:rgba(255,255,255,0.95); font-family:'Tajawal',sans-serif; font-size:0.85rem; flex:2; outline:none;">
-                            @foreach($months as $n => $name)<option value="{{ $n }}">{{ $name }}</option>@endforeach
-                        </select>
-                        <select wire:model="toYear" style="padding:0.4rem 0.4rem; border:1px solid rgba(255,255,255,0.3); border-radius:5px; background:rgba(255,255,255,0.95); font-size:0.85rem; flex:2; outline:none;">
-                            @foreach($years as $y)<option value="{{ $y }}">{{ $y }}</option>@endforeach
-                        </select>
-                    </div>
-                </td>
-            </tr>
+        {{-- حتى تاريخ --}}
+        <div>
+            <div class="st-field-label">حتى تاريخ</div>
+            <div class="st-date-row">
+                <select wire:model="toDay" class="st-select">
+                    @foreach($days as $d)<option value="{{ $d }}" @selected((int)$toDay===$d)>{{ $d }}</option>@endforeach
+                </select>
+                <select wire:model="toMonth" class="st-select">
+                    @foreach($months as $n => $name)<option value="{{ $n }}" @selected((int)$toMonth===$n)>{{ $name }}</option>@endforeach
+                </select>
+                <select wire:model="toYear" class="st-select">
+                    @foreach($years as $y)<option value="{{ $y }}" @selected((int)$toYear===$y)>{{ $y }}</option>@endforeach
+                </select>
+            </div>
+        </div>
 
-        </table>
     </div>
 
     {{-- أزرار --}}
-    <div style="background:var(--navy); padding:0.75rem 1.5rem; display:flex; justify-content:center; gap:1rem; border-top:1px solid rgba(255,255,255,0.1);">
-        <button wire:click="search"
-            style="padding:0.45rem 2rem; background:#2563eb; color:#fff; border:none; border-radius:6px; font-weight:900; font-size:0.88rem; font-family:'Tajawal',sans-serif; cursor:pointer;"
-            onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
-            بحث : Search
+    <div class="st-filter-footer">
+        <button wire:click="search" class="btn btn-primary" style="padding:0.5rem 2rem; font-size:0.9rem;">
+            بحث
         </button>
-        <button wire:click="resetForm"
-            style="padding:0.45rem 1.5rem; background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.3); border-radius:6px; font-weight:800; font-size:0.88rem; font-family:'Tajawal',sans-serif; cursor:pointer;">
-            إستعادة : Reset
+        <button wire:click="resetForm" class="btn" style="padding:0.5rem 1.25rem; font-size:0.9rem; background:#f3f4f6; color:#374151; border:1px solid #e5e7eb;">
+            إعادة تعيين
         </button>
         @if($searched && $patient)
-        <button type="button" onclick="printStatement()"
-            style="padding:0.45rem 1.5rem; background:#16a34a; color:#fff; border:none; border-radius:6px; font-weight:800; font-size:0.88rem; font-family:'Tajawal',sans-serif; cursor:pointer;">
+        <button type="button" onclick="printStatement()" class="btn" style="padding:0.5rem 1.25rem; font-size:0.9rem; background:#16a34a; color:#fff; border:none;">
             🖨 طباعة
         </button>
         @endif
     </div>
 
-    {{-- روابط --}}
-    <div style="background:var(--navy); padding:0.5rem 1.5rem; display:flex; justify-content:center; gap:2rem; border-top:1px solid rgba(255,255,255,0.08); border-radius:0 0 12px 12px;">
-        <a href="{{ route('dashboard') }}" wire:navigate style="color:#fbbf24; font-size:0.82rem; font-weight:700; text-decoration:none;">الرئيسية : Home</a>
-        <a href="javascript:history.back()" style="color:#fbbf24; font-size:0.82rem; font-weight:700; text-decoration:none;">رجوع : Back</a>
-    </div>
-
-</div>
 </div>
 
 {{-- لم يُوجد --}}
