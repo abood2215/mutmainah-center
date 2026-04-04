@@ -35,9 +35,7 @@ class Index extends Component
                       ->orWhereRaw('CAST(id AS CHAR) LIKE ?', [$like]);
             })
             ->limit(10)
-            ->get()
-            ->map(fn($r) => (array) $r)
-            ->toArray();
+            ->get();
     }
 
     #[Title('إدارة العملاء')]
