@@ -647,7 +647,7 @@
         }
 
         @media (max-width: 768px) {
-            .page-content { padding: 0.6rem !important; }
+            .page-content { padding: 0.6rem 0.6rem 80px 0.6rem !important; }
             .topbar { padding: 0 0.85rem; }
             .user-name { display: none; }
             .topbar-date { display: none; }
