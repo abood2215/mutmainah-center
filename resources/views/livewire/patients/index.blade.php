@@ -63,18 +63,17 @@
                 @if(!empty($suggestions))
                 <div style="position:absolute; top:calc(100% + 6px); left:0; right:0; background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 16px 40px rgba(0,0,0,0.12); z-index:300; overflow:hidden; animation:dropIn 0.15s ease;">
                     @foreach($suggestions as $s)
-                    @php $sName = $s['name'] ?? ''; $sId = $s['id'] ?? 0; $sFileId = $s['file_id'] ?? $sId; $sPhone = $s['phone'] ?? ''; $sSsn = $s['ssn'] ?? ''; @endphp
-                    <div wire:click="selectPatient({{ $sId }}, @js($sName))"
+                    <div wire:click="selectPatient({{ $s->id }}, '{{ addslashes($s->name) }}')"
                         style="padding:0.7rem 1.1rem; cursor:pointer; border-bottom:1px solid #f3f4f6; display:flex; justify-content:space-between; align-items:center; transition:background 0.15s;"
                         onmouseover="this.style.background='#fef5f5'" onmouseout="this.style.background='#fff'">
                         <div>
-                            <div style="font-weight:800; color:#1a1a2e; font-size:0.88rem; font-family:'Tajawal',sans-serif;">{{ $sName }}</div>
+                            <div style="font-weight:800; color:#1a1a2e; font-size:0.88rem; font-family:'Tajawal',sans-serif;">{{ $s->name }}</div>
                             <div style="font-size:0.73rem; color:#9ca3af; margin-top:0.1rem;">
-                                {{ $sPhone }}
-                                @if($sSsn) &nbsp;·&nbsp; {{ $sSsn }} @endif
+                                {{ $s->phone }}
+                                @if($s->ssn) &nbsp;·&nbsp; {{ $s->ssn }} @endif
                             </div>
                         </div>
-                        <span style="background:#fef5f5; color:var(--primary); font-weight:900; font-size:0.78rem; padding:0.18rem 0.55rem; border-radius:6px; border:1px solid #fdd5da; direction:ltr;">#{{ $sFileId }}</span>
+                        <span style="background:#fef5f5; color:var(--primary); font-weight:900; font-size:0.78rem; padding:0.18rem 0.55rem; border-radius:6px; border:1px solid #fdd5da; direction:ltr;">#{{ $s->file_id ?? $s->id }}</span>
                     </div>
                     @endforeach
                 </div>
