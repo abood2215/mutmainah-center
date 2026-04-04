@@ -26,6 +26,17 @@
                 <div>
                     <div style="font-size:0.78rem; font-weight:700; color:var(--text-muted); margin-bottom:0.2rem;">إجمالي العملاء</div>
                     <div style="font-size:2rem; font-weight:900; color:var(--navy); line-height:1;">{{ number_format($totalPatients) }}</div>
+                    @if($lastPatient)
+                    <div style="margin-top:0.35rem; font-size:0.73rem; color:var(--text-muted); display:flex; align-items:center; gap:0.3rem;">
+                        <span style="color:var(--gold); font-weight:800;">آخر ملف:</span>
+                        <a href="{{ route('patients.show', $lastPatient->id) }}" wire:navigate
+                           style="color:var(--navy); font-weight:800; text-decoration:none;"
+                           onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--navy)'">
+                            {{ $lastPatient->full_name }}
+                        </a>
+                        <span style="background:#f0f4ff; color:#1565c0; font-size:0.68rem; font-weight:900; padding:0.1rem 0.4rem; border-radius:4px; font-family:'Inter';">#{{ $lastPatient->file_id ?? $lastPatient->id }}</span>
+                    </div>
+                    @endif
                 </div>
             </div>
 

@@ -13,6 +13,11 @@ class Dashboard extends Component
     {
         $totalPatients = DB::table('kstu')->count();
 
+        $lastPatient = DB::table('kstu')
+            ->select('id', 'file_id', 'full_name')
+            ->orderBy('id', 'desc')
+            ->first();
+
         $today = now()->format('j-n-Y');
 
         // تم الكشف = نزل بقائمة الكشوف (دفع) confirm_id=1
@@ -68,6 +73,7 @@ class Dashboard extends Component
 
         return view('livewire.dashboard', [
             'totalPatients'  => $totalPatients,
+            'lastPatient'    => $lastPatient,
             'todayChecks'    => $todayChecks,
             'todayDone'      => $todayDone,
             'todayWaiting'   => $todayWaiting,
