@@ -1,16 +1,24 @@
 <style>
-@media (max-width: 768px) {
-    .vc-outer { padding: 0.75rem !important; }
-    .vc-card { max-width: 100% !important; width: 100% !important; }
-    .vc-form-table td:first-child { width: auto !important; padding: 0.5rem 0.75rem !important; font-size: 0.8rem !important; }
-    .vc-form-table td:last-child { padding: 0.5rem 0.75rem !important; }
-    .vc-date-row { flex-direction: column !important; gap: 0.35rem !important; }
-    .vc-date-row select { width: 100% !important; flex: 1 !important; }
-    .vc-result-table { overflow-x: auto; display: block; }
+.vc-filter-card { background:#fff; border-radius:14px; border:1px solid #e5e7eb; box-shadow:0 4px 20px rgba(0,0,0,0.07); width:100%; max-width:660px; }
+.vc-filter-head { background:var(--primary); padding:0.85rem 1.5rem; border-radius:13px 13px 0 0; text-align:center; }
+.vc-filter-head h2 { color:#fff; font-size:1rem; font-weight:900; margin:0; font-family:'Tajawal',sans-serif; }
+.vc-filter-body { padding:1.25rem 1.5rem; display:flex; flex-direction:column; gap:1rem; }
+.vc-field-label { font-size:0.82rem; font-weight:800; color:#374151; margin-bottom:0.3rem; font-family:'Tajawal',sans-serif; }
+.vc-select { width:100%; padding:0.5rem 0.75rem; border:1px solid #d1d5db; border-radius:8px; font-family:'Tajawal',sans-serif; font-size:0.88rem; color:#1a1a2e; outline:none; background:#fff; cursor:pointer; }
+.vc-select:focus { border-color:var(--primary); }
+.vc-date-sel { padding:0.45rem 0.5rem; border:1px solid #d1d5db; border-radius:7px; background:#fff; font-family:'Tajawal',sans-serif; font-size:0.85rem; color:#1a1a2e; outline:none; cursor:pointer; }
+.vc-date-row { display:flex; gap:0.4rem; direction:ltr; }
+.vc-date-row .vc-date-sel:first-child { flex:1; }
+.vc-date-row .vc-date-sel:nth-child(2) { flex:2; }
+.vc-date-row .vc-date-sel:last-child { flex:2; }
+.vc-filter-footer { padding:0.85rem 1.5rem; border-top:1px solid #f1f5f9; display:flex; justify-content:center; gap:0.75rem; flex-wrap:wrap; }
+@media (max-width:600px) {
+    .vc-filter-body { padding:1rem; gap:0.85rem; }
+    .vc-filter-footer { padding:0.75rem 1rem; }
+    .vc-result-table { overflow-x:auto; display:block; }
 }
 </style>
-<div class="pg-outer vc-outer" style="min-height:80vh; padding:1.5rem 2rem; display:flex; justify-content:center; align-items:flex-start;">
-<div style="width:100%; max-width:680px; animation:fadeIn 0.4s ease;">
+<div class="pg-outer vc-outer" style="min-height:80vh; padding:1.25rem 1rem; display:flex; flex-direction:column; align-items:center; gap:1.5rem;">
 
 @php
 $days   = range(1, 31);
@@ -19,152 +27,122 @@ $months = [1=>'يناير',2=>'فبراير',3=>'مارس',4=>'أبريل',5=>'�
 $years  = range(2000, now()->year + 1);
 @endphp
 
-<div style="border-radius:14px; overflow:visible; border:2px solid var(--gold); box-shadow:0 8px 25px rgba(0,0,0,0.12);">
+<div class="vc-filter-card" style="animation:fadeIn 0.4s ease;">
 
-    {{-- رأس --}}
-    <div style="background:var(--navy); padding:0.9rem 1.5rem; text-align:center; border-radius:12px 12px 0 0;">
-        <span style="color:#fbbf24; font-size:1.05rem; font-weight:900; font-family:'Tajawal',sans-serif;">
-            تقارير السندات : Vouchers Reports
-        </span>
+    <div class="vc-filter-head">
+        <h2>تقارير السندات</h2>
     </div>
 
-    <div style="background:var(--navy); opacity:0.97;">
-        <table style="width:100%; border-collapse:collapse;">
+    <div class="vc-filter-body">
 
-            {{-- التصنيف --}}
-            <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
-                <td style="padding:0.75rem 1.25rem; text-align:left; font-weight:900; color:#fbbf24; font-size:0.88rem; width:200px;">
-                    Class : التصنيف
-                </td>
-                <td style="padding:0.65rem 1.25rem;">
-                    <select wire:model="classId" style="padding:0.4rem 0.65rem; border:1px solid rgba(255,255,255,0.3); border-radius:5px; background:rgba(255,255,255,0.95); font-family:'Tajawal',sans-serif; font-size:0.88rem; width:100%; outline:none;">
-                        <option value="mutmainah">مركز مطمئنة الكويت</option>
-                    </select>
-                </td>
-            </tr>
+        {{-- التصنيف --}}
+        <div>
+            <div class="vc-field-label">التصنيف</div>
+            <select wire:model="classId" class="vc-select">
+                <option value="mutmainah">مركز مطمئنة الكويت</option>
+            </select>
+        </div>
 
-            {{-- النوع --}}
-            <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
-                <td style="padding:0.75rem 1.25rem; text-align:left; font-weight:900; color:#fbbf24; font-size:0.88rem;">
-                    Type : النوع
-                </td>
-                <td style="padding:0.65rem 1.25rem;">
-                    <select wire:model="voucherType" style="padding:0.4rem 0.65rem; border:1px solid rgba(255,255,255,0.3); border-radius:5px; background:rgba(255,255,255,0.95); font-family:'Tajawal',sans-serif; font-size:0.88rem; width:100%; outline:none;">
-                        <option value="receipt">سند قبض : Receipt</option>
-                        <option value="payment">سند صرف : Payment</option>
-                        <option value="">الكل : All</option>
-                    </select>
-                </td>
-            </tr>
+        {{-- النوع --}}
+        <div>
+            <div class="vc-field-label">نوع السند</div>
+            <select wire:model="voucherType" class="vc-select">
+                <option value="receipt">سند قبض</option>
+                <option value="payment">سند صرف</option>
+                <option value="">الكل</option>
+            </select>
+        </div>
 
-            {{-- من تاريخ --}}
-            <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
-                <td style="padding:0.75rem 1.25rem; text-align:left; font-weight:900; color:#fbbf24; font-size:0.88rem;">
-                    From : من تاريخ
-                </td>
-                <td style="padding:0.65rem 1.25rem;">
-                    <div style="display:flex; gap:0.35rem; direction:ltr;">
-                        <select wire:model="fromDay" style="padding:0.4rem 0.4rem; border:1px solid rgba(255,255,255,0.3); border-radius:5px; background:rgba(255,255,255,0.95); font-size:0.85rem; flex:1; outline:none;">
-                            @foreach($days as $d)<option value="{{ $d }}">{{ $d }}</option>@endforeach
-                        </select>
-                        <select wire:model="fromMonth" style="padding:0.4rem 0.4rem; border:1px solid rgba(255,255,255,0.3); border-radius:5px; background:rgba(255,255,255,0.95); font-family:'Tajawal',sans-serif; font-size:0.85rem; flex:2; outline:none;">
-                            @foreach($months as $n => $name)<option value="{{ $n }}">{{ $name }}</option>@endforeach
-                        </select>
-                        <select wire:model="fromYear" style="padding:0.4rem 0.4rem; border:1px solid rgba(255,255,255,0.3); border-radius:5px; background:rgba(255,255,255,0.95); font-size:0.85rem; flex:2; outline:none;">
-                            @foreach($years as $y)<option value="{{ $y }}">{{ $y }}</option>@endforeach
-                        </select>
-                    </div>
-                </td>
-            </tr>
+        {{-- من تاريخ --}}
+        <div>
+            <div class="vc-field-label">من تاريخ</div>
+            <div class="vc-date-row">
+                <select wire:model="fromDay" class="vc-date-sel">
+                    @foreach($days as $d)<option value="{{ $d }}" @selected((int)$fromDay===$d)>{{ $d }}</option>@endforeach
+                </select>
+                <select wire:model="fromMonth" class="vc-date-sel">
+                    @foreach($months as $n => $name)<option value="{{ $n }}" @selected((int)$fromMonth===$n)>{{ $name }}</option>@endforeach
+                </select>
+                <select wire:model="fromYear" class="vc-date-sel">
+                    @foreach($years as $y)<option value="{{ $y }}" @selected((int)$fromYear===$y)>{{ $y }}</option>@endforeach
+                </select>
+            </div>
+        </div>
 
-            {{-- حتى تاريخ --}}
-            <tr>
-                <td style="padding:0.75rem 1.25rem; text-align:left; font-weight:900; color:#fbbf24; font-size:0.88rem;">
-                    To : حتى تاريخ
-                </td>
-                <td style="padding:0.65rem 1.25rem;">
-                    <div style="display:flex; gap:0.35rem; direction:ltr;">
-                        <select wire:model="toDay" style="padding:0.4rem 0.4rem; border:1px solid rgba(255,255,255,0.3); border-radius:5px; background:rgba(255,255,255,0.95); font-size:0.85rem; flex:1; outline:none;">
-                            @foreach($days as $d)<option value="{{ $d }}">{{ $d }}</option>@endforeach
-                        </select>
-                        <select wire:model="toMonth" style="padding:0.4rem 0.4rem; border:1px solid rgba(255,255,255,0.3); border-radius:5px; background:rgba(255,255,255,0.95); font-family:'Tajawal',sans-serif; font-size:0.85rem; flex:2; outline:none;">
-                            @foreach($months as $n => $name)<option value="{{ $n }}">{{ $name }}</option>@endforeach
-                        </select>
-                        <select wire:model="toYear" style="padding:0.4rem 0.4rem; border:1px solid rgba(255,255,255,0.3); border-radius:5px; background:rgba(255,255,255,0.95); font-size:0.85rem; flex:2; outline:none;">
-                            @foreach($years as $y)<option value="{{ $y }}">{{ $y }}</option>@endforeach
-                        </select>
-                    </div>
-                </td>
-            </tr>
+        {{-- حتى تاريخ --}}
+        <div>
+            <div class="vc-field-label">حتى تاريخ</div>
+            <div class="vc-date-row">
+                <select wire:model="toDay" class="vc-date-sel">
+                    @foreach($days as $d)<option value="{{ $d }}" @selected((int)$toDay===$d)>{{ $d }}</option>@endforeach
+                </select>
+                <select wire:model="toMonth" class="vc-date-sel">
+                    @foreach($months as $n => $name)<option value="{{ $n }}" @selected((int)$toMonth===$n)>{{ $name }}</option>@endforeach
+                </select>
+                <select wire:model="toYear" class="vc-date-sel">
+                    @foreach($years as $y)<option value="{{ $y }}" @selected((int)$toYear===$y)>{{ $y }}</option>@endforeach
+                </select>
+            </div>
+        </div>
 
-        </table>
     </div>
 
     {{-- أزرار --}}
-    <div style="background:var(--navy); padding:0.75rem 1.5rem; display:flex; justify-content:center; gap:1rem; border-top:1px solid rgba(255,255,255,0.1);">
-        <button wire:click="search"
-            style="padding:0.45rem 2rem; background:#2563eb; color:#fff; border:none; border-radius:6px; font-weight:900; font-size:0.88rem; font-family:'Tajawal',sans-serif; cursor:pointer;"
-            onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
-            إرسال : Send
+    <div class="vc-filter-footer">
+        <button wire:click="search" class="btn btn-primary" style="padding:0.5rem 2rem; font-size:0.9rem;">
+            بحث
         </button>
-        <button wire:click="resetForm"
-            style="padding:0.45rem 1.5rem; background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.3); border-radius:6px; font-weight:800; font-size:0.88rem; font-family:'Tajawal',sans-serif; cursor:pointer;">
-            إستعادة : Reset
+        <button wire:click="resetForm" class="btn" style="padding:0.5rem 1.25rem; font-size:0.9rem; background:#f3f4f6; color:#374151; border:1px solid #e5e7eb;">
+            إعادة تعيين
         </button>
-    </div>
-
-    {{-- روابط --}}
-    <div style="background:var(--navy); padding:0.5rem 1.5rem; display:flex; justify-content:center; gap:2rem; border-top:1px solid rgba(255,255,255,0.08); border-radius:0 0 12px 12px;">
-        <a href="{{ route('dashboard') }}" wire:navigate style="color:#fbbf24; font-size:0.82rem; font-weight:700; text-decoration:none;">الرئيسية : Home</a>
-        <a href="javascript:history.back()" style="color:#fbbf24; font-size:0.82rem; font-weight:700; text-decoration:none;">رجوع : Back</a>
     </div>
 
 </div>
 
 {{-- النتائج --}}
 @if($searched && $rows)
-<div style="margin-top:1.5rem; background:#fff; border:1px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:var(--shadow-sm);">
-    <div style="background:var(--navy); padding:0.65rem 1.25rem; display:flex; justify-content:space-between; align-items:center;">
-        <span style="color:#fbbf24; font-weight:900; font-size:0.92rem;">
+<div style="width:100%; max-width:860px; background:#fff; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; box-shadow:0 4px 16px rgba(0,0,0,0.06);">
+    <div style="background:var(--primary); padding:0.65rem 1.25rem; display:flex; justify-content:space-between; align-items:center;">
+        <span style="color:#fff; font-weight:900; font-size:0.92rem; font-family:'Tajawal',sans-serif;">
             {{ $voucherType === 'receipt' ? 'سندات القبض' : ($voucherType === 'payment' ? 'سندات الصرف' : 'جميع السندات') }}
         </span>
         <div style="display:flex; gap:1rem;">
-            <span style="color:#86efac; font-size:0.82rem; font-weight:800;">قبض: {{ number_format($totalCredit, 3) }}</span>
-            <span style="color:#fca5a5; font-size:0.82rem; font-weight:800;">صرف: {{ number_format($totalDebit, 3) }}</span>
+            <span style="color:#bbf7d0; font-size:0.82rem; font-weight:800;">قبض: {{ number_format($totalCredit, 3) }}</span>
+            <span style="color:#fecaca; font-size:0.82rem; font-weight:800;">صرف: {{ number_format($totalDebit, 3) }}</span>
         </div>
     </div>
-    <div style="overflow-x:auto;">
+    <div class="vc-result-table">
         <table style="width:100%; border-collapse:collapse; font-family:'Tajawal',sans-serif; font-size:0.83rem;">
             <thead>
-                <tr style="background:#f8fafc; border-bottom:2px solid var(--border);">
-                    <th style="padding:0.6rem 0.75rem; text-align:center; font-weight:900; color:var(--text-dim);">#</th>
-                    <th style="padding:0.6rem 0.75rem; font-weight:900; color:var(--text-dim);">العميل</th>
-                    <th style="padding:0.6rem 0.75rem; font-weight:900; color:var(--text-dim);">التاريخ</th>
-                    <th style="padding:0.6rem 0.75rem; font-weight:900; color:var(--text-dim);">النوع</th>
-                    <th style="padding:0.6rem 0.75rem; font-weight:900; color:var(--text-dim);">البيان</th>
+                <tr style="background:#f8fafc; border-bottom:2px solid #e2e8f0;">
+                    <th style="padding:0.6rem 0.75rem; text-align:center; font-weight:900; color:#6b7280;">#</th>
+                    <th style="padding:0.6rem 0.75rem; font-weight:900; color:#374151;">العميل</th>
+                    <th style="padding:0.6rem 0.75rem; font-weight:900; color:#374151;">التاريخ</th>
+                    <th style="padding:0.6rem 0.75rem; font-weight:900; color:#374151;">النوع</th>
+                    <th style="padding:0.6rem 0.75rem; font-weight:900; color:#374151;">البيان</th>
                     <th style="padding:0.6rem 0.75rem; text-align:center; font-weight:900; color:#16a34a;">دائن</th>
                     <th style="padding:0.6rem 0.75rem; text-align:center; font-weight:900; color:#dc2626;">مدين</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($rows as $i => $r)
-                <tr style="border-bottom:1px solid #f0f2f5;" onmouseover="this.style.background='#fafbfc'" onmouseout="this.style.background=''">
-                    <td style="padding:0.55rem 0.75rem; text-align:center; color:var(--text-muted);">{{ $i+1 }}</td>
-                    <td style="padding:0.55rem 0.75rem; font-weight:800; color:var(--navy);">{{ $r->client_name ?: '—' }}</td>
+                <tr style="border-bottom:1px solid #f1f5f9;" onmouseover="this.style.background='#fafbfc'" onmouseout="this.style.background=''">
+                    <td style="padding:0.55rem 0.75rem; text-align:center; color:#9ca3af;">{{ $i+1 }}</td>
+                    <td style="padding:0.55rem 0.75rem; font-weight:800; color:#1a1a2e;">{{ $r->client_name ?: '—' }}</td>
                     <td style="padding:0.55rem 0.75rem; color:#1565c0; font-weight:700; direction:ltr; unicode-bidi:isolate;">{{ fmt_date($r->pdate) }}</td>
-                    <td style="padding:0.55rem 0.75rem; color:var(--text-dim);">{{ $r->ptype ?: '—' }}</td>
-                    <td style="padding:0.55rem 0.75rem; color:var(--text-dim); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ $r->pdesc ?: '—' }}</td>
+                    <td style="padding:0.55rem 0.75rem; color:#6b7280;">{{ $r->ptype ?: '—' }}</td>
+                    <td style="padding:0.55rem 0.75rem; color:#374151; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ $r->pdesc ?: '—' }}</td>
                     <td style="padding:0.55rem 0.75rem; text-align:center; font-weight:800; color:#16a34a;">{{ $r->credit > 0 ? number_format($r->credit, 3) : '—' }}</td>
                     <td style="padding:0.55rem 0.75rem; text-align:center; font-weight:800; color:#dc2626;">{{ $r->debit > 0 ? number_format($r->debit, 3) : '—' }}</td>
                 </tr>
                 @empty
-                <tr><td colspan="7" style="padding:3rem; text-align:center; color:var(--text-muted);">لا توجد سندات في هذه الفترة</td></tr>
+                <tr><td colspan="7" style="padding:3rem; text-align:center; color:#9ca3af;">لا توجد سندات في هذه الفترة</td></tr>
                 @endforelse
             </tbody>
             @if($rows->count() > 0)
             <tfoot>
-                <tr style="background:#f0f0f0; border-top:2px solid #ccc; font-weight:900;">
-                    <td colspan="5" style="padding:0.6rem 0.75rem; text-align:right; color:var(--navy);">الإجمالي</td>
+                <tr style="background:#f8fafc; border-top:2px solid #e2e8f0; font-weight:900;">
+                    <td colspan="5" style="padding:0.6rem 0.75rem; text-align:right; color:#1a1a2e; font-family:'Tajawal',sans-serif;">الإجمالي</td>
                     <td style="padding:0.6rem 0.75rem; text-align:center; color:#16a34a;">{{ number_format($totalCredit, 3) }}</td>
                     <td style="padding:0.6rem 0.75rem; text-align:center; color:#dc2626;">{{ number_format($totalDebit, 3) }}</td>
                 </tr>
@@ -175,5 +153,4 @@ $years  = range(2000, now()->year + 1);
 </div>
 @endif
 
-</div>
 </div>
