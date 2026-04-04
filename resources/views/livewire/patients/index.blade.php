@@ -4,10 +4,10 @@
 <div style="width:100%; max-width:580px; animation:fadeIn 0.45s ease;">
 
     {{-- الكارد الرئيسية --}}
-    <div style="border-radius:18px; overflow:hidden; box-shadow:0 12px 40px rgba(26,26,46,0.18); border:1px solid rgba(200,148,26,0.25);">
+    <div style="border-radius:18px; overflow:visible; box-shadow:0 12px 40px rgba(26,26,46,0.18); border:1px solid rgba(200,148,26,0.25);">
 
         {{-- رأس: شعار + عنوان --}}
-        <div style="background:linear-gradient(135deg, var(--navy) 0%, #252550 100%); padding:2rem 2rem 1.5rem; text-align:center; position:relative; overflow:hidden;">
+        <div style="background:linear-gradient(135deg, var(--navy) 0%, #252550 100%); padding:2rem 2rem 1.5rem; text-align:center; position:relative; overflow:hidden; border-radius:18px 18px 0 0;">
             {{-- خط زخرفي خلفي --}}
             <div style="position:absolute; inset:0; background:repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(200,148,26,0.03) 30px, rgba(200,148,26,0.03) 60px);"></div>
 
@@ -46,17 +46,17 @@
 
                 {{-- Autocomplete dropdown --}}
                 @if(!empty($suggestions))
-                <div style="position:absolute; top:calc(100% + 6px); left:0; right:0; background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 16px 40px rgba(0,0,0,0.12); z-index:300; overflow:hidden; animation:dropIn 0.15s ease;">
+                <div style="position:absolute; top:calc(100% + 6px); left:0; right:0; background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 16px 40px rgba(0,0,0,0.12); z-index:9999; overflow:hidden; animation:dropIn 0.15s ease;">
                     @foreach($suggestions as $s)
-                    <div wire:click="selectPatient({{ $s->id }}, '{{ addslashes($s->name) }}')"
-                        style="padding:0.7rem 1.1rem; cursor:pointer; border-bottom:1px solid #f3f4f6; display:flex; justify-content:space-between; align-items:center; transition:background 0.15s;"
+                    <a href="{{ route('patients.medical-history', $s->id) }}" wire:navigate
+                        style="padding:0.7rem 1.1rem; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f3f4f6; text-decoration:none; transition:background 0.15s;"
                         onmouseover="this.style.background='#fef5f5'" onmouseout="this.style.background='#fff'">
                         <div>
                             <div style="font-weight:800; color:#1a1a2e; font-size:0.88rem; font-family:'Tajawal',sans-serif;">{{ $s->name }}</div>
                             <div style="font-size:0.73rem; color:#9ca3af; margin-top:0.1rem;">{{ $s->phone }}</div>
                         </div>
                         <span style="background:#fef5f5; color:var(--primary); font-weight:900; font-size:0.78rem; padding:0.18rem 0.55rem; border-radius:6px; border:1px solid #fdd5da; direction:ltr;">#{{ $s->file_id ?? $s->id }}</span>
-                    </div>
+                    </a>
                     @endforeach
                 </div>
                 @endif
@@ -80,7 +80,7 @@
         </div>
 
         {{-- روابط سريعة --}}
-        <div style="background:linear-gradient(135deg, var(--navy) 0%, #252550 100%); padding:0.85rem 2rem; display:flex; justify-content:center; gap:0; border-top:1px solid rgba(200,148,26,0.2);">
+        <div style="background:linear-gradient(135deg, var(--navy) 0%, #252550 100%); padding:0.85rem 2rem; display:flex; justify-content:center; gap:0; border-top:1px solid rgba(200,148,26,0.2); border-radius:0 0 18px 18px;">
 
             <a href="{{ route('patients.create') }}" wire:navigate
                 style="flex:1; text-align:center; color:rgba(255,255,255,0.65); font-weight:700; font-size:0.8rem; text-decoration:none; font-family:'Tajawal',sans-serif; padding:0.3rem 0.5rem; border-left:1px solid rgba(255,255,255,0.1); transition:color 0.2s; display:flex; flex-direction:column; align-items:center; gap:0.2rem;"
