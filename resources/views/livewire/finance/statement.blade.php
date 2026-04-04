@@ -1,4 +1,31 @@
-<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem; display:flex; flex-direction:column; align-items:center;">
+<style>
+@media (max-width: 768px) {
+    .st-outer { padding: 0.5rem !important; }
+    /* الكارت الرئيسي */
+    .st-outer > div { padding: 0 !important; }
+    /* تحويل الجدول لـ block */
+    .st-outer table,
+    .st-outer tbody,
+    .st-outer tr,
+    .st-outer td { display: block !important; width: 100% !important; }
+    .st-outer tr { border-bottom: 1px solid rgba(255,255,255,0.1) !important; padding: 0.1rem 0; }
+    .st-outer td { padding: 0.4rem 1rem !important; width: auto !important; }
+    .st-outer td:first-child { font-size: 0.78rem !important; padding-bottom: 0.1rem !important; }
+    .st-outer td:last-child { padding-top: 0.1rem !important; }
+    /* الـ selects في الـ date row */
+    .st-outer td div[style*="display:flex"],
+    .st-outer td div[style*="display: flex"] { flex-wrap: wrap !important; }
+    .st-outer td select { min-width: 60px !important; font-size: 0.8rem !important; }
+    /* الأزرار */
+    .st-outer div[style*="justify-content:center"] button,
+    .st-outer div[style*="justify-content: center"] button,
+    .st-outer div[style*="justify-content:center"] a,
+    .st-outer div[style*="justify-content: center"] a { flex: 1 !important; justify-content: center !important; }
+    /* جدول النتائج */
+    .st-result-table { overflow-x: auto; display: block; }
+}
+</style>
+<div class="pg-outer st-outer" style="min-height:80vh; padding:1.5rem 2rem; display:flex; flex-direction:column; align-items:center;">
 @php
 $days   = range(1, 31);
 $months = [1=>'يناير',2=>'فبراير',3=>'مارس',4=>'أبريل',5=>'مايو',6=>'يونيو',

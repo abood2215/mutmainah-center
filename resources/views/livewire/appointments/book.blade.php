@@ -1,8 +1,20 @@
-<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem;">
+<style>
+@media (max-width: 768px) {
+    .bk-outer { padding: 0.75rem !important; }
+    .bk-header { padding: 0.85rem 1rem !important; flex-direction: column !important; align-items: flex-start !important; gap: 0.5rem !important; }
+    .bk-2col { grid-template-columns: 1fr !important; }
+    .bk-body { padding: 1.25rem 1rem !important; }
+    .bk-time-grid { grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)) !important; gap: 0.3rem !important; }
+    .bk-summary-grid { grid-template-columns: 1fr !important; }
+    .bk-footer-btns { flex-direction: column !important; gap: 0.75rem !important; }
+    .bk-footer-btns .btn { width: 100% !important; text-align: center !important; }
+}
+</style>
+<div class="pg-outer bk-outer" style="min-height:80vh; padding:1.5rem 2rem;">
 <div style="max-width:1100px; margin:0 auto; background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow-sm); animation:fadeIn 0.5s ease;">
 
     <!-- رأس الصفحة -->
-    <div style="padding:1.25rem 1.75rem; border-bottom:1px solid var(--border); background:#fafbfc; border-radius:16px 16px 0 0; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+    <div class="bk-header" style="padding:1.25rem 1.75rem; border-bottom:1px solid var(--border); background:#fafbfc; border-radius:16px 16px 0 0; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
         <div style="display:flex; align-items:center; gap:0.75rem;">
             <div style="width:42px; height:42px; background:var(--primary-glow); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.4rem;">📅</div>
             <div>
@@ -29,7 +41,7 @@
                 <span style="background:rgba(255,255,255,0.25); color:#fff; font-size:0.72rem; font-weight:900; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">١</span>
                 <span style="color:#fff; font-weight:900; font-size:0.9rem;">اختيار العيادة والتاريخ</span>
             </div>
-            <div class="pg-2col" style="padding:1.25rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+            <div class="pg-2col bk-2col" style="padding:1.25rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
                 <div>
                     <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">العيادة *</label>
                     <select wire:model.live="selectedClinic" class="form-input">
@@ -67,7 +79,7 @@
                 </div>
             </div>
             <div style="padding:1.25rem;">
-                <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(78px, 1fr)); gap:0.4rem;">
+                <div class="bk-time-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(78px, 1fr)); gap:0.4rem;">
                     @foreach($timeSlots as $slot)
                         @php
                             $isBooked   = in_array($slot, $bookedSlots);
@@ -198,7 +210,7 @@
         @endif
 
         <!-- أزرار الحفظ -->
-        <div style="display:flex; gap:1rem; align-items:center;">
+        <div class="bk-footer-btns" style="display:flex; gap:1rem; align-items:center;">
             <button wire:click="save" wire:loading.attr="disabled"
                 class="btn btn-primary"
                 style="padding:0.75rem 3rem; font-size:1rem; {{ (!$patientId || !$selectedTime || !$selectedClinic) ? 'opacity:0.5; cursor:not-allowed;' : '' }}">

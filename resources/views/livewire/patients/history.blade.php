@@ -1,4 +1,14 @@
-<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem;">
+<style>
+@media (max-width: 768px) {
+    .ph-outer { padding: 0.75rem !important; }
+    .ph-header { flex-direction: column !important; align-items: flex-start !important; gap: 0.5rem !important; }
+    .ph-patient-info { flex-direction: column !important; gap: 0.5rem !important; align-items: flex-start !important; padding: 0.75rem 1rem !important; }
+    .ph-grid { grid-template-columns: 1fr !important; }
+    .ph-span2 { grid-column: span 1 !important; }
+    .ph-inner { padding: 1rem !important; }
+}
+</style>
+<div class="pg-outer ph-outer" style="min-height:80vh; padding:1.5rem 2rem;">
 <div style="max-width:1400px; margin:0 auto; animation:fadeIn 0.5s ease;">
 
 <div id="print-area" style="background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow-sm); overflow:hidden;">
@@ -7,7 +17,7 @@
     <div style="padding:1rem 1.75rem; border-bottom:1px solid var(--border); background:#fafbfc;">
         <x-print-header title="السجل الاستشاري" />
 
-        <div style="display:flex; align-items:center; justify-content:space-between;">
+        <div class="ph-header" style="display:flex; align-items:center; justify-content:space-between;">
             <div style="display:flex; align-items:center; gap:0.75rem;">
                 <div style="width:42px; height:42px; background:var(--primary-glow); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.4rem;">📄</div>
                 <h1 style="font-size:1.4rem; font-weight:900; color:var(--primary); margin:0; font-family:'Tajawal',sans-serif;">السجل الاستشاري</h1>
@@ -16,7 +26,7 @@
         </div>
     </div>
 
-    <div class="pg-inner" style="padding:1.75rem;">
+    <div class="pg-inner ph-inner" style="padding:1.75rem;">
 
         @if(session()->has('success'))
         <div class="no-print" style="background:#e8f5e9; color:#2e7d32; padding:0.9rem 1.25rem; border-radius:8px; margin-bottom:1.25rem; font-weight:700; border:1px solid #c8e6c9;">✅ {{ session('success') }}</div>
@@ -27,7 +37,7 @@
             <div style="background:var(--primary); padding:0.6rem 1.25rem;">
                 <span style="color:#fff; font-weight:900; font-size:0.92rem;">بيانات العميل</span>
             </div>
-            <div style="padding:0.75rem 1.25rem; display:flex; flex-wrap:wrap; gap:1.5rem; align-items:center; background:#fafbfc;">
+            <div class="ph-patient-info" style="padding:0.75rem 1.25rem; display:flex; flex-wrap:wrap; gap:1.5rem; align-items:center; background:#fafbfc;">
                 <div style="display:flex; gap:0.4rem; align-items:center;">
                     <span style="font-size:0.78rem; color:var(--text-muted); font-weight:700;">الاسم :</span>
                     <span style="font-weight:900; color:var(--navy); font-size:0.95rem;">{{ $patient->full_name }}</span>
@@ -58,7 +68,7 @@
             </div>
 
             {{-- نسخة الشاشة (حقول قابلة للتعديل) --}}
-            <div class="no-print pg-2col" style="padding:1.25rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+            <div class="no-print pg-2col ph-grid" style="padding:1.25rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
                 <div>
                     <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">الشكوى الحالية</label>
                     <textarea wire:model="current_complaint" style="width:100%; height:90px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
@@ -75,7 +85,7 @@
                     <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">الخطة</label>
                     <textarea wire:model="plan" style="width:100%; height:90px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
-                <div style="grid-column:span 2;">
+                <div class="ph-span2" style="grid-column:span 2;">
                     <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">الأمراض النفسية في الأسرة</label>
                     <textarea wire:model="family_history" style="width:100%; height:80px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
@@ -87,11 +97,11 @@
                     <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">تقييم الحالة الحاضرة</label>
                     <textarea wire:model="mental_state" style="width:100%; height:90px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
-                <div style="grid-column:span 2;">
+                <div class="ph-span2" style="grid-column:span 2;">
                     <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">التوصيات / الملاحظات</label>
                     <textarea wire:model="recommendations" style="width:100%; height:80px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
-                <div style="grid-column:span 2;">
+                <div class="ph-span2" style="grid-column:span 2;">
                     <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">خطة المتابعة الاستشارية</label>
                     <textarea wire:model="future_plan" style="width:100%; height:80px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>

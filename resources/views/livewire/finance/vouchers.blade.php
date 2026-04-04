@@ -1,4 +1,15 @@
-<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem; display:flex; justify-content:center; align-items:flex-start;">
+<style>
+@media (max-width: 768px) {
+    .vc-outer { padding: 0.75rem !important; }
+    .vc-card { max-width: 100% !important; width: 100% !important; }
+    .vc-form-table td:first-child { width: auto !important; padding: 0.5rem 0.75rem !important; font-size: 0.8rem !important; }
+    .vc-form-table td:last-child { padding: 0.5rem 0.75rem !important; }
+    .vc-date-row { flex-direction: column !important; gap: 0.35rem !important; }
+    .vc-date-row select { width: 100% !important; flex: 1 !important; }
+    .vc-result-table { overflow-x: auto; display: block; }
+}
+</style>
+<div class="pg-outer vc-outer" style="min-height:80vh; padding:1.5rem 2rem; display:flex; justify-content:center; align-items:flex-start;">
 <div style="width:100%; max-width:680px; animation:fadeIn 0.4s ease;">
 
 @php

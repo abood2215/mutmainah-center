@@ -1,7 +1,22 @@
-<div class="pg-outer" style="min-height:80vh; padding:2.5rem 2rem; display:flex; flex-direction:column; align-items:center; background:var(--bg);">
+<style>
+@media (max-width: 768px) {
+    .pt-outer { padding: 1rem 0.75rem !important; }
+    .pt-search-card { width: 100% !important; max-width: 100% !important; }
+    .pt-search-head { padding: 1.5rem 1.25rem 1.25rem !important; }
+    .pt-results { max-width: 100% !important; margin-top: 1.25rem !important; }
+    .pt-table-wrap { overflow-x: auto; }
+    .pt-actions { flex-wrap: wrap !important; gap: 0.3rem !important; }
+    .pt-action-btn { padding: 0.35rem 0.5rem !important; font-size: 0.72rem !important; }
+}
+@media (max-width: 480px) {
+    .pt-search-head h2 { font-size: 1.1rem !important; }
+    .pt-results-header { padding: 0.6rem 1rem !important; }
+}
+</style>
+<div class="pg-outer pt-outer" style="min-height:80vh; padding:2.5rem 2rem; display:flex; flex-direction:column; align-items:center; background:var(--bg);">
 
 {{-- ═══ بطاقة البحث ═══ --}}
-<div style="width:100%; max-width:580px; animation:fadeIn 0.45s ease;">
+<div class="pt-search-card" style="width:100%; max-width:580px; animation:fadeIn 0.45s ease;">
 
     {{-- الكارد الرئيسية --}}
     <div style="border-radius:18px; overflow:hidden; box-shadow:0 12px 40px rgba(26,26,46,0.18); border:1px solid rgba(200,148,26,0.25);">
@@ -117,7 +132,7 @@
 
 {{-- ═══ النتائج ═══ --}}
 @if($searchPerformed)
-<div style="width:100%; max-width:1150px; margin-top:1.75rem; animation:fadeIn 0.3s ease;">
+<div class="pt-results" style="width:100%; max-width:1150px; margin-top:1.75rem; animation:fadeIn 0.3s ease;">
 
     @if(count($patients) > 0)
     <div style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,0.08); border:1px solid #e9ecef;">
@@ -174,7 +189,7 @@
 
                         {{-- ═ الإجراءات ═ --}}
                         <td style="padding:0.65rem 1rem;">
-                            <div style="display:flex; gap:0.4rem; justify-content:center; align-items:center;">
+                            <div class="pt-actions" style="display:flex; gap:0.4rem; justify-content:center; align-items:center;">
 
                                 {{-- كشف جديد --}}
                                 <a href="{{ route('patients.new-check', $patient->id) }}" wire:navigate

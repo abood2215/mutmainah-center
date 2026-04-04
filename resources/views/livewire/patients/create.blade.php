@@ -1,8 +1,22 @@
-<div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem;">
+<style>
+@media (max-width: 768px) {
+    .pc-outer { padding: 0.75rem !important; }
+    .pc-wrap { border-radius: 10px !important; }
+    .pc-header { padding: 0.85rem 1rem !important; flex-direction: column !important; align-items: flex-start !important; gap: 0.5rem !important; }
+    .pc-body { padding: 1rem !important; }
+    .pc-2col { grid-template-columns: 1fr !important; }
+    .pc-3col { grid-template-columns: 1fr !important; }
+    .pc-span2 { grid-column: span 1 !important; }
+    .pc-birthdate { grid-template-columns: 1fr 2fr 1fr !important; gap: 0.35rem !important; }
+    .pc-footer-btns { flex-direction: column !important; gap: 0.75rem !important; }
+    .pc-footer-btns .btn { width: 100% !important; text-align: center !important; }
+}
+</style>
+<div class="pg-outer pc-outer" style="min-height:80vh; padding:1.5rem 2rem;">
 <div style="max-width:1100px; margin:0 auto; background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow-sm); overflow:hidden; animation:fadeIn 0.5s ease;">
 
     <!-- رأس الإطار -->
-    <div style="padding:1.25rem 1.75rem; border-bottom:1px solid var(--border); background:#fafbfc; display:flex; align-items:center; justify-content:space-between;">
+    <div class="pc-header" style="padding:1.25rem 1.75rem; border-bottom:1px solid var(--border); background:#fafbfc; display:flex; align-items:center; justify-content:space-between;">
         <div style="display:flex; align-items:center; gap:0.75rem;">
             <div style="width:42px; height:42px; background:var(--primary-glow); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.4rem;">👤</div>
             <div>
@@ -14,7 +28,7 @@
     </div>
 
     <!-- المحتوى -->
-    <div style="padding:1.75rem;">
+    <div class="pc-body" style="padding:1.75rem;">
 
         @if(session()->has('success'))
         <div style="background:#e8f5e9; color:#2e7d32; padding:1rem 1.25rem; border-radius:10px; margin-bottom:1.25rem; font-weight:700; border:1px solid #c8e6c9; display:flex; align-items:center; gap:0.75rem;">
@@ -30,10 +44,10 @@
                     <span class="card-title">👤 البيانات الأساسية</span>
                 </div>
                 <div class="card-body">
-                    <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:1.25rem;">
+                    <div class="pc-2col" style="display:grid; grid-template-columns:repeat(2,1fr); gap:1.25rem;">
 
                         <!-- الاسم كامل -->
-                        <div style="grid-column:span 2;">
+                        <div class="pc-span2" style="grid-column:span 2;">
                             <label style="display:block; font-size:0.85rem; font-weight:800; color:var(--text-dim); margin-bottom:0.4rem;">
                                 الاسم بالكامل <span style="color:var(--danger);">*</span>
                             </label>
@@ -122,7 +136,7 @@
                         </div>
 
                         <!-- العنوان -->
-                        <div style="grid-column:span 2;">
+                        <div class="pc-span2" style="grid-column:span 2;">
                             <label style="display:block; font-size:0.85rem; font-weight:800; color:var(--text-dim); margin-bottom:0.4rem;">العنوان</label>
                             <input type="text" wire:model="address" placeholder="المنطقة / القرية..."
                                 class="form-input">
@@ -138,7 +152,7 @@
                     <span class="card-title">🏥 بيانات التأمين</span>
                 </div>
                 <div class="card-body">
-                    <div class="pg-3col" style="display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem;">
+                    <div class="pg-3col pc-3col" style="display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem;">
 
                         <!-- شركة التأمين -->
                         <div>
@@ -184,7 +198,7 @@
             </div>
 
             <!-- أزرار الحفظ -->
-            <div style="display:flex; align-items:center; justify-content:center; gap:1rem;">
+            <div class="pc-footer-btns" style="display:flex; align-items:center; justify-content:center; gap:1rem;">
                 <button type="submit" class="btn btn-primary" style="padding:0.85rem 4rem; font-size:1rem;">
                     ➕ تسجيل العميل
                 </button>
