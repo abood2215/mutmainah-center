@@ -1,67 +1,19 @@
 <style>
-/* ══ موبايل: تحويل الجدول لكروت ══ */
-@media (max-width: 700px) {
-    .ch-outer { padding: 0.5rem !important; }
-    .ch-header { padding: 0.75rem 0.85rem !important; flex-direction: column !important; align-items: flex-start !important; gap: 0.5rem !important; }
-    .ch-header h1 { font-size: 1.1rem !important; }
-    .ch-inner { padding: 0.75rem !important; }
-
-    /* فلاتر البحث */
-    .ch-filter { flex-direction: column !important; gap: 0.5rem !important; }
+@media (max-width: 768px) {
+    .ch-outer { padding: 0.6rem !important; }
+    .ch-header { padding: 0.85rem 1rem !important; flex-direction: column !important; align-items: flex-start !important; }
+    .ch-inner { padding: 1rem !important; }
+    .ch-filter { flex-direction: column !important; align-items: stretch !important; }
     .ch-filter > div { min-width: 0 !important; max-width: 100% !important; width: 100% !important; }
-    .ch-filter input, .ch-filter select { width: 100% !important; }
-    .ch-filter-btns { display: flex !important; gap: 0.5rem !important; }
-    .ch-filter-btns button { flex: 1 !important; justify-content: center !important; }
-
-    /* إخفاء رأس الجدول على الموبايل */
-    .ch-table thead { display: none !important; }
-
-    /* تحويل كل صف لكارت */
-    .ch-table tbody tr {
-        display: block !important;
-        margin-bottom: 0.75rem !important;
-        border: 1px solid #e5e7eb !important;
-        border-radius: 10px !important;
-        overflow: hidden !important;
-        background: #fff !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
-    }
-    .ch-table tbody tr td {
-        display: flex !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-        padding: 0.55rem 0.85rem !important;
-        border-bottom: 1px solid #f1f5f9 !important;
-        font-size: 0.85rem !important;
-        text-align: right !important;
-    }
-    .ch-table tbody tr td:last-child { border-bottom: none !important; }
-    .ch-table tbody tr td::before {
-        content: attr(data-label);
-        font-size: 0.72rem;
-        font-weight: 800;
-        color: #9ca3af;
-        white-space: nowrap;
-        margin-left: 0.75rem;
-        flex-shrink: 0;
-    }
-    /* الصف الفارغ */
-    .ch-table tbody tr td[colspan] {
-        display: block !important;
-        text-align: center !important;
-        border-radius: 10px !important;
-    }
-    .ch-table tbody tr td[colspan]::before { display: none; }
-
-    /* بانيل المريض */
-    .ch-patient-panel table thead { display: none !important; }
-    .ch-patient-panel table tbody tr { display: block !important; }
-    .ch-patient-panel table tbody tr td { display: flex !important; justify-content: space-between !important; padding: 0.5rem 0.85rem !important; border-bottom: 1px solid #fce7ea !important; font-size: 0.85rem !important; }
+    .ch-filter input[type="date"],
+    .ch-filter select { width: 100% !important; }
+    .ch-filter button { width: 100% !important; justify-content: center !important; }
     .ch-patient-actions { flex-wrap: wrap !important; gap: 0.4rem !important; }
-
-    /* الفوتر */
-    .ch-footer { padding: 0.75rem 1rem !important; flex-direction: column !important; gap: 0.5rem !important; align-items: flex-start !important; }
-    .ch-footer-stats { gap: 0.75rem !important; }
+    .ch-footer { padding: 0.75rem 1rem !important; flex-direction: column !important; gap: 0.75rem !important; }
+    .ch-footer-stats { flex-direction: column !important; gap: 0.5rem !important; }
+}
+@media (max-width: 480px) {
+    .ch-success-banner { flex-direction: column !important; }
 }
 </style>
 <div class="pg-outer ch-outer" style="min-height:80vh; padding: 1.5rem 2rem;">
@@ -200,13 +152,13 @@
             <!-- جدول الكشوفات الرئيسي -->
             <div style="border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: #fff;">
                 <div style="overflow-x:auto;">
-                    <table class="ch-table" style="width:100%; border-collapse:collapse;">
+                    <table style="width:100%; border-collapse:collapse;">
                         <thead>
                             <tr style="background:#f8fafc; border-bottom:2px solid var(--border);">
                                 <th style="padding:1rem; text-align:center; font-size:0.8rem; font-weight:900; color:var(--text-dim); width:50px;">#</th>
                                 <th style="padding:1rem; font-size:0.8rem; font-weight:900; color:var(--text-dim); min-width:180px; text-align: right;">العميل</th>
                                 <th style="padding:1rem; text-align:center; font-size:0.8rem; font-weight:900; color:var(--text-dim);">تاريخ الكشف</th>
-                                <th style="padding:1rem; font-size:0.8rem; font-weight:900; color:var(--text-dim); min-width:160px; text-align: right;">العيادة</th>
+                                <th style="padding:1rem; font-size:0.8rem; font-weight:900; color:var(--text-dim); min-width:160px; text-align: right;">العيادة / المستشار</th>
                                 <th style="padding:1rem; text-align:center; font-size:0.8rem; font-weight:900; color:var(--text-dim);">المبلغ</th>
                                 <th style="padding:1rem; text-align:center; font-size:0.8rem; font-weight:900; color:var(--text-dim);">الفاتورة</th>
                                 <th style="padding:1rem; text-align:center; font-size:0.8rem; font-weight:900; color:var(--text-dim);">الحالة</th>
@@ -216,62 +168,62 @@
                         <tbody>
                             @forelse($checks as $check)
                                 @php
-                                    $rowBg   = $selectedStId == $check->st_id ? '#fff9f9' : 'transparent';
-                                    $hoverBg = '#fcfdfe';
+                                    $rowBg     = $selectedStId == $check->st_id ? '#fff9f9' : 'transparent';
+                                    $hoverBg   = '#fcfdfe';
                                 @endphp
                                 <tr wire:key="check-{{ $check->id }}"
                                     style="border-bottom:1px solid #f1f5f9; transition:all 0.2s; background:{{ $rowBg }};"
                                     onmouseover="this.style.background='{{ $hoverBg }}'" onmouseout="this.style.background='{{ $rowBg }}'">
 
-                                    <td data-label="#" style="padding:0.85rem 1rem; text-align:center; font-weight:800; color:var(--text-muted); font-size:0.85rem;">
+                                    <td style="padding:0.85rem 1rem; text-align:center; font-weight:800; color:var(--text-muted); font-size:0.85rem;">
                                         {{ ($checks->currentPage() - 1) * $checks->perPage() + $loop->iteration }}
                                     </td>
 
-                                    <td data-label="العميل" style="padding:0.85rem 1rem;">
+                                    <td style="padding:0.85rem 1rem;">
                                         <a href="{{ route('patients.show', $check->st_id) }}" target="_blank"
-                                            style="font-weight:900; color:var(--primary); font-size:0.95rem; font-family:'Tajawal',sans-serif; text-decoration:none;"
-                                            onmouseover="this.style.textDecoration='underline';" onmouseout="this.style.textDecoration='none';">
+                                            style="font-weight:900; color:var(--primary); font-size:1rem; font-family:'Tajawal',sans-serif; text-decoration:none; transition:all 0.15s;"
+                                            onmouseover="this.style.color='var(--navy)'; this.style.textDecoration='underline';" onmouseout="this.style.color='var(--primary)'; this.style.textDecoration='none';">
                                             {{ $check->patient_name ?? '—' }}
                                         </a>
                                     </td>
 
-                                    <td data-label="التاريخ" style="padding:0.85rem 1rem; text-align:center;">
+                                    <td style="padding:0.85rem 1rem; text-align:center;">
                                         <div style="font-weight:800; color:#1e40af; font-size:0.88rem; direction:ltr; unicode-bidi:isolate;">{{ fmt_date($check->rec_date) }}</div>
                                         @if($check->rec_time)
-                                            <div style="font-size:0.72rem; color:var(--text-muted); margin-top:0.1rem; direction:ltr;">{{ $check->rec_time }}</div>
+                                            <div style="font-size:0.72rem; color:var(--text-muted); margin-top:0.1rem; direction:ltr; unicode-bidi:isolate;">{{ $check->rec_time }}</div>
                                         @endif
                                     </td>
 
-                                    <td data-label="العيادة" style="padding:0.85rem 1rem; font-size:0.85rem; color:var(--text-dim); font-weight:600;">
+                                    <td style="padding:0.85rem 1rem; font-size:0.85rem; color:var(--text-dim); font-weight: 600;">
                                         {{ $check->clinic_name ?? '—' }}
                                     </td>
 
-                                    <td data-label="المبلغ" style="padding:0.85rem 1rem; text-align:center; font-weight:900; font-size:1rem; color:var(--navy);">
-                                        {{ number_format($check->amount, 0) }} <span style="font-size:0.65rem; font-weight:400; opacity:0.7;">د.ك</span>
+                                    <td style="padding:0.85rem 1rem; text-align:center; font-weight:900; font-size:1.1rem; color:var(--navy);">
+                                        {{ number_format($check->amount, 0) }} <span style="font-size: 0.65rem; font-weight: 400; opacity: 0.7;">د.ك</span>
                                     </td>
 
-                                    <td data-label="الفاتورة" style="padding:0.85rem 1rem; text-align:center;">
+                                    <td style="padding:0.85rem 1rem; text-align:center;">
                                         <a href="{{ route('finance.invoice-print', $check->id) }}" target="_blank"
-                                           style="color:#2563eb; font-weight:800; font-size:0.8rem; text-decoration:none; border:1px solid #dbeafe; background:#eff6ff; padding:0.25rem 0.6rem; border-radius:6px;">📄 فاتورة</a>
+                                           style="color:#2563eb; font-weight:800; font-size:0.8rem; text-decoration:none; border:1px solid #dbeafe; background:#eff6ff; padding: 0.25rem 0.6rem; border-radius: 6px;">📄 فاتورة</a>
                                     </td>
 
-                                    <td data-label="الحالة" style="padding:0.85rem 1rem; text-align:center;">
+                                    <td style="padding:0.85rem 1rem; text-align:center;">
                                         <span style="background:#ecfdf5; color:#059669; font-weight:900; font-size:0.75rem; padding:0.25rem 0.75rem; border-radius:50px; border:1px solid #d1fae5;">اكتمل ✓</span>
                                     </td>
 
-                                    <td data-label="إجراء" style="padding:0.85rem 1rem; text-align:center;">
+                                    <td style="padding:0.85rem 1rem; text-align:center;">
                                         <div style="display:flex; gap:6px; justify-content:center;">
-                                            <button title="تعديل" style="width:30px; height:30px; border:1px solid var(--border); background:#fff; border-radius:8px; cursor:pointer; font-size:0.8rem;">✏️</button>
-                                            <button title="إلغاء" style="width:30px; height:30px; border:1px solid #fee2e2; background:#fff; border-radius:8px; cursor:pointer; font-size:0.8rem; color:var(--danger);">✕</button>
+                                            <button title="تعديل" style="width:30px; height:30px; border:1px solid var(--border); background:#fff; border-radius:8px; cursor:pointer; font-size:0.8rem; transition: all 0.2s;" onmouseover="this.style.background='#f8fafc'">✏️</button>
+                                            <button title="إلغاء" style="width:30px; height:30px; border:1px solid #fee2e2; background:#fff; border-radius:8px; cursor:pointer; font-size:0.8rem; color:var(--danger); transition: all 0.2s;" onmouseover="this.style.background='#fef2f2'">✕</button>
                                         </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
                                     <td colspan="8" style="padding:5rem 2rem; text-align:center; color:var(--text-muted);">
-                                        <div style="font-size:3rem; margin-bottom:1rem; filter:grayscale(1); opacity:0.2;">📁</div>
-                                        <div style="font-weight:900; font-size:1.15rem; color:#94a3b8;">لا توجد سجلات كشوفات حالياً</div>
-                                        <div style="font-size:0.9rem; margin-top:0.5rem; opacity:0.7;">يمكنك البحث بفلتر آخر أو إضافة عميل جديد</div>
+                                        <div style="font-size:3rem; margin-bottom:1rem; filter: grayscale(1); opacity: 0.2;">📁</div>
+                                        <div style="font-weight:900; font-size: 1.25rem; color: #94a3b8;">لا توجد سجلات كشوفات حالياً</div>
+                                        <div style="font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.7;">يمكنك البحث بفلتر آخر أو إضافة عميل جديد</div>
                                     </td>
                                 </tr>
                             @endforelse
