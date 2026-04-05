@@ -24,6 +24,22 @@
 
         <form wire:submit.prevent="save">
 
+            <!-- اختيار الفرع -->
+            <div class="card" style="margin-bottom:1.25rem; border:2px solid var(--primary);">
+                <div class="card-header" style="background:var(--primary);">
+                    <span class="card-title" style="color:#fff;">🏢 الفرع <span style="opacity:0.7; font-size:0.78rem;">(مطلوب)</span></span>
+                </div>
+                <div class="card-body" style="padding:1rem 1.25rem; display:flex; gap:1rem; flex-wrap:wrap;">
+                    @foreach($branches as $branch)
+                    <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; padding:0.65rem 1.1rem; border-radius:10px; border:2px solid {{ $branch_id == $branch->id ? 'var(--primary)' : 'var(--border)' }}; background:{{ $branch_id == $branch->id ? 'var(--primary-glow)' : '#fafbfc' }}; transition:all 0.15s; flex:1; min-width:220px;">
+                        <input type="radio" wire:model="branch_id" value="{{ $branch->id }}" style="accent-color:var(--primary); width:16px; height:16px;">
+                        <span style="font-weight:800; font-size:0.88rem; color:{{ $branch_id == $branch->id ? 'var(--primary)' : 'var(--text-dim)' }}; font-family:'Tajawal',sans-serif;">{{ $branch->name }}</span>
+                    </label>
+                    @endforeach
+                </div>
+                @error('branch_id') <div style="padding:0.4rem 1.25rem 0.75rem; color:var(--danger); font-size:0.82rem; font-weight:700;">⚠ {{ $message }}</div> @enderror
+            </div>
+
             <!-- البيانات الأساسية -->
             <div class="card" style="margin-bottom:1.25rem;">
                 <div class="card-header">

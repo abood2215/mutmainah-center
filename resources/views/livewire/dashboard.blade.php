@@ -18,6 +18,30 @@
     <!-- المحتوى -->
     <div class="pg-inner" style="padding:1.75rem; display:flex; flex-direction:column; gap:1.25rem;">
 
+        <!-- ═══ بطاقات الفروع ═══ -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1rem;">
+            @foreach($branchStats as $branch)
+            <div style="background:linear-gradient(135deg, var(--navy) 0%, #252550 100%); border-radius:12px; padding:1.1rem 1.4rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; border:1px solid rgba(200,148,26,0.2);">
+                <div>
+                    <div style="color:#fbbf24; font-size:0.7rem; font-weight:800; letter-spacing:1px; margin-bottom:0.3rem; font-family:'Tajawal',sans-serif;">🏢 فرع</div>
+                    <div style="color:#fff; font-weight:900; font-size:0.88rem; font-family:'Tajawal',sans-serif; line-height:1.35;">{{ $branch->name }}</div>
+                </div>
+                <div style="text-align:left; flex-shrink:0;">
+                    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.4rem;">
+                        <div style="background:rgba(255,255,255,0.1); border-radius:8px; padding:0.3rem 0.75rem; text-align:center;">
+                            <div style="color:rgba(255,255,255,0.6); font-size:0.65rem; font-weight:700;">العملاء</div>
+                            <div style="color:#fff; font-weight:900; font-size:1.1rem; font-family:'Inter';">{{ number_format($branch->patients_count) }}</div>
+                        </div>
+                        <div style="background:rgba(200,148,26,0.15); border-radius:8px; padding:0.3rem 0.75rem; text-align:center; border:1px solid rgba(200,148,26,0.3);">
+                            <div style="color:rgba(200,148,26,0.8); font-size:0.65rem; font-weight:700;">إيرادات الشهر</div>
+                            <div style="color:#fbbf24; font-weight:900; font-size:1rem; font-family:'Inter';">{{ number_format($branch->monthly_revenue, 0) }} <span style="font-size:0.7rem;">د.ك</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+
         <!-- بطاقات الإحصائيات -->
         <div class="dash-stats" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.25rem;">
 

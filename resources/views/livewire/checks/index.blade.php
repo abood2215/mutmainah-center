@@ -64,6 +64,16 @@
                         </select>
                     </div>
 
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <span style="font-size: 0.82rem; font-weight: 800; color: var(--text-dim); white-space: nowrap;">الفرع:</span>
+                        <select wire:model.live="filterBranch" class="form-input" style="font-weight: 700; max-width:260px;">
+                            <option value="">جميع الفروع</option>
+                            @foreach($branches as $branch)
+                                <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <button wire:click="$refresh"
                         style="padding:0.6rem 1.2rem; background:var(--primary); border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; gap:0.4rem; font-size:0.85rem; color:#fff; font-weight:800;">
                         🔍 <span style="font-size:0.8rem;">بحث</span>

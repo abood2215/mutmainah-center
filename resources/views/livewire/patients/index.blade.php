@@ -115,6 +115,20 @@
 
 </div>
 
+{{-- ═══ فلتر الفرع ═══ --}}
+<div style="width:100%; max-width:580px; margin-top:0.85rem; display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;">
+    <button wire:click="$set('filterBranch', '')"
+        style="padding:0.35rem 1rem; border-radius:20px; font-size:0.8rem; font-weight:800; font-family:'Tajawal',sans-serif; cursor:pointer; border:1.5px solid {{ !$filterBranch ? 'var(--navy)' : '#d1d5db' }}; background:{{ !$filterBranch ? 'var(--navy)' : '#fff' }}; color:{{ !$filterBranch ? '#fff' : '#6b7280' }};">
+        الكل
+    </button>
+    @foreach($branches as $branch)
+    <button wire:click="$set('filterBranch', '{{ $branch->id }}')"
+        style="padding:0.35rem 1rem; border-radius:20px; font-size:0.78rem; font-weight:800; font-family:'Tajawal',sans-serif; cursor:pointer; border:1.5px solid {{ $filterBranch == $branch->id ? 'var(--primary)' : '#d1d5db' }}; background:{{ $filterBranch == $branch->id ? 'var(--primary-glow)' : '#fff' }}; color:{{ $filterBranch == $branch->id ? 'var(--primary)' : '#6b7280' }};">
+        {{ $branch->name }}
+    </button>
+    @endforeach
+</div>
+
 {{-- ═══ النتائج ═══ --}}
 @if($searchPerformed)
 <div style="width:100%; max-width:1150px; margin-top:1.75rem; animation:fadeIn 0.3s ease;">
@@ -142,6 +156,7 @@
                         <th style="padding:0.7rem 1.1rem; text-align:center; font-size:0.75rem; font-weight:900; color:#9ca3af;">رقم الملف</th>
                         <th style="padding:0.7rem 1.1rem; text-align:center; font-size:0.75rem; font-weight:900; color:#9ca3af;">الهوية</th>
                         <th style="padding:0.7rem 1.1rem; text-align:center; font-size:0.75rem; font-weight:900; color:#9ca3af;">الجوال</th>
+                        <th style="padding:0.7rem 1.1rem; text-align:center; font-size:0.75rem; font-weight:900; color:#9ca3af;">الفرع</th>
                         <th style="padding:0.7rem 1.3rem; text-align:center; font-size:0.75rem; font-weight:900; color:#9ca3af;">الإجراءات</th>
                     </tr>
                 </thead>
@@ -170,6 +185,16 @@
 
                         <td style="padding:0.8rem 1.1rem; text-align:center; color:#6b7280; font-size:0.83rem; direction:ltr;">
                             {{ $patient->phone ?: '—' }}
+                        </td>
+
+                        <td style="padding:0.8rem 1.1rem; text-align:center;">
+                            @if($patient->branch_name)
+                            <span style="background:#f0f4ff; color:#1565c0; font-size:0.72rem; font-weight:800; padding:0.2rem 0.6rem; border-radius:6px; font-family:'Tajawal',sans-serif; white-space:nowrap;">
+                                {{ $patient->branch_name }}
+                            </span>
+                            @else
+                            <span style="color:#d1d5db; font-size:0.78rem;">—</span>
+                            @endif
                         </td>
 
                         {{-- ═ الإجراءات ═ --}}
@@ -205,11 +230,13 @@
                                 </a>
 
                                 {{-- المرفقات --}}
-                                <span title="قريباً"
-                                    style="display:inline-flex; align-items:center; gap:0.28rem; padding:0.4rem 0.65rem; background:#f9fafb; color:#d1d5db; border-radius:8px; font-weight:700; font-size:0.78rem; font-family:'Tajawal',sans-serif; border:1.5px solid #f3f4f6; cursor:not-allowed; white-space:nowrap;">
+                                <a href="{{ route('patients.attachments', $patient->id) }}" wire:navigate
+                                    title="المرفقات"
+                                    style="display:inline-flex; align-items:center; gap:0.28rem; padding:0.4rem 0.65rem; background:#fff; color:#374151; border-radius:8px; text-decoration:none; font-weight:700; font-size:0.78rem; font-family:'Tajawal',sans-serif; border:1.5px solid #e5e7eb; transition:all 0.2s; white-space:nowrap;"
+                                    onmouseover="this.style.borderColor='#f59e0b'; this.style.color='#b45309'; this.style.background='#fffbeb'" onmouseout="this.style.borderColor='#e5e7eb'; this.style.color='#374151'; this.style.background='#fff'">
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                                     مرفقات
-                                </span>
+                                </a>
 
                             </div>
                         </td>

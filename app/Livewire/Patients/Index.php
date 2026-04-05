@@ -12,8 +12,10 @@ class Index extends Component
     use WithPagination;
 
     public $search = '';
+    public $filterBranch = '';
     public $searchPerformed = false;
     public $suggestions = [];
+    public array $branches = [];
 
     public function updatedSearch()
     {
@@ -36,6 +38,11 @@ class Index extends Component
     }
 
     #[Title('إدارة العملاء')]
+    public function mount(): void
+    {
+        $this->branches = DB::table('branches')->where('is_active', 1)->get(['id', 'name'])->all();
+    }
+
     public function render()
     {
         $patients = collect();
@@ -43,27 +50,33 @@ class Index extends Component
         if ($this->searchPerformed) {
             $searchTerm = '%' . $this->search . '%';
 
-            $patients = DB::table('kstu')
+            $q = DB::table('kstu as k')
+                ->leftJoin('branches as b', 'b.id', '=', 'k.branch_id')
                 ->select(
-                    'id',
-                    'file_id',
-                    'full_name as name',
-                    'phone',
-                    'ssn as identity_number',
-                    'reg_date as created_at'
+                    'k.id', 'k.file_id',
+                    'k.full_name as name',
+                    'k.phone',
+                    'k.ssn as identity_number',
+                    'k.reg_date as created_at',
+                    'b.name as branch_name'
                 )
                 ->where(function($q) use ($searchTerm) {
-                    $q->where('full_name', 'like', $searchTerm)
-                      ->orWhere('file_id', 'like', $searchTerm)
-                      ->orWhere('phone', 'like', $searchTerm)
-                      ->orWhere('ssn', 'like', $searchTerm);
-                })
-                ->orderBy('id', 'desc')
-                ->paginate(15);
+                    $q->where('k.full_name', 'like', $searchTerm)
+                      ->orWhere('k.file_id', 'like', $searchTerm)
+                      ->orWhere('k.phone', 'like', $searchTerm)
+                      ->orWhere('k.ssn', 'like', $searchTerm);
+                });
+
+            if ($this->filterBranch) {
+                $q->where('k.branch_id', $this->filterBranch);
+            }
+
+            $patients = $q->orderBy('k.id', 'desc')->paginate(15);
         }
 
         return view('livewire.patients.index', [
-            'patients' => $patients
+            'patients' => $patients,
+            'branches' => $this->branches,
         ])->layout('layouts.app');
     }
 

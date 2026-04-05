@@ -11,9 +11,11 @@ class Index extends Component
 {
     use WithPagination;
 
-    public string $search       = '';
-    public string $filterDate   = '';
-    public string $filterClinic = '';
+    public string $search        = '';
+    public string $filterDate    = '';
+    public string $filterClinic  = '';
+    public string $filterBranch  = '';
+    public array  $branches      = [];
 
     public ?int    $selectedStId      = null;
     public ?object $selectedPatient   = null;
@@ -22,6 +24,11 @@ class Index extends Component
     public array   $waitingList       = [];
 
     #[Title('الكشوف')]
+    public function mount(): void
+    {
+        $this->branches = DB::table('branches')->where('is_active', 1)->get(['id', 'name'])->all();
+    }
+
     public function render()
     {
         $today = now()->format('j-n-Y');
@@ -39,7 +46,7 @@ class Index extends Component
             ->leftJoin('kstu as a', 'a.id', '=', 'r.st_id')
             ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
             ->leftJoinSub($paymentsAgg, 'k', 'k.rec_id', '=', 'r.id')
-            ->where('r.confirm_id', 1) // فقط المكتملة (اللي دفعوا)
+            ->where('r.confirm_id', 1)
             ->select(
                 'r.id',
                 'r.rec_date',
@@ -53,6 +60,10 @@ class Index extends Component
                 'k.vno',
                 'k.serial_no'
             );
+
+        if ($this->filterBranch) {
+            $query->where('a.branch_id', $this->filterBranch);
+        }
 
         if ($this->search) {
             $term = '%' . $this->search . '%';
@@ -72,7 +83,8 @@ class Index extends Component
         }
 
         $checks  = $query->orderBy('r.id', 'desc')->paginate(15);
-        $clinics = DB::table('clinic')->orderBy('name')->get(['id', 'name']);
+        $clinics  = DB::table('clinic')->orderBy('name')->get(['id', 'name']);
+        $branches = $this->branches;
 
         // تم الكشف = دفع ونزل بقائمة الكشوف
         $todayDone    = DB::table('rec')->where('rec_date', $today)->where('confirm_id', 1)->count();
@@ -80,7 +92,7 @@ class Index extends Component
         $todayWaiting = DB::table('rec')->where('rec_date', $today)->where('confirm_id', 0)->count();
 
         return view('livewire.checks.index', compact(
-            'checks', 'clinics', 'todayDone', 'todayWaiting'
+            'checks', 'clinics', 'branches', 'todayDone', 'todayWaiting'
         ))->layout('layouts.app');
     }
 

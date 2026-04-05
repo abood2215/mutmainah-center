@@ -116,7 +116,34 @@ class Dashboard extends Component
             ->limit(8)
             ->get();
 
+        // ── إحصائيات الفروع ──
+        $allBranches = DB::table('branches')->where('is_active', 1)->get(['id', 'name']);
+
+        $branchPatients = DB::table('kstu')
+            ->whereIn('branch_id', $allBranches->pluck('id'))
+            ->select('branch_id', DB::raw('COUNT(*) as cnt'))
+            ->groupBy('branch_id')
+            ->pluck('cnt', 'branch_id');
+
+        $branchMonthRevenue = DB::table('kpayments as p')
+            ->join('rec as r', 'r.id', '=', 'p.rec_id')
+            ->join('kstu as k', 'k.id', '=', 'r.st_id')
+            ->where('p.price', '>', 0)
+            ->whereRaw("MONTH(STR_TO_DATE(p.pdate, '%e-%c-%Y')) = ?", [$currentMonth])
+            ->whereRaw("YEAR(STR_TO_DATE(p.pdate, '%e-%c-%Y')) = ?",  [$currentYear])
+            ->whereIn('k.branch_id', $allBranches->pluck('id'))
+            ->select('k.branch_id', DB::raw('SUM(p.price) as revenue'))
+            ->groupBy('k.branch_id')
+            ->pluck('revenue', 'branch_id');
+
+        $branchStats = $allBranches->map(function($b) use ($branchPatients, $branchMonthRevenue) {
+            $b->patients_count  = $branchPatients[$b->id]     ?? 0;
+            $b->monthly_revenue = $branchMonthRevenue[$b->id] ?? 0;
+            return $b;
+        });
+
         return view('livewire.dashboard', [
+            'branchStats'      => $branchStats,
             'totalPatients'    => $totalPatients,
             'lastPatient'      => $lastPatient,
             'todayChecks'      => $todayChecks,

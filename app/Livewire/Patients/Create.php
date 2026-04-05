@@ -24,19 +24,24 @@ class Create extends Component
     public $assur_no       = '';
     public $class_id       = 0;
     public $notes          = '';
+    public int $branch_id  = 0;
 
     public array $companies = [];
+    public array $branches  = [];
 
     protected $rules = [
-        'name'  => 'required|min:2',
-        'phone' => 'required',
-        'ssn'   => 'nullable',
+        'name'      => 'required|min:2',
+        'phone'     => 'required',
+        'ssn'       => 'nullable',
+        'branch_id' => 'required|integer|min:1',
     ];
 
     protected $messages = [
-        'name.required'  => 'الاسم مطلوب',
-        'name.min'       => 'الاسم يجب أن يكون حرفين على الأقل',
-        'phone.required' => 'رقم الجوال مطلوب',
+        'name.required'      => 'الاسم مطلوب',
+        'name.min'           => 'الاسم يجب أن يكون حرفين على الأقل',
+        'phone.required'     => 'رقم الجوال مطلوب',
+        'branch_id.min'      => 'يجب اختيار الفرع',
+        'branch_id.required' => 'يجب اختيار الفرع',
     ];
 
     #[Title('فتح ملف جديد')]
@@ -46,6 +51,7 @@ class Create extends Component
         if (empty($this->companies)) {
             $this->companies = [(object)['id' => 28, 'name' => 'على نفقته']];
         }
+        $this->branches = DB::table('branches')->where('is_active', 1)->get(['id', 'name'])->all();
     }
 
     public function save(): void
@@ -60,6 +66,7 @@ class Create extends Component
         }
 
         $newId = DB::table('kstu')->insertGetId([
+            'branch_id'     => (int) $this->branch_id,
             'full_name'     => trim($this->name),
             'ssn'           => trim($this->ssn),
             'phone'         => trim($this->phone),
@@ -99,7 +106,8 @@ class Create extends Component
         // Set file_id = id (as legacy system does)
         DB::table('kstu')->where('id', $newId)->update(['file_id' => $newId]);
 
-        ActivityLogger::log('created', 'patient', $newId, 'فتح ملف جديد: ' . trim($this->name) . ' — رقم الملف #' . $newId);
+        $branchName = collect($this->branches)->firstWhere('id', $this->branch_id)->name ?? '';
+        ActivityLogger::log('created', 'patient', $newId, 'فتح ملف جديد: ' . trim($this->name) . ' — رقم الملف #' . $newId . ' — ' . $branchName);
 
         session()->flash('success', 'تم فتح الملف بنجاح! رقم الملف: ' . $newId);
 

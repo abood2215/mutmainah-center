@@ -28,6 +28,15 @@ $years  = range(2000, now()->year + 1);
 
     <div class="pg-autogrid" style="display:grid; grid-template-columns:auto 1fr; gap:0.55rem 1.25rem; align-items:center; max-width:700px; margin:0 auto;">
 
+        {{-- الفرع --}}
+        <label style="color:#fbbf24; font-weight:800; font-size:0.88rem; white-space:nowrap;">الفرع : Branch</label>
+        <select wire:model="filterBranch" style="padding:0.4rem 0.65rem; border:1px solid rgba(255,255,255,0.2); border-radius:6px; background:rgba(255,255,255,0.1); color:#fff; font-family:'Tajawal',sans-serif; font-weight:700; font-size:0.85rem; width:100%;">
+            <option value="" style="color:#000;">الكل : All</option>
+            @foreach($branches as $branch)
+                <option value="{{ $branch->id }}" style="color:#000;">{{ $branch->name }}</option>
+            @endforeach
+        </select>
+
         {{-- العيادة --}}
         <label style="color:#fbbf24; font-weight:800; font-size:0.88rem; white-space:nowrap;">العيادة : Clinic</label>
         <select wire:model="filterClinic" style="padding:0.4rem 0.65rem; border:1px solid rgba(255,255,255,0.2); border-radius:6px; background:rgba(255,255,255,0.1); color:#fff; font-family:'Tajawal',sans-serif; font-weight:700; font-size:0.85rem; width:100%;">

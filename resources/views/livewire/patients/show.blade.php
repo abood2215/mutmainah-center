@@ -10,14 +10,21 @@
     <div style="border-radius:14px; overflow:hidden; border:2px solid var(--primary); box-shadow:0 10px 30px rgba(139,28,43,0.12);">
 
         {{-- رأس البطاقة --}}
-        <div style="background:var(--primary); padding:1.1rem 1.5rem; display:flex; align-items:center; justify-content:space-between;">
+        <div style="background:var(--primary); padding:1.1rem 1.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
             <span style="color:#fff; font-weight:900; font-size:1.15rem; display:flex; align-items:center; gap:0.6rem;">
                 👤 ملف العميل:
                 <span style="font-weight:400; opacity:0.9;">{{ $patient->full_name }}</span>
             </span>
-            <span style="background:rgba(255,255,255,0.2); color:#fff; padding:0.25rem 0.9rem; border-radius:20px; font-weight:800; font-size:0.9rem; font-family:'Inter';">
-                #{{ $patient->file_id }}
-            </span>
+            <div style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+                @if($patient->branch_name)
+                <span style="background:rgba(255,255,255,0.15); color:#fff; padding:0.2rem 0.8rem; border-radius:20px; font-size:0.78rem; font-weight:700; font-family:'Tajawal',sans-serif;">
+                    🏢 {{ $patient->branch_name }}
+                </span>
+                @endif
+                <span style="background:rgba(255,255,255,0.2); color:#fff; padding:0.25rem 0.9rem; border-radius:20px; font-weight:800; font-size:0.9rem; font-family:'Inter';">
+                    #{{ $patient->file_id }}
+                </span>
+            </div>
         </div>
 
         {{-- جدول البيانات --}}
@@ -54,6 +61,21 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+
+        {{-- تعديل الفرع --}}
+        @if(session()->has('branch_saved'))
+        <div class="no-print" style="background:#e8f5e9; color:#2e7d32; padding:0.5rem 1.25rem; font-size:0.82rem; font-weight:700; border-top:1px solid #c8e6c9;">✅ {{ session('branch_saved') }}</div>
+        @endif
+        <div class="no-print" style="background:#f8fafc; padding:0.6rem 1.25rem; border-top:1px solid #e2e8f0; display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+            <span style="font-size:0.78rem; font-weight:800; color:var(--text-muted);">🏢 الفرع:</span>
+            <select wire:model="editBranch" style="border:1.5px solid var(--border); border-radius:7px; padding:0.3rem 0.7rem; font-family:'Tajawal',sans-serif; font-size:0.82rem; color:var(--text-dim); outline:none; background:#fff;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
+                <option value="0">— غير محدد —</option>
+                @foreach($branches as $branch)
+                <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                @endforeach
+            </select>
+            <button wire:click="saveBranch" style="padding:0.3rem 1rem; background:var(--primary); color:#fff; border:none; border-radius:7px; font-size:0.8rem; font-weight:800; font-family:'Tajawal',sans-serif; cursor:pointer;">حفظ</button>
         </div>
 
         {{-- شريط الأزرار --}}

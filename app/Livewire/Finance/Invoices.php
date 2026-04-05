@@ -11,7 +11,9 @@ class Invoices extends Component
     public string $filterClinic  = '';
     public string $filterUser    = '';
     public string $filterPayment = '';
+    public string $filterBranch  = '';
     public bool   $searched      = false;
+    public array  $branches      = [];
 
     // تاريخ البداية
     public string $fromDay   = '1';
@@ -46,6 +48,7 @@ class Invoices extends Component
         $this->toDay     = now()->format('j');
         $this->toMonth   = now()->format('n');
         $this->toYear    = now()->format('Y');
+        $this->branches  = DB::table('branches')->where('is_active', 1)->get(['id', 'name'])->all();
     }
 
     public function search(): void
@@ -90,6 +93,8 @@ class Invoices extends Component
             ->leftJoin('employees as e', 'e.id', '=', 'k.user_id')
             ->where('r.confirm_id', 1);
 
+        if ($this->filterBranch)
+            $q->where('s.branch_id', $this->filterBranch);
         if ($this->filterClinic)
             $q->where('k.clinic_id', $this->filterClinic);
         if ($this->filterUser)
@@ -200,6 +205,7 @@ class Invoices extends Component
         }
 
         return view('livewire.finance.invoices', [
+            'branches'       => $this->branches,
             'clinics'        => $clinics,
             'employees'      => $employees,
             'invoices'       => $invoices,
