@@ -54,11 +54,14 @@ Route::middleware('auth.employee')->group(function () {
         $patient = DB::table('kstu as k')
             ->leftJoin('kcom as c', 'c.id', '=', 'k.com_id')
             ->where('k.id', $rec->st_id)
-            ->select('k.full_name', 'k.file_id', 'k.pno as policy_no', 'c.name as insurance')
+            ->select('k.full_name', 'k.file_id', 'k.pno as policy_no', 'c.name as insurance', 'k.branch_id')
             ->first();
 
-        $clinic     = DB::table('clinic')->where('id', $rec->clinic_id)->first();
-        $clinicName = $clinic?->name ?? '—';
+        $clinic      = DB::table('clinic')->where('id', $rec->clinic_id)->first();
+        $clinicName  = $clinic?->name ?? '—';
+        $branchName  = $patient?->branch_id
+            ? DB::table('branches')->where('id', $patient->branch_id)->value('name')
+            : null;
 
         // صف header لجلب ptime و user_id (بدون فلتر السعر لدعم الخدمات المجانية)
         $invoiceHeader = DB::table('kpayments')->where('rec_id', $recId)->first();
@@ -144,7 +147,7 @@ Route::middleware('auth.employee')->group(function () {
         }
 
         return view('finance.invoice-print', compact(
-            'rec', 'patient', 'clinicName', 'items',
+            'rec', 'patient', 'clinicName', 'branchName', 'items',
             'invoice', 'total', 'totalDiscount', 'clientAmount',
             'insuranceAmount', 'paymentLabel', 'cashierName'
         ));

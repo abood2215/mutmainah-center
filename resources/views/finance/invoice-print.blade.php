@@ -312,6 +312,12 @@ body {
                 <td class="lbl">المستشار</td>
                 <td class="val">{{ $clinicName }}</td>
             </tr>
+            @if($branchName)
+            <tr>
+                <td class="lbl">الفرع</td>
+                <td class="val" colspan="3">{{ $branchName }}</td>
+            </tr>
+            @endif
             @if($cashierName)
             <tr>
                 <td class="lbl">الاستقبال</td>
