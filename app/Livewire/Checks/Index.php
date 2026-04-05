@@ -45,6 +45,7 @@ class Index extends Component
         $query = DB::table('rec as r')
             ->leftJoin('kstu as a', 'a.id', '=', 'r.st_id')
             ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
+            ->leftJoin('branches as b', 'b.id', '=', 'a.branch_id')
             ->leftJoinSub($paymentsAgg, 'k', 'k.rec_id', '=', 'r.id')
             ->where('r.confirm_id', 1)
             ->select(
@@ -56,6 +57,7 @@ class Index extends Component
                 'r.clinic_id',
                 'a.full_name as patient_name',
                 'c.name as clinic_name',
+                'b.name as branch_name',
                 DB::raw('COALESCE(k.amount, 0) as amount'),
                 'k.vno',
                 'k.serial_no'

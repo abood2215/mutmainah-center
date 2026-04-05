@@ -154,7 +154,7 @@
                                 <th style="padding:1rem; text-align:center; font-size:0.8rem; font-weight:900; color:var(--text-dim);">المبلغ</th>
                                 <th style="padding:1rem; text-align:center; font-size:0.8rem; font-weight:900; color:var(--text-dim);">الفاتورة</th>
                                 <th style="padding:1rem; text-align:center; font-size:0.8rem; font-weight:900; color:var(--text-dim);">الحالة</th>
-                                <th style="padding:1rem; text-align:center; font-size:0.8rem; font-weight:900; color:var(--text-dim); width:80px;">إجراء</th>
+                                <th style="padding:1rem; text-align:center; font-size:0.8rem; font-weight:900; color:var(--text-dim); width:120px;">الفرع</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -204,10 +204,18 @@
                                     </td>
 
                                     <td style="padding:0.85rem 1rem; text-align:center;">
-                                        <div style="display:flex; gap:6px; justify-content:center;">
-                                            <button title="تعديل" style="width:30px; height:30px; border:1px solid var(--border); background:#fff; border-radius:8px; cursor:pointer; font-size:0.8rem; transition: all 0.2s;" onmouseover="this.style.background='#f8fafc'">✏️</button>
-                                            <button title="إلغاء" style="width:30px; height:30px; border:1px solid #fee2e2; background:#fff; border-radius:8px; cursor:pointer; font-size:0.8rem; color:var(--danger); transition: all 0.2s;" onmouseover="this.style.background='#fef2f2'">✕</button>
-                                        </div>
+                                        @if($check->branch_name)
+                                            @php
+                                                $isFloor6 = str_contains($check->branch_name, 'السادس') || str_contains($check->branch_name, 'السادش') || str_contains($check->branch_name, 'التربوي');
+                                            @endphp
+                                            @if($isFloor6)
+                                                <span style="background:#fef3c7; color:#92400e; font-size:0.72rem; font-weight:900; padding:0.25rem 0.65rem; border-radius:50px; border:1px solid #fde68a; white-space:nowrap;">الدور السادس</span>
+                                            @else
+                                                <span style="background:#ede9fe; color:#5b21b6; font-size:0.72rem; font-weight:900; padding:0.25rem 0.65rem; border-radius:50px; border:1px solid #ddd6fe; white-space:nowrap;">الدور الثالث</span>
+                                            @endif
+                                        @else
+                                            <span style="color:#94a3b8; font-size:0.75rem;">—</span>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty
