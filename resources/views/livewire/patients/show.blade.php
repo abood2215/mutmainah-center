@@ -72,9 +72,11 @@
                onmouseover="this.style.borderColor='var(--primary)'; this.style.color='var(--primary)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.color='var(--text-dim)'">
                 💰 البيان المالي
             </a>
-            <button style="color:var(--text-dim); font-size:0.85rem; font-weight:800; padding:0.5rem 1rem; border-radius:8px; background:#fff; border:1px solid #e2e8f0; cursor:pointer;">
+            <a href="{{ route('patients.attachments', $patient->id) }}" wire:navigate
+               style="color:var(--text-dim); text-decoration:none; font-size:0.85rem; font-weight:800; padding:0.5rem 1rem; border-radius:8px; background:#fff; border:1px solid #e2e8f0;"
+               onmouseover="this.style.borderColor='#f59e0b'; this.style.color='#b45309'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.color='var(--text-dim)'">
                 📎 المرفقات
-            </button>
+            </a>
         </div>
 
     </div>

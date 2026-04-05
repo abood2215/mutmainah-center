@@ -38,6 +38,7 @@ Route::middleware('auth.employee')->group(function () {
     Route::get('/patients/{id}/medical-history', \App\Livewire\Patients\History::class)->name('patients.medical-history');
     Route::get('/patients/{id}/financial-statement', \App\Livewire\Patients\Financial::class)->name('patients.financial-statement');
     Route::get('/patients/{id}/new-check', \App\Livewire\Patients\NewCheck::class)->name('patients.new-check');
+    Route::get('/patients/{id}/attachments', \App\Livewire\Patients\Attachments::class)->name('patients.attachments');
 
     // Checks
     Route::get('/checks', \App\Livewire\Checks\Index::class)->name('checks.index');
