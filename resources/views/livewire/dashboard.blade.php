@@ -74,7 +74,17 @@
         </div>
 
         <!-- ═══ الرسوم البيانية ═══ -->
-        <div style="display:grid; grid-template-columns:2fr 1fr; gap:1.25rem;">
+        <style>
+            .dash-charts-row { display:grid; grid-template-columns:2fr 1fr; gap:1.25rem; }
+            .dash-bottom-row { display:grid; grid-template-columns:2fr 1fr; gap:1.25rem; }
+            @media(max-width:700px) {
+                .dash-charts-row { grid-template-columns:1fr; }
+                .dash-bottom-row { grid-template-columns:1fr; }
+                .dash-stats      { grid-template-columns:1fr 1fr !important; }
+            }
+        </style>
+
+        <div class="dash-charts-row">
 
             <!-- منحنى الإيرادات اليومية -->
             <div class="card">
@@ -82,7 +92,7 @@
                     <span class="card-title">📈 إيرادات {{ now()->locale('ar')->isoFormat('MMMM YYYY') }}</span>
                 </div>
                 <div style="padding:1.25rem; position:relative; height:220px;">
-                    <canvas id="dailyRevenueChart" style="width:100%; height:100%;"></canvas>
+                    <canvas id="dailyRevenueChart"></canvas>
                 </div>
             </div>
 
@@ -91,8 +101,8 @@
                 <div class="card-header">
                     <span class="card-title">🏥 العيادات هذا الشهر</span>
                 </div>
-                <div style="padding:1rem; position:relative; height:220px; display:flex; align-items:center; justify-content:center;">
-                    <canvas id="clinicDonutChart" style="max-height:200px;"></canvas>
+                <div style="padding:1rem; position:relative; height:220px;">
+                    <canvas id="clinicDonutChart"></canvas>
                 </div>
             </div>
 
@@ -104,12 +114,12 @@
                 <span class="card-title">📊 مقارنة الإيرادات — آخر 6 أشهر</span>
             </div>
             <div style="padding:1.25rem; position:relative; height:200px;">
-                <canvas id="monthlyCompareChart" style="width:100%; height:100%;"></canvas>
+                <canvas id="monthlyCompareChart"></canvas>
             </div>
         </div>
 
         <!-- جدول + عيادات + روابط -->
-        <div class="pg-2col" style="display:grid; grid-template-columns:2fr 1fr; gap:1.25rem;">
+        <div class="dash-bottom-row pg-2col">
 
             <!-- أحدث كشوف اليوم -->
             <div class="card">
@@ -198,10 +208,8 @@
 </div>
 </div>
 
-@push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-(function() {
+(function(){
     var dailyLabels  = @json($chartDailyLabels);
     var dailyData    = @json($chartDailyData);
     var monthLabels  = @json($chartMonthLabels);
@@ -209,15 +217,22 @@
     var clinicLabels = @json($clinicChartData->pluck('clinic_name'));
     var clinicCounts = @json($clinicChartData->pluck('count'));
 
-    var palette = ['#8b1c2b','#1a1a2e','#c8941a','#2e7d32','#1565c0','#6a1b9a','#e65100','#00838f'];
+    function destroyChart(id) {
+        var existing = Chart.getChart(id);
+        if (existing) existing.destroy();
+    }
 
-    Chart.defaults.font.family = "'Tajawal', sans-serif";
-    Chart.defaults.color = '#546e7a';
+    function initCharts() {
+        if (typeof Chart === 'undefined') return;
+        if (!document.getElementById('dailyRevenueChart')) return;
 
-    // منحنى الإيرادات اليومية
-    var ctx1 = document.getElementById('dailyRevenueChart');
-    if (ctx1) {
-        new Chart(ctx1, {
+        Chart.defaults.font.family = "'Tajawal', sans-serif";
+        Chart.defaults.color = '#546e7a';
+
+        var palette = ['#8b1c2b','#1a1a2e','#c8941a','#2e7d32','#1565c0','#6a1b9a','#e65100','#00838f'];
+
+        destroyChart('dailyRevenueChart');
+        new Chart(document.getElementById('dailyRevenueChart'), {
             type: 'line',
             data: {
                 labels: dailyLabels,
@@ -238,17 +253,14 @@
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+                    x: { grid: { display: false }, ticks: { font: { size: 11 }, maxTicksLimit: 10 } },
                     y: { beginAtZero: true, grid: { color: '#f0f2f5' }, ticks: { font: { size: 11 } } }
                 }
             }
         });
-    }
 
-    // دونات العيادات
-    var ctx2 = document.getElementById('clinicDonutChart');
-    if (ctx2) {
-        new Chart(ctx2, {
+        destroyChart('clinicDonutChart');
+        new Chart(document.getElementById('clinicDonutChart'), {
             type: 'doughnut',
             data: {
                 labels: clinicLabels,
@@ -263,7 +275,7 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '62%',
+                cutout: '60%',
                 plugins: {
                     legend: {
                         position: 'bottom',
@@ -272,19 +284,16 @@
                 }
             }
         });
-    }
 
-    // مقارنة الأشهر
-    var ctx3 = document.getElementById('monthlyCompareChart');
-    if (ctx3) {
-        new Chart(ctx3, {
+        destroyChart('monthlyCompareChart');
+        new Chart(document.getElementById('monthlyCompareChart'), {
             type: 'bar',
             data: {
                 labels: monthLabels,
                 datasets: [{
                     label: 'الإيرادات (د.ك)',
                     data: monthData,
-                    backgroundColor: monthData.map((_, i) => i === monthData.length - 1 ? '#8b1c2b' : 'rgba(139,28,43,0.25)'),
+                    backgroundColor: monthData.map(function(_, i){ return i === monthData.length - 1 ? '#8b1c2b' : 'rgba(139,28,43,0.25)'; }),
                     borderRadius: 6,
                     borderSkipped: false,
                 }]
@@ -300,6 +309,8 @@
             }
         });
     }
+
+    document.addEventListener('DOMContentLoaded', initCharts);
+    document.addEventListener('livewire:navigated', initCharts);
 })();
 </script>
-@endpush
