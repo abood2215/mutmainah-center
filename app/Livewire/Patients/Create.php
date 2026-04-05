@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Patients;
 
+use App\Helpers\ActivityLogger;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\DB;
@@ -97,6 +98,8 @@ class Create extends Component
 
         // Set file_id = id (as legacy system does)
         DB::table('kstu')->where('id', $newId)->update(['file_id' => $newId]);
+
+        ActivityLogger::log('created', 'patient', $newId, 'فتح ملف جديد: ' . trim($this->name) . ' — رقم الملف #' . $newId);
 
         session()->flash('success', 'تم فتح الملف بنجاح! رقم الملف: ' . $newId);
 

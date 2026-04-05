@@ -29,6 +29,16 @@ class Show extends Component
 
     public function render()
     {
-        return view('livewire.patients.show')->layout('layouts.app');
+        $activityLogs = [];
+        try {
+            $activityLogs = DB::table('activity_logs')
+                ->where('subject_id', $this->patient->id)
+                ->whereIn('subject', ['patient', 'check', 'attachment'])
+                ->orderBy('id', 'desc')
+                ->limit(20)
+                ->get();
+        } catch (\Throwable) {}
+
+        return view('livewire.patients.show', compact('activityLogs'))->layout('layouts.app');
     }
 }

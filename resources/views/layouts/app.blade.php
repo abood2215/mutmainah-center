@@ -795,6 +795,7 @@
     </div>
 
     @livewireScripts
+    @stack('scripts')
 
     {{-- ═══ أنماط الطباعة المشتركة ═══ --}}
     <style>

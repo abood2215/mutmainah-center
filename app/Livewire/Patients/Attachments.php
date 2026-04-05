@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Patients;
 
+use App\Helpers\ActivityLogger;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Title;
@@ -62,6 +63,11 @@ class Attachments extends Component
 
         $this->files = [];
         $this->loadAttachments();
+
+        ActivityLogger::log('uploaded', 'attachment', $this->patientId,
+            'رفع مرفق للعميل #' . $this->patientId . ' — ' . $this->patient->full_name
+        );
+
         session()->flash('success', 'تم رفع الملفات بنجاح');
     }
 

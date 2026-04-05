@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Patients;
 
+use App\Helpers\ActivityLogger;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\DB;
@@ -256,6 +257,11 @@ class NewCheck extends Component
                 'clinic_type_id'  => 0,
             ]);
         }
+
+        $clinicName = $this->items[0]['clinic_name'] ?? '—';
+        ActivityLogger::log('created', 'check', $recId,
+            'كشف جديد للعميل: ' . $this->patient->full_name . ' — ' . $clinicName . ' — المبلغ: ' . $this->getTotal() . ' د.ك'
+        );
 
         session()->flash('check_success', [
             'rec_id'     => $recId,

@@ -73,6 +73,41 @@
 
         </div>
 
+        <!-- ═══ الرسوم البيانية ═══ -->
+        <div style="display:grid; grid-template-columns:2fr 1fr; gap:1.25rem;">
+
+            <!-- منحنى الإيرادات اليومية -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">📈 إيرادات {{ now()->locale('ar')->isoFormat('MMMM YYYY') }}</span>
+                </div>
+                <div style="padding:1.25rem; position:relative; height:220px;">
+                    <canvas id="dailyRevenueChart" style="width:100%; height:100%;"></canvas>
+                </div>
+            </div>
+
+            <!-- دونات توزيع العيادات -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">🏥 العيادات هذا الشهر</span>
+                </div>
+                <div style="padding:1rem; position:relative; height:220px; display:flex; align-items:center; justify-content:center;">
+                    <canvas id="clinicDonutChart" style="max-height:200px;"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- مقارنة الأشهر -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">📊 مقارنة الإيرادات — آخر 6 أشهر</span>
+            </div>
+            <div style="padding:1.25rem; position:relative; height:200px;">
+                <canvas id="monthlyCompareChart" style="width:100%; height:100%;"></canvas>
+            </div>
+        </div>
+
         <!-- جدول + عيادات + روابط -->
         <div class="pg-2col" style="display:grid; grid-template-columns:2fr 1fr; gap:1.25rem;">
 
@@ -162,3 +197,109 @@
 
 </div>
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+    var dailyLabels  = @json($chartDailyLabels);
+    var dailyData    = @json($chartDailyData);
+    var monthLabels  = @json($chartMonthLabels);
+    var monthData    = @json($chartMonthData);
+    var clinicLabels = @json($clinicChartData->pluck('clinic_name'));
+    var clinicCounts = @json($clinicChartData->pluck('count'));
+
+    var palette = ['#8b1c2b','#1a1a2e','#c8941a','#2e7d32','#1565c0','#6a1b9a','#e65100','#00838f'];
+
+    Chart.defaults.font.family = "'Tajawal', sans-serif";
+    Chart.defaults.color = '#546e7a';
+
+    // منحنى الإيرادات اليومية
+    var ctx1 = document.getElementById('dailyRevenueChart');
+    if (ctx1) {
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: dailyLabels,
+                datasets: [{
+                    label: 'الإيرادات (د.ك)',
+                    data: dailyData,
+                    borderColor: '#8b1c2b',
+                    backgroundColor: 'rgba(139,28,43,0.08)',
+                    borderWidth: 2.5,
+                    pointRadius: 3,
+                    pointHoverRadius: 5,
+                    fill: true,
+                    tension: 0.4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+                    y: { beginAtZero: true, grid: { color: '#f0f2f5' }, ticks: { font: { size: 11 } } }
+                }
+            }
+        });
+    }
+
+    // دونات العيادات
+    var ctx2 = document.getElementById('clinicDonutChart');
+    if (ctx2) {
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: clinicLabels,
+                datasets: [{
+                    data: clinicCounts,
+                    backgroundColor: palette,
+                    borderWidth: 2,
+                    borderColor: '#fff',
+                    hoverOffset: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '62%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { font: { size: 11 }, padding: 8, boxWidth: 12 }
+                    }
+                }
+            }
+        });
+    }
+
+    // مقارنة الأشهر
+    var ctx3 = document.getElementById('monthlyCompareChart');
+    if (ctx3) {
+        new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: monthLabels,
+                datasets: [{
+                    label: 'الإيرادات (د.ك)',
+                    data: monthData,
+                    backgroundColor: monthData.map((_, i) => i === monthData.length - 1 ? '#8b1c2b' : 'rgba(139,28,43,0.25)'),
+                    borderRadius: 6,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false }, ticks: { font: { size: 12 } } },
+                    y: { beginAtZero: true, grid: { color: '#f0f2f5' }, ticks: { font: { size: 11 } } }
+                }
+            }
+        });
+    }
+})();
+</script>
+@endpush

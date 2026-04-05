@@ -81,6 +81,46 @@
 
     </div>
 
+    {{-- سجل النشاط --}}
+    @if(count($activityLogs) > 0)
+    <div class="no-print" style="margin-top:1.25rem; background:#fff; border-radius:12px; border:1px solid var(--border); overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.05);">
+        <div style="background:var(--navy); padding:0.7rem 1.25rem; display:flex; align-items:center; gap:0.5rem;">
+            <span style="color:#fbbf24; font-size:0.9rem;">🕓</span>
+            <span style="color:#fbbf24; font-weight:900; font-size:0.88rem; font-family:'Tajawal',sans-serif;">سجل النشاط</span>
+        </div>
+        <div style="padding:0.25rem 0;">
+            @foreach($activityLogs as $log)
+            @php
+                $icon = match($log->action) {
+                    'created'  => $log->subject === 'patient' ? '👤' : '📋',
+                    'uploaded' => '📎',
+                    'updated'  => '✏️',
+                    'deleted'  => '🗑',
+                    default    => '•',
+                };
+                $color = match($log->action) {
+                    'created'  => '#2e7d32',
+                    'uploaded' => '#1565c0',
+                    'deleted'  => '#dc2626',
+                    default    => '#546e7a',
+                };
+            @endphp
+            <div style="padding:0.65rem 1.25rem; border-bottom:1px solid #f4f6f9; display:flex; align-items:flex-start; gap:0.75rem;"
+                 onmouseover="this.style.background='#fafbfc'" onmouseout="this.style.background=''">
+                <span style="font-size:1rem; margin-top:0.05rem;">{{ $icon }}</span>
+                <div style="flex:1; min-width:0;">
+                    <div style="font-size:0.83rem; font-weight:700; color:var(--navy); font-family:'Tajawal',sans-serif;">{{ $log->description }}</div>
+                    <div style="font-size:0.74rem; color:var(--text-muted); margin-top:0.15rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+                        <span style="color:{{ $color }}; font-weight:800;">{{ $log->user_name ?: 'النظام' }}</span>
+                        <span>{{ \Carbon\Carbon::parse($log->created_at)->format('d/m/Y H:i') }}</span>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
     {{-- تذييل الطباعة --}}
     <div class="print-footer" style="display:none; margin-top:1.5rem; text-align:center; font-size:0.72rem; color:#9ca3af; font-family:'Tajawal',sans-serif; border-top:1px solid #e2e8f0; padding-top:0.5rem;">
         تاريخ الطباعة: {{ now()->format('d/m/Y H:i') }} &nbsp;|&nbsp; مركز مطمئنة الاستشاري

@@ -71,16 +71,67 @@ class Dashboard extends Component
             ->limit(6)
             ->get();
 
+        // ── رسم بياني: إيرادات يومية للشهر الحالي ──
+        $daysInMonth = now()->daysInMonth;
+        $dailyRevenue = DB::table('kpayments')
+            ->where('price', '>', 0)
+            ->whereRaw("MONTH(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?", [$currentMonth])
+            ->whereRaw("YEAR(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?",  [$currentYear])
+            ->select(DB::raw("DAY(STR_TO_DATE(pdate, '%e-%c-%Y')) as day"), DB::raw('SUM(price) as total'))
+            ->groupBy('day')
+            ->pluck('total', 'day');
+
+        $chartDailyLabels = [];
+        $chartDailyData   = [];
+        for ($d = 1; $d <= $daysInMonth; $d++) {
+            $chartDailyLabels[] = $d;
+            $chartDailyData[]   = round($dailyRevenue[$d] ?? 0, 3);
+        }
+
+        // ── رسم بياني: مقارنة آخر 6 أشهر ──
+        $chartMonthLabels = [];
+        $chartMonthData   = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $dt = now()->subMonths($i);
+            $m  = $dt->month;
+            $y  = $dt->year;
+            $rev = DB::table('kpayments')
+                ->where('price', '>', 0)
+                ->whereRaw("MONTH(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?", [$m])
+                ->whereRaw("YEAR(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?",  [$y])
+                ->sum('price');
+            $chartMonthLabels[] = $dt->locale('ar')->isoFormat('MMM YY');
+            $chartMonthData[]   = round($rev, 3);
+        }
+
+        // ── رسم بياني: توزيع العيادات هذا الشهر ──
+        $clinicChartData = DB::table('rec as r')
+            ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
+            ->where('r.confirm_id', 1)
+            ->whereRaw("MONTH(STR_TO_DATE(r.rec_date, '%e-%c-%Y')) = ?", [$currentMonth])
+            ->whereRaw("YEAR(STR_TO_DATE(r.rec_date, '%e-%c-%Y')) = ?",  [$currentYear])
+            ->select('c.name as clinic_name', DB::raw('COUNT(r.id) as count'))
+            ->groupBy('r.clinic_id', 'c.name')
+            ->orderBy('count', 'desc')
+            ->limit(8)
+            ->get();
+
         return view('livewire.dashboard', [
-            'totalPatients'  => $totalPatients,
-            'lastPatient'    => $lastPatient,
-            'todayChecks'    => $todayChecks,
-            'todayDone'      => $todayDone,
-            'todayWaiting'   => $todayWaiting,
-            'monthlyRevenue' => $monthlyRevenue,
-            'todayRevenue'   => $todayRevenue,
-            'recentChecks'   => $recentChecks,
-            'clinicStats'    => $clinicStats,
+            'totalPatients'    => $totalPatients,
+            'lastPatient'      => $lastPatient,
+            'todayChecks'      => $todayChecks,
+            'todayDone'        => $todayDone,
+            'todayWaiting'     => $todayWaiting,
+            'monthlyRevenue'   => $monthlyRevenue,
+            'todayRevenue'     => $todayRevenue,
+            'recentChecks'     => $recentChecks,
+            'clinicStats'      => $clinicStats,
+            // charts
+            'chartDailyLabels' => $chartDailyLabels,
+            'chartDailyData'   => $chartDailyData,
+            'chartMonthLabels' => $chartMonthLabels,
+            'chartMonthData'   => $chartMonthData,
+            'clinicChartData'  => $clinicChartData,
         ])->layout('layouts.app');
     }
 }
