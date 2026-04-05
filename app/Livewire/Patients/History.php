@@ -124,7 +124,16 @@ class History extends Component
                 return $v;
             });
 
-        return view('livewire.patients.history', ['visits' => $visits])
+        // حساب العمر من تاريخ الميلاد
+        $age = null;
+        if ($this->patient->date_of_birth) {
+            try {
+                $dob = \Carbon\Carbon::createFromFormat('j-n-Y', $this->patient->date_of_birth);
+                $age = $dob->age;
+            } catch (\Throwable) {}
+        }
+
+        return view('livewire.patients.history', ['visits' => $visits, 'age' => $age])
             ->layout('layouts.app');
     }
 }

@@ -48,16 +48,24 @@
                     <span style="font-size:0.78rem; color:var(--text-muted); font-weight:700;">الجنس :</span>
                     <span style="font-weight:700; color:var(--text-dim);">{{ $patient->gender == 1 ? 'ذكر' : 'أنثى' }}</span>
                 </div>
+                @if($age !== null)
+                <div style="display:flex; gap:0.4rem; align-items:center;">
+                    <span style="font-size:0.78rem; color:var(--text-muted); font-weight:700;">العمر :</span>
+                    <span style="background:#e8f5e9; color:#2e7d32; font-weight:900; font-size:0.85rem; padding:0.15rem 0.6rem; border-radius:6px;">{{ $age }} سنة</span>
+                </div>
+                @endif
             </div>
         </div>
 
         <!-- نموذج السجل الاستشاري -->
         <div style="border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:1.25rem;">
-            <div style="background:var(--primary); padding:0.6rem 1.25rem;">
+            <div onclick="toggleRecord()" style="background:var(--primary); padding:0.6rem 1.25rem; cursor:pointer; display:flex; align-items:center; justify-content:space-between; user-select:none;">
                 <span style="color:#fff; font-weight:900; font-size:0.92rem;">السجل الاستشاري</span>
+                <span id="recordToggleIcon" style="color:rgba(255,255,255,0.8); font-size:1.1rem; transition:transform 0.25s;">▼</span>
             </div>
 
             {{-- نسخة الشاشة (حقول قابلة للتعديل) --}}
+            <div id="recordBody">
             <div class="no-print pg-2col" style="padding:1.25rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
                 <div>
                     <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">الشكوى الحالية</label>
@@ -133,6 +141,7 @@
                     💾 حفظ
                 </button>
             </div>
+            </div>{{-- end #recordBody --}}
         </div>
 
         <!-- سجل الزيارات -->
@@ -187,4 +196,22 @@
 </div>{{-- end #print-area --}}
 
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var body = document.getElementById('recordBody');
+        var icon = document.getElementById('recordToggleIcon');
+        if (body) body.style.display = 'none';
+        if (icon) icon.style.transform = 'rotate(-90deg)';
+    });
+
+    function toggleRecord() {
+        var body = document.getElementById('recordBody');
+        var icon = document.getElementById('recordToggleIcon');
+        if (!body) return;
+        var hidden = body.style.display === 'none';
+        body.style.display = hidden ? '' : 'none';
+        if (icon) icon.style.transform = hidden ? '' : 'rotate(-90deg)';
+    }
+</script>
 </div>
