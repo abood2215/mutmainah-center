@@ -33,20 +33,10 @@ class Index extends Component
     {
         $today = now()->format('j-n-Y');
 
-        $paymentsAgg = DB::table('kpayments')
-            ->select(
-                'rec_id',
-                DB::raw('COALESCE(SUM(price), 0) as amount'),
-                DB::raw('MAX(vno) as vno'),
-                DB::raw('MAX(serial_no) as serial_no')
-            )
-            ->groupBy('rec_id');
-
         $query = DB::table('rec as r')
             ->leftJoin('kstu as a', 'a.id', '=', 'r.st_id')
             ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
             ->leftJoin('branches as b', 'b.id', '=', 'a.branch_id')
-            ->leftJoinSub($paymentsAgg, 'k', 'k.rec_id', '=', 'r.id')
             ->where('r.confirm_id', 1)
             ->select(
                 'r.id',
@@ -57,10 +47,7 @@ class Index extends Component
                 'r.clinic_id',
                 'a.full_name as patient_name',
                 'c.name as clinic_name',
-                'b.name as branch_name',
-                DB::raw('COALESCE(k.amount, 0) as amount'),
-                'k.vno',
-                'k.serial_no'
+                'b.name as branch_name'
             );
 
         if ($this->filterBranch) {
@@ -84,7 +71,24 @@ class Index extends Component
             $query->where('r.clinic_id', $this->filterClinic);
         }
 
-        $checks  = $query->orderBy('r.id', 'desc')->paginate(15);
+        $checks = $query->orderBy('r.id', 'desc')->paginate(15);
+
+        // جيب مدفوعات الـ 15 سجل الحالية بس (بدل full scan على كل الجدول)
+        $pageIds = $checks->pluck('id')->toArray();
+        $payments = DB::table('kpayments')
+            ->whereIn('rec_id', $pageIds)
+            ->select('rec_id', DB::raw('COALESCE(SUM(price), 0) as amount'), DB::raw('MAX(vno) as vno'), DB::raw('MAX(serial_no) as serial_no'))
+            ->groupBy('rec_id')
+            ->get()
+            ->keyBy('rec_id');
+
+        $checks->getCollection()->transform(function ($check) use ($payments) {
+            $p = $payments[$check->id] ?? null;
+            $check->amount    = $p ? (float) $p->amount    : 0;
+            $check->vno       = $p ? $p->vno       : null;
+            $check->serial_no = $p ? $p->serial_no : null;
+            return $check;
+        });
         $clinics  = DB::table('clinic')->orderBy('name')->get(['id', 'name']);
         $branches = $this->branches;
 

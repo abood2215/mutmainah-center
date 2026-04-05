@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class Dashboard extends Component
 {
@@ -37,19 +38,98 @@ class Dashboard extends Component
         // إيرادات هذا الشهر — pdate بصيغة j-n-Y
         $currentMonth = now()->format('n');
         $currentYear  = now()->format('Y');
-        $monthlyRevenue = DB::table('kpayments')
-            ->where('price', '>', 0)
-            ->whereRaw("MONTH(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?", [$currentMonth])
-            ->whereRaw("YEAR(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?",  [$currentYear])
-            ->sum('price');
+        $cacheKey = "dash_month_{$currentYear}_{$currentMonth}";
 
-        // إيرادات اليوم
+        // الإيرادات والرسوم البيانية: cache 10 دقائق (لا تتغير كثيراً)
+        [$monthlyRevenue, $chartDailyLabels, $chartDailyData, $chartMonthLabels, $chartMonthData, $clinicChartData, $branchStats] =
+            Cache::remember($cacheKey, 600, function () use ($currentMonth, $currentYear) {
+
+            $monthlyRevenue = DB::table('kpayments')
+                ->where('price', '>', 0)
+                ->whereRaw("MONTH(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?", [$currentMonth])
+                ->whereRaw("YEAR(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?",  [$currentYear])
+                ->sum('price');
+
+            // إيرادات يومية للشهر الحالي
+            $daysInMonth  = now()->daysInMonth;
+            $dailyRevenue = DB::table('kpayments')
+                ->where('price', '>', 0)
+                ->whereRaw("MONTH(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?", [$currentMonth])
+                ->whereRaw("YEAR(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?",  [$currentYear])
+                ->select(DB::raw("DAY(STR_TO_DATE(pdate, '%e-%c-%Y')) as day"), DB::raw('SUM(price) as total'))
+                ->groupBy('day')
+                ->pluck('total', 'day');
+
+            $chartDailyLabels = [];
+            $chartDailyData   = [];
+            for ($d = 1; $d <= $daysInMonth; $d++) {
+                $chartDailyLabels[] = $d;
+                $chartDailyData[]   = round($dailyRevenue[$d] ?? 0, 3);
+            }
+
+            // مقارنة آخر 6 أشهر
+            $chartMonthLabels = [];
+            $chartMonthData   = [];
+            for ($i = 5; $i >= 0; $i--) {
+                $dt  = now()->subMonths($i);
+                $m   = $dt->month;
+                $y   = $dt->year;
+                $rev = DB::table('kpayments')
+                    ->where('price', '>', 0)
+                    ->whereRaw("MONTH(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?", [$m])
+                    ->whereRaw("YEAR(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?",  [$y])
+                    ->sum('price');
+                $chartMonthLabels[] = $dt->locale('ar')->isoFormat('MMM YY');
+                $chartMonthData[]   = round($rev, 3);
+            }
+
+            // توزيع العيادات هذا الشهر
+            $clinicChartData = DB::table('rec as r')
+                ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
+                ->where('r.confirm_id', 1)
+                ->whereRaw("MONTH(STR_TO_DATE(r.rec_date, '%e-%c-%Y')) = ?", [$currentMonth])
+                ->whereRaw("YEAR(STR_TO_DATE(r.rec_date, '%e-%c-%Y')) = ?",  [$currentYear])
+                ->select('c.name as clinic_name', DB::raw('COUNT(r.id) as count'))
+                ->groupBy('r.clinic_id', 'c.name')
+                ->orderBy('count', 'desc')
+                ->limit(8)
+                ->get();
+
+            // إحصائيات الفروع
+            $allBranches = DB::table('branches')->where('is_active', 1)->get(['id', 'name']);
+            $branchPatients = DB::table('kstu')
+                ->whereIn('branch_id', $allBranches->pluck('id'))
+                ->select('branch_id', DB::raw('COUNT(*) as cnt'))
+                ->groupBy('branch_id')
+                ->pluck('cnt', 'branch_id');
+
+            $branchMonthRevenue = DB::table('kpayments as p')
+                ->join('rec as r', 'r.id', '=', 'p.rec_id')
+                ->join('kstu as k', 'k.id', '=', 'r.st_id')
+                ->where('p.price', '>', 0)
+                ->whereRaw("MONTH(STR_TO_DATE(p.pdate, '%e-%c-%Y')) = ?", [$currentMonth])
+                ->whereRaw("YEAR(STR_TO_DATE(p.pdate, '%e-%c-%Y')) = ?",  [$currentYear])
+                ->whereIn('k.branch_id', $allBranches->pluck('id'))
+                ->select('k.branch_id', DB::raw('SUM(p.price) as revenue'))
+                ->groupBy('k.branch_id')
+                ->pluck('revenue', 'branch_id');
+
+            $branchStats = $allBranches->map(function ($b) use ($branchPatients, $branchMonthRevenue) {
+                $b->patients_count  = $branchPatients[$b->id]     ?? 0;
+                $b->monthly_revenue = $branchMonthRevenue[$b->id] ?? 0;
+                return $b;
+            });
+
+            return [$monthlyRevenue, $chartDailyLabels, $chartDailyData, $chartMonthLabels, $chartMonthData, $clinicChartData, $branchStats];
+        });
+
+        // إيرادات اليوم (لا cache — تتغير لحظياً)
         $todayRevenue = DB::table('kpayments')
             ->where('price', '>', 0)
             ->where('pdate', $today)
             ->sum('price');
 
-        // أحدث الكشوف اليوم
+        // أحدث الكشوف اليوم (لا cache)
         $recentChecks = DB::table('rec as r')
             ->leftJoin('kstu as s', 's.id', '=', 'r.st_id')
             ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
@@ -60,7 +140,7 @@ class Dashboard extends Component
             ->limit(8)
             ->get();
 
-        // إحصائيات العيادات اليوم
+        // إحصائيات العيادات اليوم (لا cache)
         $clinicStats = DB::table('rec as r')
             ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
             ->where('r.rec_date', $today)
@@ -71,76 +151,6 @@ class Dashboard extends Component
             ->limit(6)
             ->get();
 
-        // ── رسم بياني: إيرادات يومية للشهر الحالي ──
-        $daysInMonth = now()->daysInMonth;
-        $dailyRevenue = DB::table('kpayments')
-            ->where('price', '>', 0)
-            ->whereRaw("MONTH(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?", [$currentMonth])
-            ->whereRaw("YEAR(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?",  [$currentYear])
-            ->select(DB::raw("DAY(STR_TO_DATE(pdate, '%e-%c-%Y')) as day"), DB::raw('SUM(price) as total'))
-            ->groupBy('day')
-            ->pluck('total', 'day');
-
-        $chartDailyLabels = [];
-        $chartDailyData   = [];
-        for ($d = 1; $d <= $daysInMonth; $d++) {
-            $chartDailyLabels[] = $d;
-            $chartDailyData[]   = round($dailyRevenue[$d] ?? 0, 3);
-        }
-
-        // ── رسم بياني: مقارنة آخر 6 أشهر ──
-        $chartMonthLabels = [];
-        $chartMonthData   = [];
-        for ($i = 5; $i >= 0; $i--) {
-            $dt = now()->subMonths($i);
-            $m  = $dt->month;
-            $y  = $dt->year;
-            $rev = DB::table('kpayments')
-                ->where('price', '>', 0)
-                ->whereRaw("MONTH(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?", [$m])
-                ->whereRaw("YEAR(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?",  [$y])
-                ->sum('price');
-            $chartMonthLabels[] = $dt->locale('ar')->isoFormat('MMM YY');
-            $chartMonthData[]   = round($rev, 3);
-        }
-
-        // ── رسم بياني: توزيع العيادات هذا الشهر ──
-        $clinicChartData = DB::table('rec as r')
-            ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
-            ->where('r.confirm_id', 1)
-            ->whereRaw("MONTH(STR_TO_DATE(r.rec_date, '%e-%c-%Y')) = ?", [$currentMonth])
-            ->whereRaw("YEAR(STR_TO_DATE(r.rec_date, '%e-%c-%Y')) = ?",  [$currentYear])
-            ->select('c.name as clinic_name', DB::raw('COUNT(r.id) as count'))
-            ->groupBy('r.clinic_id', 'c.name')
-            ->orderBy('count', 'desc')
-            ->limit(8)
-            ->get();
-
-        // ── إحصائيات الفروع ──
-        $allBranches = DB::table('branches')->where('is_active', 1)->get(['id', 'name']);
-
-        $branchPatients = DB::table('kstu')
-            ->whereIn('branch_id', $allBranches->pluck('id'))
-            ->select('branch_id', DB::raw('COUNT(*) as cnt'))
-            ->groupBy('branch_id')
-            ->pluck('cnt', 'branch_id');
-
-        $branchMonthRevenue = DB::table('kpayments as p')
-            ->join('rec as r', 'r.id', '=', 'p.rec_id')
-            ->join('kstu as k', 'k.id', '=', 'r.st_id')
-            ->where('p.price', '>', 0)
-            ->whereRaw("MONTH(STR_TO_DATE(p.pdate, '%e-%c-%Y')) = ?", [$currentMonth])
-            ->whereRaw("YEAR(STR_TO_DATE(p.pdate, '%e-%c-%Y')) = ?",  [$currentYear])
-            ->whereIn('k.branch_id', $allBranches->pluck('id'))
-            ->select('k.branch_id', DB::raw('SUM(p.price) as revenue'))
-            ->groupBy('k.branch_id')
-            ->pluck('revenue', 'branch_id');
-
-        $branchStats = $allBranches->map(function($b) use ($branchPatients, $branchMonthRevenue) {
-            $b->patients_count  = $branchPatients[$b->id]     ?? 0;
-            $b->monthly_revenue = $branchMonthRevenue[$b->id] ?? 0;
-            return $b;
-        });
 
         return view('livewire.dashboard', [
             'branchStats'      => $branchStats,
