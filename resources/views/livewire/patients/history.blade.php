@@ -64,7 +64,7 @@
                     <textarea wire:model="current_complaint" style="width:100%; height:90px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
                 <div>
-                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">التدخلات الاستشارية المستخدمة ومدى التحسن</label>
+                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">العلاجات النفسية المستخدمة حالياً وسابقاً</label>
                     <textarea wire:model="psychiatric_treatments" style="width:100%; height:90px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
                 <div>
@@ -80,11 +80,11 @@
                     <textarea wire:model="family_history" style="width:100%; height:80px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
                 <div>
-                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">الملاحظات على المستوى الشخصي</label>
+                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">التعليقات على المستوى الشخصي</label>
                     <textarea wire:model="personal_history" style="width:100%; height:90px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
                 <div>
-                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">تقييم الحالة الحاضرة</label>
+                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">تقييم</label>
                     <textarea wire:model="mental_state" style="width:100%; height:90px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
                 <div style="grid-column:span 2;">
@@ -92,7 +92,7 @@
                     <textarea wire:model="recommendations" style="width:100%; height:80px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
                 <div style="grid-column:span 2;">
-                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">خطة المتابعة الاستشارية</label>
+                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">الخطة المستقبلية</label>
                     <textarea wire:model="future_plan" style="width:100%; height:80px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
             </div>
@@ -102,16 +102,16 @@
                 @php
                 $printFields = [
                     'الشكوى الحالية'                              => $current_complaint,
-                    'التدخلات الاستشارية المستخدمة ومدى التحسن' => $psychiatric_treatments,
+                    'العلاجات النفسية المستخدمة حالياً وسابقاً' => $psychiatric_treatments,
                     'الانطباع'                                    => $impression,
                     'الخطة'                                       => $plan,
-                    'الملاحظات على المستوى الشخصي'               => $personal_history,
-                    'تقييم الحالة الحاضرة'                        => $mental_state,
+                    'التعليقات على المستوى الشخصي'               => $personal_history,
+                    'تقييم'                        => $mental_state,
                 ];
                 $printFieldsFull = [
                     'الأمراض النفسية في الأسرة'    => $family_history,
                     'التوصيات / الملاحظات'         => $recommendations,
-                    'خطة المتابعة الاستشارية'    => $future_plan,
+                    'الخطة المستقبلية'    => $future_plan,
                 ];
                 @endphp
                 @foreach($printFields as $label => $value)
