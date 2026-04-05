@@ -115,19 +115,6 @@
 
 </div>
 
-{{-- ═══ فلتر الفرع ═══ --}}
-<div style="width:100%; max-width:580px; margin-top:0.85rem; display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;">
-    <button wire:click="$set('filterBranch', '')"
-        style="padding:0.35rem 1rem; border-radius:20px; font-size:0.8rem; font-weight:800; font-family:'Tajawal',sans-serif; cursor:pointer; border:1.5px solid {{ !$filterBranch ? 'var(--navy)' : '#d1d5db' }}; background:{{ !$filterBranch ? 'var(--navy)' : '#fff' }}; color:{{ !$filterBranch ? '#fff' : '#6b7280' }};">
-        الكل
-    </button>
-    @foreach($branches as $branch)
-    <button wire:click="$set('filterBranch', '{{ $branch->id }}')"
-        style="padding:0.35rem 1rem; border-radius:20px; font-size:0.78rem; font-weight:800; font-family:'Tajawal',sans-serif; cursor:pointer; border:1.5px solid {{ $filterBranch == $branch->id ? 'var(--primary)' : '#d1d5db' }}; background:{{ $filterBranch == $branch->id ? 'var(--primary-glow)' : '#fff' }}; color:{{ $filterBranch == $branch->id ? 'var(--primary)' : '#6b7280' }};">
-        {{ $branch->name }}
-    </button>
-    @endforeach
-</div>
 
 {{-- ═══ النتائج ═══ --}}
 @if($searchPerformed)
