@@ -72,7 +72,7 @@
                     <textarea wire:model="impression" style="width:100%; height:90px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
                 <div>
-                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">الخطة</label>
+                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">التوصيات</label>
                     <textarea wire:model="plan" style="width:100%; height:90px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
                 <div style="grid-column:span 2;">
@@ -80,11 +80,11 @@
                     <textarea wire:model="family_history" style="width:100%; height:80px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
                 <div>
-                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">التعليقات على المستوى الشخصي</label>
+                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">الأمراض العضوية لدى العميل</label>
                     <textarea wire:model="personal_history" style="width:100%; height:90px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
                 <div>
-                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">تقييم</label>
+                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">تقييم المشكلة</label>
                     <textarea wire:model="mental_state" style="width:100%; height:90px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
                 <div style="grid-column:span 2;">
@@ -104,9 +104,9 @@
                     'الشكوى الحالية'                              => $current_complaint,
                     'العلاجات النفسية المستخدمة حالياً وسابقاً' => $psychiatric_treatments,
                     'الانطباع'                                    => $impression,
-                    'الخطة'                                       => $plan,
-                    'التعليقات على المستوى الشخصي'               => $personal_history,
-                    'تقييم'                        => $mental_state,
+                    'التوصيات'                                       => $plan,
+                    'الأمراض العضوية لدى العميل'               => $personal_history,
+                    'تقييم المشكلة'                => $mental_state,
                 ];
                 $printFieldsFull = [
                     'الأمراض النفسية في الأسرة'    => $family_history,
