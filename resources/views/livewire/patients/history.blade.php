@@ -64,7 +64,7 @@
                     <textarea wire:model="current_complaint" style="width:100%; height:90px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
                 <div>
-                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">العلاجات النفسية المستخدمة حالياً وسابقاً</label>
+                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">العلاجات النفسية المستخدمة حالياً</label>
                     <textarea wire:model="psychiatric_treatments" style="width:100%; height:90px; border:1.5px solid var(--border); border-radius:7px; padding:0.65rem; font-family:'Tajawal'; font-size:0.88rem; outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 </div>
                 <div>
@@ -102,7 +102,7 @@
                 @php
                 $printFields = [
                     'الشكوى الحالية'                              => $current_complaint,
-                    'العلاجات النفسية المستخدمة حالياً وسابقاً' => $psychiatric_treatments,
+                    'العلاجات النفسية المستخدمة حالياً' => $psychiatric_treatments,
                     'الانطباع'                                    => $impression,
                     'التوصيات'                                       => $plan,
                     'الأمراض العضوية لدى العميل'               => $personal_history,
