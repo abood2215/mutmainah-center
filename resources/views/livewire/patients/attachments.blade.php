@@ -60,11 +60,11 @@
             @enderror
 
             <div style="margin-top:1rem; display:flex; gap:0.75rem;">
-                <button wire:click="upload" wire:loading.attr="disabled"
+                <button wire:click="saveFiles" wire:loading.attr="disabled"
                     style="padding:0.6rem 2rem; background:var(--primary); color:#fff; border:none; border-radius:8px; font-weight:900; font-size:0.9rem; font-family:'Tajawal',sans-serif; cursor:pointer; display:flex; align-items:center; gap:0.4rem;"
                     onmouseover="this.style.background='#6e1522'" onmouseout="this.style.background='var(--primary)'">
-                    <span wire:loading.remove wire:target="upload">⬆ رفع الملفات</span>
-                    <span wire:loading wire:target="upload" style="display:none;">⏳ جاري الرفع...</span>
+                    <span wire:loading.remove wire:target="saveFiles">⬆ رفع الملفات</span>
+                    <span wire:loading wire:target="saveFiles" style="display:none;">⏳ جاري الرفع...</span>
                 </button>
             </div>
 

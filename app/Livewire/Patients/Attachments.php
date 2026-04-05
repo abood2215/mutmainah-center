@@ -36,7 +36,7 @@ class Attachments extends Component
             ->toArray();
     }
 
-    public function upload(): void
+    public function saveFiles(): void
     {
         $this->validate([
             'files.*' => 'file|max:10240|mimes:jpg,jpeg,png,pdf,doc,docx,gif,webp',
