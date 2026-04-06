@@ -20,4 +20,9 @@ class EmployeeUser implements Authenticatable
     {
         return trim($this->data->first_name . ' ' . $this->data->middle_initial);
     }
+
+    public function __get(string $name): mixed
+    {
+        return $this->data->$name ?? null;
+    }
 }
