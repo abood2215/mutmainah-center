@@ -25,7 +25,8 @@
 </div>
 
 {{-- ═══ فورم الإضافة ═══ --}}
-<div style="background:#fff; border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.07); margin-bottom:1.25rem;">
+<div style="max-width:700px; margin:0 auto 1.25rem;">
+<div style="background:#fff; border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.07);">
 
     {{-- رأس --}}
     <div style="background:var(--navy); padding:1rem 1.5rem; border-bottom:3px solid var(--gold); display:flex; align-items:center; justify-content:space-between;">
@@ -126,24 +127,6 @@
             </div>
             @endif
 
-            {{-- التاريخ --}}
-            <div>
-                <label style="display:block; font-size:0.75rem; font-weight:800; color:#6b7280; margin-bottom:0.4rem;">التاريخ</label>
-                <div style="display:grid; grid-template-columns:0.6fr 1.3fr 1fr; gap:0.4rem;">
-                    <select wire:model="newDay" style="padding:0.55rem 0.3rem; border:1.5px solid #e5e7eb; border-radius:8px; font-family:'Tajawal',sans-serif; font-size:0.82rem; outline:none; background:#fff; text-align:center;">
-                        @for($d=1;$d<=31;$d++)<option value="{{ $d }}">{{ $d }}</option>@endfor
-                    </select>
-                    <select wire:model="newMonth" style="padding:0.55rem 0.3rem; border:1.5px solid #e5e7eb; border-radius:8px; font-family:'Tajawal',sans-serif; font-size:0.82rem; outline:none; background:#fff;">
-                        @foreach(['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'] as $mi=>$mn)
-                        <option value="{{ $mi+1 }}">{{ $mn }}</option>
-                        @endforeach
-                    </select>
-                    <select wire:model="newYear" style="padding:0.55rem 0.3rem; border:1.5px solid #e5e7eb; border-radius:8px; font-family:'Tajawal',sans-serif; font-size:0.82rem; outline:none; background:#fff; text-align:center;">
-                        @for($y=2020;$y<=2027;$y++)<option value="{{ $y }}">{{ $y }}</option>@endfor
-                    </select>
-                </div>
-            </div>
-
             {{-- البيان --}}
             <div>
                 <label style="display:block; font-size:0.75rem; font-weight:800; color:#6b7280; margin-bottom:0.4rem;">البيان / Desc</label>
@@ -164,6 +147,7 @@
             </button>
         </div>
     </div>
+</div>
 </div>
 
 {{-- ═══ قسم الحركات المدخلة (قابل للطي) ═══ --}}

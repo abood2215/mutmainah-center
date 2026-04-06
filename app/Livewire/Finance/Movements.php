@@ -155,11 +155,7 @@ class Movements extends Component
             $acckId = $acck->id;
         }
 
-        // بناء التاريخ من الحقول المنفصلة أو newDate
-        $dateObj = ($this->newDay && $this->newMonth && $this->newYear)
-            ? \Carbon\Carbon::createFromDate((int)$this->newYear, (int)$this->newMonth, (int)$this->newDay)
-            : \Carbon\Carbon::parse($this->newDate);
-        $pdate   = $dateObj->format('j-n-Y');
+        $pdate = now()->format('j-n-Y');
         $amount = round((float)$this->newAmount, 3);
         $userId = Auth::id() ?? 0;
         $isReceipt = $this->newMoveType === 'receipt';
