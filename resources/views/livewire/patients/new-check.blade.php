@@ -457,12 +457,13 @@
                         @if($isFree) disabled @endif
                         class="nc-input-full"
                         style="{{ $isFree ? 'background:#eee; opacity:.7;' : '' }}">
-                    <option value="1">نقد</option>
-                    <option value="2">شيك</option>
-                    <option value="3">شبكة (كي نت)</option>
-                    <option value="4">تحويل بنكي</option>
-                    <option value="6">فيزا</option>
-                    <option value="7">مجاني</option>
+                    <option value="1">Cash</option>
+                    <option value="2">Cheque</option>
+                    <option value="3">K-Net</option>
+                    <option value="4">Bank Transfer</option>
+                    <option value="6">Visa</option>
+                    <option value="11">MyFatoorah</option>
+                    <option value="7">Free</option>
                 </select>
             </div>
 
