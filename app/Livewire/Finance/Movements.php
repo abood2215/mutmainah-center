@@ -21,14 +21,16 @@ class Movements extends Component
 
     /* ══ نموذج إضافة حركة جديدة ══ */
     public bool   $showAddModal     = true;
+    public bool   $showMovements    = false;
     public string $newClientSearch  = '';
     public array  $newClientResults = [];
     public ?int   $newClientId      = null;
     public string $newClientName    = '';
     public string $newMoveType      = 'receipt';
     public string $newAmount        = '';
-    public string $newPayMethod     = '11';
-    public string $newDate          = '';   // YYYY-MM-DD
+    public string $newPayMethod     = '1';
+    public string $newRefNo         = '';
+    public string $newDate          = '';
     public string $newDay           = '';
     public string $newMonth         = '';
     public string $newYear          = '';
@@ -172,7 +174,7 @@ class Movements extends Component
             'discount'       => 0,
             'payment_method' => (int)$this->newPayMethod,
             'clinic_id'      => 0,
-            'pdesc'          => $this->newDesc,
+            'pdesc'          => $this->newDesc . ($this->newRefNo ? ' | Ref: '.$this->newRefNo : ''),
             'acc_id'         => $acckId,
             'serial_no'      => 0,
             'user_id'        => $userId,
@@ -215,6 +217,7 @@ class Movements extends Component
 
     public function openAddModal(): void  { }
     public function closeAddModal(): void { }
+    public function toggleMovements(): void { $this->showMovements = !$this->showMovements; }
 
     private function resetAddModal(): void
     {
@@ -224,7 +227,8 @@ class Movements extends Component
         $this->newClientName    = '';
         $this->newMoveType      = 'receipt';
         $this->newAmount        = '';
-        $this->newPayMethod     = '11';
+        $this->newPayMethod     = '1';
+        $this->newRefNo         = '';
         $this->newDate          = now()->format('Y-m-d');
         $this->newDay           = now()->format('j');
         $this->newMonth         = now()->format('n');
