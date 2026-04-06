@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
+            \App\Http\Middleware\SecurityHeaders::class,
         ]);
         $middleware->alias([
             'auth.employee' => \App\Http\Middleware\RequireAuth::class,

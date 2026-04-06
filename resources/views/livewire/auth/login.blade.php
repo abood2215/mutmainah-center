@@ -2,7 +2,7 @@
     @if($failed)
     <div class="error-box" role="alert">
         <div class="error-icon">✕</div>
-        <span>اسم المستخدم أو كلمة المرور غير صحيحة</span>
+        <span>{{ $errorMsg ?: 'اسم المستخدم أو كلمة المرور غير صحيحة' }}</span>
     </div>
     @endif
 
