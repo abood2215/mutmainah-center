@@ -366,7 +366,8 @@ class Reports extends Component
         if ($this->search) {
             $t = '%' . $this->search . '%';
             $query->where(fn($q) => $q->where('s.full_name', 'like', $t)
-                ->orWhere('s.file_id', 'like', $t));
+                ->orWhere('s.file_id', 'like', $t)
+                ->orWhere('s.phone', 'like', $t));
         }
 
         $rows = $query->paginate(20);
