@@ -5,16 +5,18 @@ namespace App\Livewire\Auth;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class Login extends Component
 {
-    public string $username = '';
-    public string $password = '';
-    public bool   $failed   = false;
-    public string $errorMsg = '';
+    public string $username        = '';
+    public string $password        = '';
+    public string $recaptchaToken  = '';
+    public bool   $failed          = false;
+    public string $errorMsg        = '';
 
     private function throttleKey(): string
     {
@@ -26,6 +28,27 @@ class Login extends Component
     {
         $this->failed   = false;
         $this->errorMsg = '';
+
+        // التحقق من reCAPTCHA
+        if (empty($this->recaptchaToken)) {
+            $this->failed   = true;
+            $this->errorMsg = 'يرجى التحقق من أنك لست روبوتاً.';
+            return;
+        }
+
+        $captcha = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+            'secret'   => config('services.recaptcha.secret'),
+            'response' => $this->recaptchaToken,
+            'remoteip' => request()->ip(),
+        ]);
+
+        if (!($captcha->json('success') ?? false)) {
+            $this->failed         = true;
+            $this->errorMsg       = 'فشل التحقق من reCAPTCHA. حاول مرة أخرى.';
+            $this->recaptchaToken = '';
+            $this->dispatch('reset-recaptcha');
+            return;
+        }
 
         // Rate Limiting: 5 محاولات كل 5 دقائق
         $key = $this->throttleKey();
