@@ -400,7 +400,7 @@ class Reports extends Component
     ══════════════════════════════════════════════ */
     public function render()
     {
-        $clinics = DB::table('clinic')->orderBy('name')->get(['id', 'name']);
+        $clinics = DB::table('clinic')->where('state_id', 1)->orderBy('name')->get(['id', 'name']);
 
         $rows    = collect();
         $summary = [];

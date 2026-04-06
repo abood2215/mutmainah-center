@@ -126,7 +126,7 @@ class Invoices extends Component
 
     public function render()
     {
-        $clinics   = DB::table('clinic')->orderBy('name')->get(['id', 'name']);
+        $clinics = DB::table('clinic')->where('state_id', 1)->orderBy('name')->get(['id', 'name']);
         $employees = DB::table('employees as e')
             ->whereIn('e.id', DB::table('kpayments')->distinct()->pluck('user_id'))
             ->select('e.id', 'e.first_name', 'e.middle_initial')

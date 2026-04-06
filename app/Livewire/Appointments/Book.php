@@ -22,7 +22,7 @@ class Book extends Component
     #[Title('حجز موعد جديد')]
     public function mount(): void
     {
-        $this->clinics      = DB::table('clinic')->orderBy('name')->get(['id', 'name'])->all();
+        $this->clinics = DB::table('clinic')->where('state_id', 1)->orderBy('name')->get(['id', 'name'])->all();
         $this->selectedDate = now()->format('Y-m-d');
     }
 

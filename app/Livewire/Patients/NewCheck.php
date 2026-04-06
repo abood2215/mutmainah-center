@@ -43,7 +43,7 @@ class NewCheck extends Component
 
         abort_if(!$this->patient, 404);
 
-        $this->clinics = DB::table('clinic')->orderBy('name')->get(['id', 'name'])->all();
+        $this->clinics = DB::table('clinic')->where('state_id', 1)->orderBy('name')->get(['id', 'name'])->all();
         $this->loadServices();
     }
 

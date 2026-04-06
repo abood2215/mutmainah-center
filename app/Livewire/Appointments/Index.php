@@ -85,7 +85,7 @@ class Index extends Component
             ->orderByRaw("STR_TO_DATE(r.rec_date, '%e-%c-%Y') ASC")
             ->orderBy('r.rec_time', 'asc')
             ->paginate(20);
-        $clinics      = DB::table('clinic')->orderBy('name')->get();
+        $clinics = DB::table('clinic')->where('state_id', 1)->orderBy('name')->get();
 
         $todayCount = DB::table('rec')
             ->where('rec_date', $today)

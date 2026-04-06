@@ -89,7 +89,7 @@ class Index extends Component
             $check->serial_no = $p ? $p->serial_no : null;
             return $check;
         });
-        $clinics  = DB::table('clinic')->orderBy('name')->get(['id', 'name']);
+        $clinics = DB::table('clinic')->where('state_id', 1)->orderBy('name')->get(['id', 'name']);
         $branches = $this->branches;
 
         // تم الكشف = دفع ونزل بقائمة الكشوف
