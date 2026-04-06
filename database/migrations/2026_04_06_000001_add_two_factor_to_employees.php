@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('employees', function (Blueprint $table) {
-            $table->string('two_factor_secret')->nullable()->after('password');
-            $table->boolean('two_factor_enabled')->default(false)->after('two_factor_secret');
+            $table->string('two_factor_secret')->nullable();
+            $table->boolean('two_factor_enabled')->default(false);
         });
     }
 
