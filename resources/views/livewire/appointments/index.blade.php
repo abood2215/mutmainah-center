@@ -124,7 +124,16 @@
                             @if($app->status == 1)
                                 <span style="display:inline-block; background:#f1f5f9; color:#64748b; padding:0.25rem 0.85rem; border-radius:20px; font-size:0.78rem; font-weight:800;">منتهي</span>
                             @else
-                                <span style="display:inline-block; background:#fffbeb; color:#b45309; border:1px solid #fde68a; padding:0.25rem 0.85rem; border-radius:20px; font-size:0.78rem; font-weight:800;">محجوز</span>
+                                <div style="display:flex; flex-direction:column; align-items:center; gap:0.4rem;">
+                                    <span style="display:inline-block; background:#fffbeb; color:#b45309; border:1px solid #fde68a; padding:0.25rem 0.85rem; border-radius:20px; font-size:0.78rem; font-weight:800;">محجوز</span>
+                                    <button wire:click="markChecked({{ $app->id }})"
+                                        wire:confirm="تأكيد: تم الكشف على هذا العميل؟"
+                                        style="background:#059669; color:#fff; border:none; padding:0.2rem 0.7rem; border-radius:6px; font-size:0.72rem; font-weight:800; cursor:pointer; font-family:'Tajawal',sans-serif; white-space:nowrap;"
+                                        onmouseover="this.style.background='#047857'"
+                                        onmouseout="this.style.background='#059669'">
+                                        ✓ تم الكشف
+                                    </button>
+                                </div>
                             @endif
                         </td>
                         <td style="padding:0.85rem 1rem; text-align:center;">

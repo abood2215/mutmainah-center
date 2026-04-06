@@ -47,6 +47,11 @@ class Index extends Component
         $this->showTodayModal = false;
     }
 
+    public function markChecked(int $recId): void
+    {
+        DB::table('rec')->where('id', $recId)->where('confirm_id', 0)->update(['confirm_id' => 1]);
+    }
+
     #[Title('جدول المواعيد : Appointments')]
     public function render()
     {
