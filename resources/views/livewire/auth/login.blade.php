@@ -41,11 +41,6 @@
         </div>
     </div>
 
-    {{-- reCAPTCHA --}}
-    <div wire:ignore style="margin-bottom:1.25rem; display:flex; justify-content:center;">
-        <div id="recaptcha-container"></div>
-    </div>
-
     <div class="btn-login-wrap">
         <button wire:click="login" wire:loading.attr="disabled" class="btn-login">
             <div class="btn-shimmer"></div>
@@ -59,26 +54,4 @@
     </div>
 </div>
 
-@script
-<script>
-    (function tryInit() {
-        if (typeof grecaptcha === 'undefined' || typeof grecaptcha.render === 'undefined') {
-            return setTimeout(tryInit, 150);
-        }
-        var c = document.getElementById('recaptcha-container');
-        if (!c) return;
-        try {
-            grecaptcha.render(c, {
-                sitekey: '{{ config("services.recaptcha.site_key") }}',
-                callback:          function(t) { $wire.set('recaptchaToken', t);  },
-                'expired-callback': function()  { $wire.set('recaptchaToken', ''); }
-            });
-        } catch(e) {}
-    })();
-
-    $wire.on('reset-recaptcha', function() {
-        if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
-    });
-</script>
-@endscript
 

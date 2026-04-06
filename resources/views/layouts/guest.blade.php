@@ -466,6 +466,5 @@
     </div>
 
     @livewireScripts
-    <script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer></script>
 </body>
 </html>
