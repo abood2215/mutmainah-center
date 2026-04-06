@@ -42,13 +42,7 @@
     </div>
 
     {{-- reCAPTCHA --}}
-    <div style="margin-bottom:1.25rem; display:flex; justify-content:center;" wire:ignore>
-        <div class="g-recaptcha"
-             data-sitekey="{{ config('services.recaptcha.site_key') }}"
-             data-callback="onRecaptchaSuccess"
-             data-expired-callback="onRecaptchaExpired">
-        </div>
-    </div>
+    <div id="recaptcha-container" style="margin-bottom:1.25rem; display:flex; justify-content:center;" wire:ignore></div>
 
     <div class="btn-login-wrap">
         <button wire:click="login" wire:loading.attr="disabled" class="btn-login">
@@ -63,13 +57,18 @@
     </div>
 </div>
 
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script src="https://www.google.com/recaptcha/api.js?onload=renderRecaptcha&render=explicit" async defer></script>
 <script>
-    function onRecaptchaSuccess(token) {
-        @this.set('recaptchaToken', token);
-    }
-    function onRecaptchaExpired() {
-        @this.set('recaptchaToken', '');
+    function renderRecaptcha() {
+        grecaptcha.render('recaptcha-container', {
+            sitekey: '{{ config("services.recaptcha.site_key") }}',
+            callback: function(token) {
+                @this.set('recaptchaToken', token);
+            },
+            'expired-callback': function() {
+                @this.set('recaptchaToken', '');
+            }
+        });
     }
     document.addEventListener('reset-recaptcha', () => {
         if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
