@@ -55,6 +55,7 @@ class Index extends Component
         $query = DB::table('rec as r')
             ->leftJoin('kstu as a', 'a.id', '=', 'r.st_id')
             ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
+            ->leftJoin('employees as e', 'e.id', '=', 'r.user_id')
             ->where('r.confirm_id', 0)
             ->select(
                 'r.id',
@@ -64,7 +65,8 @@ class Index extends Component
                 'r.st_id',
                 'a.full_name as patient_name',
                 'a.phone as patient_phone',
-                'c.name as clinic_name'
+                'c.name as clinic_name',
+                DB::raw("TRIM(CONCAT(COALESCE(e.first_name,''), ' ', COALESCE(e.middle_initial,''))) as booked_by")
             );
 
         if ($this->search) {

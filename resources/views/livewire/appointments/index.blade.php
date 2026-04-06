@@ -87,6 +87,7 @@
                         <th style="padding:0.75rem 1rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px;">الوقت والتاريخ</th>
                         <th style="padding:0.75rem 1rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px;">العميل</th>
                         <th style="padding:0.75rem 1rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px;">العيادة</th>
+                        <th style="padding:0.75rem 1rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px;">الحجز بواسطة</th>
                         <th style="padding:0.75rem 1rem; text-align:center; font-size:0.78rem; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px;">الحالة</th>
                         <th style="padding:0.75rem 1rem; text-align:center; font-size:0.78rem; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px;">تذكير واتساب</th>
                     </tr>
@@ -113,6 +114,11 @@
                         </td>
                         <td style="padding:0.85rem 1rem;">
                             <div style="font-size:0.88rem; font-weight:700; color:var(--text-dim);">{{ $app->clinic_name ?: '—' }}</div>
+                        </td>
+                        <td style="padding:0.85rem 1rem;">
+                            <div style="font-size:0.82rem; font-weight:700; color:#1e40af; background:#eff6ff; padding:0.2rem 0.6rem; border-radius:6px; display:inline-block; max-width:160px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="{{ $app->booked_by }}">
+                                {{ $app->booked_by ?: '—' }}
+                            </div>
                         </td>
                         <td style="padding:0.85rem 1rem; text-align:center;">
                             @if($app->status == 1)
