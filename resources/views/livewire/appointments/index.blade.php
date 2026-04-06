@@ -164,8 +164,42 @@
         </div>
 
         @if($appointments->hasPages())
-        <div style="padding:0.85rem 1.25rem; border-top:1px solid var(--border); background:#fafbfc;">
-            <div class="custom-pagination">{{ $appointments->links() }}</div>
+        @php
+            $cur   = $appointments->currentPage();
+            $last  = $appointments->lastPage();
+            $start = max(1, $cur - 3);
+            $end   = min($last, $cur + 3);
+        @endphp
+        <div style="background:#1a1a2e; padding:0.55rem 1rem; display:flex; align-items:center; justify-content:center; gap:0.25rem; flex-wrap:wrap; border-top:2px solid var(--gold);">
+            @if($appointments->onFirstPage())
+                <span style="padding:0.3rem 0.75rem; color:rgba(255,255,255,0.3); font-size:0.82rem; font-weight:700;">السابق</span>
+            @else
+                <button wire:click="previousPage" style="padding:0.3rem 0.75rem; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25); border-radius:4px; color:#fff; cursor:pointer; font-size:0.82rem; font-weight:700; font-family:'Tajawal',sans-serif;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">السابق</button>
+            @endif
+
+            @if($start > 1)
+                <button wire:click="gotoPage(1)" style="padding:0.3rem 0.6rem; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:4px; color:#fff; cursor:pointer; font-size:0.82rem; min-width:30px; font-family:'Tajawal',sans-serif;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">1</button>
+                @if($start > 2)<span style="color:rgba(255,255,255,0.4); font-size:0.85rem; padding:0 2px;">…</span>@endif
+            @endif
+
+            @for($p = $start; $p <= $end; $p++)
+                @if($p == $cur)
+                    <span style="padding:0.3rem 0.6rem; background:#c8941a; border-radius:4px; color:#fff; font-weight:900; font-size:0.82rem; min-width:30px; text-align:center;">{{ $p }}</span>
+                @else
+                    <button wire:click="gotoPage({{ $p }})" style="padding:0.3rem 0.6rem; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:4px; color:#fff; cursor:pointer; font-size:0.82rem; min-width:30px; font-family:'Tajawal',sans-serif;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">{{ $p }}</button>
+                @endif
+            @endfor
+
+            @if($end < $last)
+                @if($end < $last - 1)<span style="color:rgba(255,255,255,0.4); font-size:0.85rem; padding:0 2px;">…</span>@endif
+                <button wire:click="gotoPage({{ $last }})" style="padding:0.3rem 0.6rem; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:4px; color:#fff; cursor:pointer; font-size:0.82rem; min-width:30px; font-family:'Tajawal',sans-serif;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">{{ $last }}</button>
+            @endif
+
+            @if($appointments->hasMorePages())
+                <button wire:click="nextPage" style="padding:0.3rem 0.75rem; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25); border-radius:4px; color:#fff; cursor:pointer; font-size:0.82rem; font-weight:700; font-family:'Tajawal',sans-serif;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">التالي</button>
+            @else
+                <span style="padding:0.3rem 0.75rem; color:rgba(255,255,255,0.3); font-size:0.82rem; font-weight:700;">التالي</span>
+            @endif
         </div>
         @endif
 
