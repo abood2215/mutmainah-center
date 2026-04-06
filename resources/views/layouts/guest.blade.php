@@ -466,26 +466,6 @@
     </div>
 
     @livewireScripts
-    <script src="https://www.google.com/recaptcha/api.js?onload=renderRecaptcha&render=explicit" async defer></script>
-    <script>
-        function renderRecaptcha() {
-            var container = document.getElementById('recaptcha-container');
-            if (!container) return;
-            grecaptcha.render(container, {
-                sitekey: '{{ config("services.recaptcha.site_key") }}',
-                callback: function(token) {
-                    var el = document.querySelector('[wire\\:id]');
-                    if (el) Livewire.find(el.getAttribute('wire:id')).set('recaptchaToken', token);
-                },
-                'expired-callback': function() {
-                    var el = document.querySelector('[wire\\:id]');
-                    if (el) Livewire.find(el.getAttribute('wire:id')).set('recaptchaToken', '');
-                }
-            });
-        }
-        window.addEventListener('reset-recaptcha', function() {
-            if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
-        });
-    </script>
+    <script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer></script>
 </body>
 </html>
