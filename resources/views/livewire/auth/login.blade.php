@@ -42,7 +42,9 @@
     </div>
 
     {{-- reCAPTCHA --}}
-    <div id="recaptcha-container" style="margin-bottom:1.25rem; display:flex; justify-content:center;" wire:ignore></div>
+    <div wire:ignore style="margin-bottom:1.25rem; display:flex; justify-content:center;">
+        <div id="recaptcha-container"></div>
+    </div>
 
     <div class="btn-login-wrap">
         <button wire:click="login" wire:loading.attr="disabled" class="btn-login">
@@ -57,20 +59,3 @@
     </div>
 </div>
 
-<script src="https://www.google.com/recaptcha/api.js?onload=renderRecaptcha&render=explicit" async defer></script>
-<script>
-    function renderRecaptcha() {
-        grecaptcha.render('recaptcha-container', {
-            sitekey: '{{ config("services.recaptcha.site_key") }}',
-            callback: function(token) {
-                @this.set('recaptchaToken', token);
-            },
-            'expired-callback': function() {
-                @this.set('recaptchaToken', '');
-            }
-        });
-    }
-    document.addEventListener('reset-recaptcha', () => {
-        if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
-    });
-</script>
