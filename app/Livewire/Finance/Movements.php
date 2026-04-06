@@ -20,7 +20,7 @@ class Movements extends Component
     public bool   $searched      = false;
 
     /* ══ نموذج إضافة حركة جديدة ══ */
-    public bool   $showAddModal     = false;
+    public bool   $showAddModal     = true;
     public string $newClientSearch  = '';
     public array  $newClientResults = [];
     public ?int   $newClientId      = null;
@@ -213,16 +213,8 @@ class Movements extends Component
         session()->flash('movement_saved', "تم حفظ سند " . ($isReceipt ? 'القبض' : 'الصرف') . " بنجاح — رقم السند: #{$newId}");
     }
 
-    public function openAddModal(): void
-    {
-        $this->showAddModal = true;
-    }
-
-    public function closeAddModal(): void
-    {
-        $this->showAddModal = false;
-        $this->resetAddModal();
-    }
+    public function openAddModal(): void  { }
+    public function closeAddModal(): void { }
 
     private function resetAddModal(): void
     {
