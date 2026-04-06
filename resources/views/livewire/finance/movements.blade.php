@@ -255,9 +255,6 @@
     </div>
 </div>
 
-</div>
-</div>
-
 {{-- ══════ MODAL: إضافة حركة مالية ══════ --}}
 @if($showAddModal)
 <div wire:click.self="closeAddModal"
@@ -398,3 +395,6 @@
 }
 </style>
 @endif
+
+</div>
+</div>
