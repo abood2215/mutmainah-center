@@ -682,6 +682,7 @@
                 <ul class="dd-menu">
                     <li><a href="{{ route('finance.invoices') }}"><span>💳</span> الفواتير</a></li>
                     <li><a href="{{ route('finance.vouchers') }}"><span>📑</span> السندات</a></li>
+                    <li><a href="{{ route('finance.branch-report') }}"><span>🏢</span> تقرير الفروع</a></li>
                     <li><a href="{{ route('finance.reports') }}?type=pb"><span>💰</span> أرصدة العملاء</a></li>
                     <li><a href="{{ route('finance.reports') }}?type=services"><span>🔬</span> الخدمات</a></li>
                     <li><a href="{{ route('finance.reports') }}?type=appointments"><span>📅</span> المواعيد</a></li>

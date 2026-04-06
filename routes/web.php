@@ -154,6 +154,7 @@ Route::middleware('auth.employee')->group(function () {
     })->name('finance.invoice-print');
 
     Route::get('/finance/reports', \App\Livewire\Finance\Reports::class)->name('finance.reports');
+    Route::get('/finance/branch-report', \App\Livewire\Finance\BranchReport::class)->name('finance.branch-report');
 
     // Clinics
     Route::get('/clinics', \App\Livewire\Clinics\Index::class)->name('clinics.index');
