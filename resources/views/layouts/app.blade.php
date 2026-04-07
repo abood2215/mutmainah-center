@@ -729,15 +729,6 @@
                         <div style="font-weight:800; color:var(--navy); font-size:0.88rem;">{{ auth()->user()?->getName() ?? 'مدير النظام' }}</div>
                         <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.15rem;">مسؤول النظام</div>
                     </div>
-                    <a href="{{ route('2fa.setup') }}" class="user-dd-item" style="display:block; padding:0.6rem 1rem; text-decoration:none; color:var(--navy); font-size:0.85rem; font-weight:700;">
-                        <span>🔐</span> المصادقة الثنائية
-                        @php $emp2fa = DB::table('employees')->where('id', auth()->id())->value('two_factor_enabled'); @endphp
-                        @if($emp2fa)
-                            <span style="background:#dcfce7; color:#16a34a; font-size:0.65rem; font-weight:800; padding:0.1rem 0.4rem; border-radius:4px; margin-right:4px;">مفعّل</span>
-                        @else
-                            <span style="background:#fef3c7; color:#d97706; font-size:0.65rem; font-weight:800; padding:0.1rem 0.4rem; border-radius:4px; margin-right:4px;">معطّل</span>
-                        @endif
-                    </a>
                     <form method="POST" action="{{ route('logout') }}" style="margin:0;">
                         @csrf
                         <button type="submit" class="user-dd-item" style="width:100%; border:none; background:none; cursor:pointer; text-align:right; font-family:'Tajawal',sans-serif; color:#dc2626;">

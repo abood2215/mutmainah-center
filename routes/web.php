@@ -22,16 +22,10 @@ Route::post('/logout', function () {
     return redirect()->route('login');
 })->name('logout');
 
-// 2FA — يحتاج تسجيل دخول لكن لا يحتاج 2fa_verified
-Route::middleware('auth.employee')->group(function () {
-    Route::get('/2fa', \App\Livewire\Auth\TwoFactor::class)->name('2fa.verify');
-    Route::get('/2fa/setup', \App\Livewire\Auth\TwoFactorSetup::class)->name('2fa.setup');
-});
-
 /* ══════════════════════════════════════
    Authenticated Routes
 ══════════════════════════════════════ */
-Route::middleware(['auth.employee', 'require.2fa'])->group(function () {
+Route::middleware(['auth.employee'])->group(function () {
 
     Route::get('/', Dashboard::class)->name('dashboard');
     Route::get('/patients', PatientsIndex::class)->name('patients.index');

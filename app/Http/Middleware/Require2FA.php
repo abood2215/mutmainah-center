@@ -15,16 +15,6 @@ class Require2FA
             return redirect()->route('login');
         }
 
-        $user = Auth::user();
-
-        // إذا 2FA مفعّل ولم يتحقق منه بعد في هذه الجلسة
-        if ($user->two_factor_enabled && !session('2fa_verified')) {
-            // نسمح بالوصول لصفحة التحقق فقط
-            if (!$request->routeIs('2fa.verify', '2fa.setup', 'logout')) {
-                return redirect()->route('2fa.verify');
-            }
-        }
-
         return $next($request);
     }
 }
