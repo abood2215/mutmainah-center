@@ -29,6 +29,15 @@ class Index extends Component
     {
         $today = now()->format('j-n-Y');
 
+        // تحديث تلقائي: إذا كان العميل أخذ كشفه اليوم → state_id=1
+        DB::statement("
+            UPDATE rec r1
+            INNER JOIN rec r2 ON r2.st_id = r1.st_id
+                AND r2.rec_date = ? AND r2.confirm_id = 1 AND r2.state_id = 1
+            SET r1.state_id = 1
+            WHERE r1.rec_date = ? AND r1.confirm_id = 0 AND r1.state_id = 0
+        ", [$today, $today]);
+
         $this->todayList = DB::table('rec as r')
             ->leftJoin('kstu as k', 'k.id', '=', 'r.st_id')
             ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')

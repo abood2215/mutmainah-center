@@ -271,7 +271,11 @@
                 </div>
                 @endif
 
-                <span style="background:#fffbeb; color:#b45309; border:1px solid #fde68a; padding:0.2rem 0.65rem; border-radius:20px; font-size:0.72rem; font-weight:800; flex-shrink:0;">محجوز</span>
+                @if($w->state_id == 1)
+                    <span style="background:#dcfce7; color:#15803d; border:1px solid #bbf7d0; padding:0.2rem 0.65rem; border-radius:20px; font-size:0.72rem; font-weight:800; flex-shrink:0;">✓ تم الكشف</span>
+                @else
+                    <span style="background:#fffbeb; color:#b45309; border:1px solid #fde68a; padding:0.2rem 0.65rem; border-radius:20px; font-size:0.72rem; font-weight:800; flex-shrink:0;">انتظار</span>
+                @endif
             </div>
             @empty
             <div style="padding:3rem; text-align:center; color:var(--text-muted);">
