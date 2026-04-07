@@ -160,9 +160,6 @@
         @endif
     </div>
 
-</div>
-</div>
-
 {{-- ═══════════ مودال التعديل ═══════════ --}}
 @if($showEditModal)
 <div style="position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; display:flex; align-items:center; justify-content:center; padding:1rem;" wire:click.self="closeEdit">
@@ -259,3 +256,6 @@
     </div>
 </div>
 @endif
+
+</div>
+</div>
