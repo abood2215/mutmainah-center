@@ -6,10 +6,10 @@ $floorEn   = $isFloor6 ? '6th Floor' : '3rd Floor';
 $deptAr    = $isFloor6 ? 'الاستشارات التربوية والتدريب' : 'الاستشارات اللغوية';
 $deptEn    = $isFloor6 ? 'Educational Consulting & Training' : 'Language Consulting';
 $isReceipt = $mov->status == 1;
-$typeColor = $isReceipt ? '#16a34a' : '#dc2626';
+$typeColor = $isReceipt ? '#0f172a' : '#dc2626';
 $typeBg    = $isReceipt ? '#f0fdf4' : '#fff5f5';
 $typeBdr   = $isReceipt ? '#bbf7d0' : '#fecaca';
-$typeDot   = $isReceipt ? 'rgba(22,163,74,0.25)' : 'rgba(220,38,38,0.25)';
+$typeDot   = $isReceipt ? 'rgba(15,23,42,0.15)' : 'rgba(220,38,38,0.25)';
 $typeLabel = $isReceipt ? 'CASH RECEIPT VOUCHER' : 'PAYMENT VOUCHER';
 $amtLabel  = $isReceipt ? 'Amount Received' : 'Amount Paid';
 @endphp
