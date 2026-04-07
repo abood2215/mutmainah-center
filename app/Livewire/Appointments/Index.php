@@ -57,6 +57,16 @@ class Index extends Component
     {
         $today = now()->format('j-n-Y');
 
+        // تحديث تلقائي: كل موعد محجوز (confirm_id=0) قبل اليوم → منتهي (confirm_id=1)
+        $pastDates = collect();
+        for ($i = 1; $i <= 30; $i++) {
+            $pastDates->push(now()->subDays($i)->format('j-n-Y'));
+        }
+        DB::table('rec')
+            ->where('confirm_id', 0)
+            ->whereIn('rec_date', $pastDates)
+            ->update(['confirm_id' => 1]);
+
         $query = DB::table('rec as r')
             ->leftJoin('kstu as a', 'a.id', '=', 'r.st_id')
             ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
