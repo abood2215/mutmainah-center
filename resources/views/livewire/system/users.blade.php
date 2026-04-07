@@ -9,20 +9,10 @@
                 {{ $totalActive }} نشط من أصل {{ $totalAll }} مستخدم
             </div>
         </div>
-        <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
-            <button wire:click="toggleAddForm"
-                style="background:{{ $showAddForm ? '#f0fdf4' : 'var(--primary)' }}; color:{{ $showAddForm ? '#16a34a' : '#fff' }}; border:{{ $showAddForm ? '1.5px solid #bbf7d0' : 'none' }}; border-radius:10px; padding:0.6rem 1.25rem; font-weight:800; font-size:0.85rem; cursor:pointer; font-family:'Tajawal',sans-serif; display:flex; align-items:center; gap:0.5rem;">
-                {{ $showAddForm ? '✕ إغلاق' : '+ مستخدم جديد' }}
-            </button>
-            @if(!$confirmDisableAll)
-            <button wire:click="confirmDisableAll"
-                style="background:#fef2f2; color:#dc2626; border:1.5px solid #fecaca; border-radius:10px; padding:0.6rem 1.25rem; font-weight:800; font-size:0.85rem; cursor:pointer; font-family:'Tajawal',sans-serif;"
-                onmouseover="this.style.background='#dc2626'; this.style.color='#fff'"
-                onmouseout="this.style.background='#fef2f2'; this.style.color='#dc2626'">
-                🔒 تعطيل الجميع ما عدا حسابي
-            </button>
-            @endif
-        </div>
+        <button wire:click="toggleAddForm"
+            style="background:{{ $showAddForm ? '#f1f5f9' : 'var(--primary)' }}; color:{{ $showAddForm ? 'var(--text-dim)' : '#fff' }}; border:{{ $showAddForm ? '1px solid var(--border)' : 'none' }}; border-radius:10px; padding:0.6rem 1.4rem; font-weight:800; font-size:0.88rem; cursor:pointer; font-family:'Tajawal',sans-serif;">
+            {{ $showAddForm ? '✕ إغلاق' : '+ مستخدم جديد' }}
+        </button>
     </div>
 
     {{-- رسائل --}}
@@ -35,32 +25,28 @@
 
     {{-- فورم إضافة مستخدم جديد --}}
     @if($showAddForm)
-    <div style="background:#fff; border:2px solid var(--primary); border-radius:14px; overflow:hidden; box-shadow:0 4px 16px rgba(139,28,43,0.12); margin-bottom:1.5rem; animation:fadeIn 0.25s ease;">
-        <div style="background:var(--primary); padding:0.85rem 1.5rem; display:flex; align-items:center; gap:0.65rem;">
+    <div style="background:#fff; border:2px solid var(--primary); border-radius:14px; overflow:hidden; box-shadow:0 4px 16px rgba(139,28,43,0.1); margin-bottom:1.5rem; animation:fadeIn 0.25s ease;">
+        <div style="background:var(--navy); padding:0.85rem 1.5rem; display:flex; align-items:center; gap:0.65rem; border-bottom:3px solid var(--gold);">
             <span style="font-size:1.1rem;">👤</span>
             <span style="color:#fff; font-weight:900; font-size:1rem; font-family:'Tajawal',sans-serif;">إضافة مستخدم جديد</span>
         </div>
         <div style="padding:1.25rem;">
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin-bottom:1rem;">
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:1rem; margin-bottom:1.1rem;">
                 <div>
                     <label style="display:block; font-size:0.75rem; font-weight:800; color:#6b7280; margin-bottom:0.35rem;">الاسم <span style="color:#dc2626;">*</span></label>
-                    <input type="text" wire:model="newFirstName" placeholder="الاسم الأول"
-                        class="form-input" style="width:100%; box-sizing:border-box;">
+                    <input type="text" wire:model="newFirstName" placeholder="الاسم الأول" class="form-input" style="width:100%; box-sizing:border-box;">
                 </div>
                 <div>
                     <label style="display:block; font-size:0.75rem; font-weight:800; color:#6b7280; margin-bottom:0.35rem;">اسم الأب</label>
-                    <input type="text" wire:model="newMiddleName" placeholder="اسم الأب (اختياري)"
-                        class="form-input" style="width:100%; box-sizing:border-box;">
+                    <input type="text" wire:model="newMiddleName" placeholder="اختياري" class="form-input" style="width:100%; box-sizing:border-box;">
                 </div>
                 <div>
                     <label style="display:block; font-size:0.75rem; font-weight:800; color:#6b7280; margin-bottom:0.35rem;">اسم المستخدم <span style="color:#dc2626;">*</span></label>
-                    <input type="text" wire:model="newUserName" placeholder="username"
-                        class="form-input" style="width:100%; box-sizing:border-box; direction:ltr;">
+                    <input type="text" wire:model="newUserName" placeholder="username" class="form-input" style="width:100%; box-sizing:border-box; direction:ltr;">
                 </div>
                 <div>
                     <label style="display:block; font-size:0.75rem; font-weight:800; color:#6b7280; margin-bottom:0.35rem;">كلمة المرور <span style="color:#dc2626;">*</span></label>
-                    <input type="password" wire:model="newPassword" placeholder="••••••••"
-                        class="form-input" style="width:100%; box-sizing:border-box; direction:ltr;">
+                    <input type="password" wire:model="newPassword" placeholder="••••••••" class="form-input" style="width:100%; box-sizing:border-box; direction:ltr;">
                 </div>
                 <div>
                     <label style="display:block; font-size:0.75rem; font-weight:800; color:#6b7280; margin-bottom:0.35rem;">الصلاحية <span style="color:#dc2626;">*</span></label>
@@ -70,36 +56,10 @@
                     </select>
                 </div>
             </div>
-            <div style="display:flex; gap:0.6rem;">
-                <button wire:click="createUser" wire:loading.attr="disabled"
-                    style="background:var(--primary); color:#fff; border:none; border-radius:9px; padding:0.65rem 2rem; font-weight:900; font-size:0.9rem; cursor:pointer; font-family:'Tajawal',sans-serif;">
-                    <span wire:loading.remove wire:target="createUser">💾 حفظ المستخدم</span>
-                    <span wire:loading wire:target="createUser">جارٍ الحفظ...</span>
-                </button>
-                <button wire:click="toggleAddForm"
-                    style="background:#f1f5f9; color:var(--text-dim); border:1px solid var(--border); border-radius:9px; padding:0.65rem 1.25rem; font-weight:700; font-size:0.88rem; cursor:pointer; font-family:'Tajawal',sans-serif;">
-                    إلغاء
-                </button>
-            </div>
-        </div>
-    </div>
-    @endif
-
-    {{-- تعطيل الجميع --}}
-    @if($confirmDisableAll)
-    <div style="background:#fff3cd; border:2px solid #ffc107; border-radius:12px; padding:1.1rem 1.5rem; margin-bottom:1.25rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
-        <div>
-            <div style="font-weight:900; color:#856404; font-size:0.95rem;">⚠️ تأكيد تعطيل جميع المستخدمين</div>
-            <div style="font-size:0.82rem; color:#856404; margin-top:0.25rem;">سيتم تعطيل كل الحسابات ما عدا حسابك</div>
-        </div>
-        <div style="display:flex; gap:0.6rem;">
-            <button wire:click="disableAllExceptMe"
-                style="background:#dc2626; color:#fff; border:none; border-radius:8px; padding:0.55rem 1.25rem; font-weight:900; font-size:0.88rem; cursor:pointer; font-family:'Tajawal',sans-serif;">
-                نعم، عطّل الجميع
-            </button>
-            <button wire:click="cancelDisableAll"
-                style="background:#f1f5f9; color:var(--text-dim); border:1px solid var(--border); border-radius:8px; padding:0.55rem 1rem; font-weight:700; font-size:0.88rem; cursor:pointer; font-family:'Tajawal',sans-serif;">
-                إلغاء
+            <button wire:click="createUser" wire:loading.attr="disabled"
+                style="background:var(--primary); color:#fff; border:none; border-radius:9px; padding:0.65rem 2.5rem; font-weight:900; font-size:0.9rem; cursor:pointer; font-family:'Tajawal',sans-serif;">
+                <span wire:loading.remove wire:target="createUser">💾 حفظ المستخدم</span>
+                <span wire:loading wire:target="createUser">جارٍ الحفظ...</span>
             </button>
         </div>
     </div>
@@ -130,7 +90,9 @@
                         <th style="padding:0.75rem 1.25rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim);">#</th>
                         <th style="padding:0.75rem 1rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim);">الاسم</th>
                         <th style="padding:0.75rem 1rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim);">اسم المستخدم</th>
+                        @if($hasRole)
                         <th style="padding:0.75rem 1rem; text-align:center; font-size:0.78rem; font-weight:800; color:var(--text-dim);">الصلاحية</th>
+                        @endif
                         <th style="padding:0.75rem 1rem; text-align:center; font-size:0.78rem; font-weight:800; color:var(--text-dim);">الحالة</th>
                         <th style="padding:0.75rem 1rem; text-align:center; font-size:0.78rem; font-weight:800; color:var(--text-dim);">إجراءات</th>
                     </tr>
@@ -171,6 +133,7 @@
                             @endif
                         </td>
 
+                        @if($hasRole)
                         <td style="padding:0.85rem 1rem; text-align:center;">
                             @if($editingId === $user->id)
                                 <select wire:model="editRole" class="form-input" style="font-size:0.82rem; padding:0.35rem 0.6rem;">
@@ -179,15 +142,16 @@
                                     <option value="reception">استقبال</option>
                                 </select>
                             @else
-                                @if($user->role === 'admin')
-                                    <span style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; padding:0.2rem 0.7rem; border-radius:20px; font-size:0.75rem; font-weight:800;">مدير</span>
-                                @elseif($user->role === 'reception')
-                                    <span style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; padding:0.2rem 0.7rem; border-radius:20px; font-size:0.75rem; font-weight:800;">استقبال</span>
+                                @if(($user->role ?? '') === 'admin')
+                                    <span style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; padding:0.2rem 0.75rem; border-radius:20px; font-size:0.75rem; font-weight:800;">مدير</span>
+                                @elseif(($user->role ?? '') === 'reception')
+                                    <span style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; padding:0.2rem 0.75rem; border-radius:20px; font-size:0.75rem; font-weight:800;">استقبال</span>
                                 @else
-                                    <span style="color:#9ca3af; font-size:0.78rem;">—</span>
+                                    <span style="color:#d1d5db; font-size:0.78rem;">—</span>
                                 @endif
                             @endif
                         </td>
+                        @endif
 
                         <td style="padding:0.85rem 1rem; text-align:center;">
                             @if($user->state === 1)
@@ -201,20 +165,14 @@
                             @if($editingId === $user->id)
                                 <div style="display:flex; gap:0.4rem; justify-content:center;">
                                     <button wire:click="saveEdit"
-                                        style="background:#16a34a; color:#fff; border:none; border-radius:7px; padding:0.45rem 0.9rem; font-weight:800; font-size:0.8rem; cursor:pointer; font-family:'Tajawal',sans-serif;">
-                                        ✓ حفظ
-                                    </button>
+                                        style="background:#16a34a; color:#fff; border:none; border-radius:7px; padding:0.45rem 0.9rem; font-weight:800; font-size:0.8rem; cursor:pointer; font-family:'Tajawal',sans-serif;">✓ حفظ</button>
                                     <button wire:click="cancelEdit"
-                                        style="background:#f1f5f9; color:var(--text-dim); border:1px solid var(--border); border-radius:7px; padding:0.45rem 0.75rem; font-weight:700; font-size:0.8rem; cursor:pointer; font-family:'Tajawal',sans-serif;">
-                                        إلغاء
-                                    </button>
+                                        style="background:#f1f5f9; color:var(--text-dim); border:1px solid var(--border); border-radius:7px; padding:0.45rem 0.75rem; font-weight:700; font-size:0.8rem; cursor:pointer; font-family:'Tajawal',sans-serif;">إلغاء</button>
                                 </div>
                             @else
                                 <div style="display:flex; gap:0.4rem; justify-content:center;">
                                     <button wire:click="startEdit({{ $user->id }})"
-                                        style="background:#f0f7ff; color:#1565c0; border:1px solid #bbdefb; border-radius:7px; padding:0.4rem 0.85rem; font-weight:700; font-size:0.8rem; cursor:pointer; font-family:'Tajawal',sans-serif;">
-                                        ✏️ تعديل
-                                    </button>
+                                        style="background:#f0f7ff; color:#1565c0; border:1px solid #bbdefb; border-radius:7px; padding:0.4rem 0.85rem; font-weight:700; font-size:0.8rem; cursor:pointer; font-family:'Tajawal',sans-serif;">✏️ تعديل</button>
                                     <button wire:click="toggleState({{ $user->id }}, {{ $user->state }})"
                                         style="background:{{ $user->state === 1 ? '#fef2f2' : '#f0fdf4' }}; color:{{ $user->state === 1 ? '#dc2626' : '#16a34a' }}; border:1px solid {{ $user->state === 1 ? '#fecaca' : '#bbf7d0' }}; border-radius:7px; padding:0.4rem 0.75rem; font-weight:700; font-size:0.8rem; cursor:pointer; font-family:'Tajawal',sans-serif;">
                                         {{ $user->state === 1 ? 'تعطيل' : 'تفعيل' }}
@@ -226,7 +184,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" style="padding:4rem; text-align:center; color:var(--text-muted);">
+                        <td colspan="{{ $hasRole ? 6 : 5 }}" style="padding:4rem; text-align:center; color:var(--text-muted);">
                             <div style="font-size:2rem; opacity:0.2; margin-bottom:0.5rem;">👤</div>
                             <div style="font-weight:800;">لا توجد نتائج</div>
                         </td>
@@ -238,7 +196,7 @@
 
         @if($users->hasPages())
         <div style="padding:0.85rem 1.25rem; border-top:1px solid var(--border); background:#fafbfc;">
-            {{ $users->links() }}
+            <div class="custom-pagination">{{ $users->links() }}</div>
         </div>
         @endif
 
