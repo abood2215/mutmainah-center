@@ -165,6 +165,7 @@ Route::middleware(['auth.employee', 'require.2fa'])->group(function () {
             ->join('acck as a', 'a.id', '=', 'k.acc_id')
             ->leftJoin('kstu as s', 's.id', '=', 'a.stu_id')
             ->leftJoin('employees as e', 'e.id', '=', 'k.user_id')
+            ->leftJoin('branches as b', 'b.id', '=', 's.branch_id')
             ->where('k.id', $id)
             ->select(
                 'k.id', 'k.pdate', 'k.ptime', 'k.pdesc', 'k.status', 'k.payment_method',
@@ -172,6 +173,8 @@ Route::middleware(['auth.employee', 'require.2fa'])->group(function () {
                 's.full_name as patient_name',
                 's.file_id as patient_file',
                 's.phone as patient_phone',
+                's.branch_id',
+                'b.name as branch_name',
                 'a.name as acck_name',
                 DB::raw("TRIM(CONCAT(IFNULL(e.first_name,''), ' ', IFNULL(e.middle_initial,''))) as emp_name")
             )
