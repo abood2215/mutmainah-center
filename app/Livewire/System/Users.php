@@ -63,6 +63,7 @@ class Users extends Component
         $data = [
             'first_name'     => $firstName,
             'middle_initial' => trim($this->newMiddleName),
+            'third_name'     => '',
             'user_name'      => $userName,
             'arway'          => md5($password),
             'state'          => 1,
