@@ -61,12 +61,30 @@ class Users extends Component
         if ($exists) { $this->errorMsg = 'اسم المستخدم مستخدم مسبقاً'; return; }
 
         $data = [
-            'first_name'     => $firstName,
-            'middle_initial' => trim($this->newMiddleName),
-            'third_name'     => '',
-            'user_name'      => $userName,
-            'arway'          => md5($password),
-            'state'          => 1,
+            'first_name'    => $firstName,
+            'middle_initial'=> trim($this->newMiddleName),
+            'third_name'    => '',
+            'user_name'     => $userName,
+            'arway'         => md5($password),
+            'state'         => 1,
+            // أعمدة إجبارية بدون قيمة افتراضية
+            'jop'           => 0,
+            'depart'        => 0,
+            'rank'          => 0,
+            'ssn'           => '',
+            'work_date'     => '',
+            'sponsor_name'  => '',
+            'contract_no'   => '',
+            'emp_no'        => '',
+            'doc_rate'      => 0,
+            'per'           => 0,
+            'inbox_id'      => 0,
+            'rate_amount'   => 0,
+            'acc_no'        => '',
+            'notes'         => '',
+            'bank'          => '',
+            'max_discount'  => 0,
+            'mr_id'         => 0,
         ];
 
         // أضف role فقط إذا كان العمود موجوداً
