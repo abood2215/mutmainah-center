@@ -36,7 +36,7 @@ class Index extends Component
         $query = DB::table('rec as r')
             ->leftJoin('kstu as a', 'a.id', '=', 'r.st_id')
             ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
-            ->leftJoin('branches as b', 'b.id', '=', 'a.branch_id')
+            ->leftJoin('branches as b', 'b.id', '=', 'c.branch_id')
             ->where('r.confirm_id', 1)
             ->select(
                 'r.id',
@@ -51,7 +51,7 @@ class Index extends Component
             );
 
         if ($this->filterBranch) {
-            $query->where('a.branch_id', $this->filterBranch);
+            $query->where('c.branch_id', $this->filterBranch);
         }
 
         if ($this->search) {

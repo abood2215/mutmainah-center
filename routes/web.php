@@ -202,13 +202,9 @@ Route::middleware(['auth.employee', 'require.2fa'])->group(function () {
         Route::get('/finance/branch-report',\App\Livewire\Finance\BranchReport::class)->name('finance.branch-report');
         Route::get('/system/users',         \App\Livewire\System\Users::class)->name('system.users');
         Route::get('/system/settings',      \App\Livewire\System\Settings::class)->name('system.settings');
+        Route::get('/clinics',              \App\Livewire\Clinics\Index::class)->name('clinics.index');
+        Route::get('/employees',            \App\Livewire\Employees\Index::class)->name('employees.index');
     });
-
-    // Clinics
-    Route::get('/clinics', \App\Livewire\Clinics\Index::class)->name('clinics.index');
-
-    // Employees
-    Route::get('/employees', \App\Livewire\Employees\Index::class)->name('employees.index');
 
     // Backup — مدير النظام ونجيبة فقط
     Route::get('/system/backup', function () {
