@@ -344,7 +344,7 @@ body {
                 <tr>
                     <td class="num">{{ $i + 1 }}</td>
                     <td class="r">{{ $item->pdesc_clean ?? '—' }}</td>
-                    <td>{{ $item->pdesc_clean ?? '—' }}</td>
+                    <td>{{ $item->ccode ?? '—' }}</td>
                     <td class="price">{{ number_format($item->price, 3) }}</td>
                     <td>{{ number_format($item->insur_amount ?? 0, 0) }}</td>
                 </tr>
@@ -381,13 +381,9 @@ body {
     </div>
 
     {{-- ملاحظات --}}
-    @php
-        $notesRaw = $rec->notes ?? $rec->pres ?? '';
-        $notesClean = strip_tags(html_entity_decode(str_replace("\xc2\xa0", ' ', $notesRaw), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
-    @endphp
     <div class="notes-row">
         <span class="lbl">ملاحظات :</span>
-        <span class="val">{{ $notesClean }}</span>
+        <span class="val">{{ $recNotes }}</span>
     </div>
 
 

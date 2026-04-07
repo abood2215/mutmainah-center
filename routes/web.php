@@ -51,6 +51,11 @@ Route::middleware(['auth.employee'])->group(function () {
     Route::get('/finance/invoices',  \App\Livewire\Finance\Invoices::class)->name('finance.invoices');
     Route::get('/finance/invoice/{recId}', function ($recId) {
         $rec = DB::table('rec')->where('id', $recId)->firstOrFail();
+        // دمج الملاحظات من كل الحقول الممكنة
+        $recNotes = collect(['notes','pres','sym','dia'])
+            ->map(fn($f) => strip_tags(html_entity_decode(str_replace("\xc2\xa0",' ',$rec->$f ?? ''), ENT_QUOTES|ENT_HTML5,'UTF-8')))
+            ->filter()
+            ->implode(' | ');
 
         $patient = DB::table('kstu as k')
             ->leftJoin('kcom as c', 'c.id', '=', 'k.com_id')
@@ -150,7 +155,7 @@ Route::middleware(['auth.employee'])->group(function () {
         return view('finance.invoice-print', compact(
             'rec', 'patient', 'clinicName', 'branchName', 'items',
             'invoice', 'total', 'totalDiscount', 'clientAmount',
-            'insuranceAmount', 'paymentLabel', 'cashierName'
+            'insuranceAmount', 'paymentLabel', 'cashierName', 'recNotes'
         ));
     })->name('finance.invoice-print');
 
