@@ -55,6 +55,15 @@
                         <option value="admin">مدير</option>
                     </select>
                 </div>
+                @if($hasBranchId)
+                <div>
+                    <label style="display:block; font-size:0.75rem; font-weight:800; color:#6b7280; margin-bottom:0.35rem;">الفرع / الدور</label>
+                    <select wire:model="newBranchId" class="form-input" style="width:100%; box-sizing:border-box;">
+                        <option value="1">الدور الثالث — الاستشارات اللغوية</option>
+                        <option value="2">الدور السادس — التربوية والتدريب</option>
+                    </select>
+                </div>
+                @endif
             </div>
             <button wire:click="createUser" wire:loading.attr="disabled"
                 style="background:var(--primary); color:#fff; border:none; border-radius:9px; padding:0.65rem 2.5rem; font-weight:900; font-size:0.9rem; cursor:pointer; font-family:'Tajawal',sans-serif;">
@@ -92,6 +101,9 @@
                         <th style="padding:0.75rem 1rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim);">اسم المستخدم</th>
                         @if($hasRole)
                         <th style="padding:0.75rem 1rem; text-align:center; font-size:0.78rem; font-weight:800; color:var(--text-dim);">الصلاحية</th>
+                        @endif
+                        @if($hasBranchId)
+                        <th style="padding:0.75rem 1rem; text-align:center; font-size:0.78rem; font-weight:800; color:var(--text-dim);">الفرع</th>
                         @endif
                         <th style="padding:0.75rem 1rem; text-align:center; font-size:0.78rem; font-weight:800; color:var(--text-dim);">الحالة</th>
                         <th style="padding:0.75rem 1rem; text-align:center; font-size:0.78rem; font-weight:800; color:var(--text-dim);">إجراءات</th>
@@ -153,6 +165,24 @@
                         </td>
                         @endif
 
+                        @if($hasBranchId)
+                        <td style="padding:0.85rem 1rem; text-align:center;">
+                            @if($editingId === $user->id)
+                                <select wire:model="editBranchId" class="form-input" style="font-size:0.82rem; padding:0.35rem 0.6rem; min-width:170px;">
+                                    <option value="1">الدور الثالث</option>
+                                    <option value="2">الدور السادس</option>
+                                </select>
+                            @else
+                                @php $bId = (int)($user->branch_id ?? 1); @endphp
+                                @if($bId === 2)
+                                    <span style="background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; padding:0.2rem 0.75rem; border-radius:20px; font-size:0.75rem; font-weight:800;">الدور السادس</span>
+                                @else
+                                    <span style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; padding:0.2rem 0.75rem; border-radius:20px; font-size:0.75rem; font-weight:800;">الدور الثالث</span>
+                                @endif
+                            @endif
+                        </td>
+                        @endif
+
                         <td style="padding:0.85rem 1rem; text-align:center;">
                             @if($user->state === 1)
                                 <span style="background:#dcfce7; color:#16a34a; border:1px solid #bbf7d0; padding:0.25rem 0.85rem; border-radius:20px; font-size:0.78rem; font-weight:800;">نشط</span>
@@ -184,7 +214,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="{{ $hasRole ? 6 : 5 }}" style="padding:4rem; text-align:center; color:var(--text-muted);">
+                        <td colspan="{{ 5 + ($hasRole ? 1 : 0) + ($hasBranchId ? 1 : 0) }}" style="padding:4rem; text-align:center; color:var(--text-muted);">
                             <div style="font-size:2rem; opacity:0.2; margin-bottom:0.5rem;">👤</div>
                             <div style="font-weight:800;">لا توجد نتائج</div>
                         </td>

@@ -22,6 +22,7 @@ class Users extends Component
     public string  $editUserName    = '';
     public string  $editPassword    = '';
     public string  $editRole        = '';
+    public int     $editBranchId    = 1;
 
     // ── إضافة مستخدم جديد ──
     public bool    $showAddForm     = false;
@@ -30,6 +31,7 @@ class Users extends Component
     public string  $newUserName     = '';
     public string  $newPassword     = '';
     public string  $newRole         = 'reception';
+    public int     $newBranchId     = 1;
 
     public ?string $successMsg = null;
     public ?string $errorMsg   = null;
@@ -44,6 +46,7 @@ class Users extends Component
         $this->showAddForm = !$this->showAddForm;
         $this->newFirstName = $this->newMiddleName = $this->newUserName = $this->newPassword = '';
         $this->newRole = 'reception';
+        $this->newBranchId = 1;
         $this->successMsg = $this->errorMsg = null;
     }
 
@@ -91,12 +94,16 @@ class Users extends Component
         if (Schema::hasColumn('employees', 'role')) {
             $data['role'] = in_array($this->newRole, ['admin', 'reception']) ? $this->newRole : 'reception';
         }
+        if (Schema::hasColumn('employees', 'branch_id')) {
+            $data['branch_id'] = in_array($this->newBranchId, [1, 2]) ? $this->newBranchId : 1;
+        }
 
         DB::table('employees')->insert($data);
 
         $this->showAddForm  = false;
         $this->newFirstName = $this->newMiddleName = $this->newUserName = $this->newPassword = '';
-        $this->newRole   = 'reception';
+        $this->newRole      = 'reception';
+        $this->newBranchId  = 1;
         $this->errorMsg  = null;
         $this->successMsg = 'تم إنشاء المستخدم بنجاح ✓';
     }
@@ -112,6 +119,7 @@ class Users extends Component
         $this->editUserName   = $emp->user_name;
         $this->editPassword   = '';
         $this->editRole       = $emp->role ?? '';
+        $this->editBranchId   = (int)($emp->branch_id ?? 1);
         $this->successMsg     = null;
         $this->errorMsg       = null;
     }
@@ -136,6 +144,9 @@ class Users extends Component
 
         if (Schema::hasColumn('employees', 'role')) {
             $data['role'] = $this->editRole ?: null;
+        }
+        if (Schema::hasColumn('employees', 'branch_id')) {
+            $data['branch_id'] = in_array($this->editBranchId, [1, 2]) ? $this->editBranchId : 1;
         }
 
         if ($this->editPassword !== '') {
@@ -162,7 +173,8 @@ class Users extends Component
     #[Title('إدارة المستخدمين')]
     public function render()
     {
-        $hasRole = Schema::hasColumn('employees', 'role');
+        $hasRole     = Schema::hasColumn('employees', 'role');
+        $hasBranchId = Schema::hasColumn('employees', 'branch_id');
 
         $query = DB::table('employees');
 
@@ -190,6 +202,7 @@ class Users extends Component
             'totalActive' => $totalActive,
             'totalAll'    => $totalAll,
             'hasRole'     => $hasRole,
+            'hasBranchId' => $hasBranchId,
         ])->layout('layouts.app');
     }
 }
