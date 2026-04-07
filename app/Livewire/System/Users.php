@@ -14,11 +14,21 @@ class Users extends Component
     public string  $search      = '';
     public string  $filterState = '';
 
+    // ── تعديل ──
     public ?int    $editingId       = null;
     public string  $editFirstName   = '';
     public string  $editMiddleName  = '';
     public string  $editUserName    = '';
     public string  $editPassword    = '';
+    public string  $editRole        = '';
+
+    // ── إضافة مستخدم جديد ──
+    public bool    $showAddForm     = false;
+    public string  $newFirstName    = '';
+    public string  $newMiddleName   = '';
+    public string  $newUserName     = '';
+    public string  $newPassword     = '';
+    public string  $newRole         = 'reception';
 
     public ?string $successMsg    = null;
     public ?string $errorMsg      = null;
@@ -26,6 +36,49 @@ class Users extends Component
 
     public function updatingSearch()      { $this->resetPage(); }
     public function updatingFilterState() { $this->resetPage(); }
+
+    /* ═══════════ إضافة مستخدم ═══════════ */
+
+    public function toggleAddForm(): void
+    {
+        $this->showAddForm = !$this->showAddForm;
+        $this->newFirstName = $this->newMiddleName = $this->newUserName = $this->newPassword = '';
+        $this->newRole = 'reception';
+        $this->successMsg = $this->errorMsg = null;
+    }
+
+    public function createUser(): void
+    {
+        $firstName = trim($this->newFirstName);
+        $userName  = trim($this->newUserName);
+        $password  = trim($this->newPassword);
+
+        if ($firstName === '') { $this->errorMsg = 'الاسم مطلوب'; return; }
+        if ($userName  === '') { $this->errorMsg = 'اسم المستخدم مطلوب'; return; }
+        if ($password  === '') { $this->errorMsg = 'كلمة المرور مطلوبة'; return; }
+        if (!in_array($this->newRole, ['admin', 'reception'])) { $this->errorMsg = 'الصلاحية غير صحيحة'; return; }
+
+        // تحقق من عدم تكرار اسم المستخدم
+        $exists = DB::table('employees')->where('user_name', $userName)->exists();
+        if ($exists) { $this->errorMsg = 'اسم المستخدم مستخدم مسبقاً'; return; }
+
+        DB::table('employees')->insert([
+            'first_name'     => $firstName,
+            'middle_initial' => trim($this->newMiddleName),
+            'user_name'      => $userName,
+            'arway'          => md5($password),
+            'state'          => 1,
+            'role'           => $this->newRole,
+        ]);
+
+        $this->showAddForm  = false;
+        $this->newFirstName = $this->newMiddleName = $this->newUserName = $this->newPassword = '';
+        $this->newRole = 'reception';
+        $this->errorMsg  = null;
+        $this->successMsg = 'تم إنشاء المستخدم بنجاح ✓';
+    }
+
+    /* ═══════════ تعديل ═══════════ */
 
     public function startEdit(int $id): void
     {
@@ -35,6 +88,7 @@ class Users extends Component
         $this->editMiddleName = $emp->middle_initial;
         $this->editUserName   = $emp->user_name;
         $this->editPassword   = '';
+        $this->editRole       = $emp->role ?? '';
         $this->successMsg     = null;
         $this->errorMsg       = null;
     }
@@ -58,6 +112,7 @@ class Users extends Component
             'first_name'     => $firstName,
             'middle_initial' => trim($this->editMiddleName),
             'user_name'      => $userName,
+            'role'           => $this->editRole ?: null,
         ];
 
         if ($this->editPassword !== '') {
@@ -71,6 +126,8 @@ class Users extends Component
         $this->errorMsg   = null;
     }
 
+    /* ═══════════ تفعيل / تعطيل ═══════════ */
+
     public function toggleState(int $id, int $currentState): void
     {
         $newState = ($currentState === 1) ? 8 : 1;
@@ -78,27 +135,18 @@ class Users extends Component
         $this->successMsg = $newState === 1 ? 'تم تفعيل المستخدم' : 'تم تعطيل المستخدم';
     }
 
-    public function confirmDisableAll(): void
-    {
-        $this->confirmDisableAll = true;
-    }
-
-    public function cancelDisableAll(): void
-    {
-        $this->confirmDisableAll = false;
-    }
+    public function confirmDisableAll(): void  { $this->confirmDisableAll = true; }
+    public function cancelDisableAll(): void   { $this->confirmDisableAll = false; }
 
     public function disableAllExceptMe(): void
     {
         $myId = auth()->user()->getAuthIdentifier();
-
-        DB::table('employees')
-            ->where('id', '!=', $myId)
-            ->update(['state' => 8]);
-
+        DB::table('employees')->where('id', '!=', $myId)->update(['state' => 8]);
         $this->confirmDisableAll = false;
         $this->successMsg = 'تم تعطيل جميع المستخدمين ما عدا حسابك';
     }
+
+    /* ═══════════ Render ═══════════ */
 
     #[Title('إدارة المستخدمين')]
     public function render()
@@ -120,7 +168,7 @@ class Users extends Component
             $query->where('state', '!=', 1);
         }
 
-        $users      = $query->orderByRaw('state = 1 DESC')->orderBy('id')->paginate(20);
+        $users       = $query->orderByRaw('state = 1 DESC')->orderBy('id')->paginate(20);
         $totalActive = DB::table('employees')->where('state', 1)->count();
         $totalAll    = DB::table('employees')->count();
 

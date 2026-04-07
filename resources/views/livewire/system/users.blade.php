@@ -1,7 +1,7 @@
 <div class="pg-outer" style="min-height:80vh; padding:1.5rem 2rem;">
 <div style="max-width:1200px; margin:0 auto; animation:fadeIn 0.4s ease;">
 
-    <!-- رأس الصفحة -->
+    {{-- رأس الصفحة --}}
     <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
         <div>
             <h1 style="font-size:1.5rem; font-weight:900; color:var(--primary); margin:0; font-family:'Tajawal',sans-serif;">إدارة المستخدمين</h1>
@@ -9,34 +9,88 @@
                 {{ $totalActive }} نشط من أصل {{ $totalAll }} مستخدم
             </div>
         </div>
-        @if(!$confirmDisableAll)
-        <button wire:click="confirmDisableAll"
-            style="background:#fef2f2; color:#dc2626; border:1.5px solid #fecaca; border-radius:10px; padding:0.6rem 1.25rem; font-weight:800; font-size:0.85rem; cursor:pointer; font-family:'Tajawal',sans-serif; display:flex; align-items:center; gap:0.5rem; transition:all 0.2s;"
-            onmouseover="this.style.background='#dc2626'; this.style.color='#fff'"
-            onmouseout="this.style.background='#fef2f2'; this.style.color='#dc2626'">
-            🔒 تعطيل الجميع ما عدا حسابي
-        </button>
-        @endif
+        <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+            <button wire:click="toggleAddForm"
+                style="background:{{ $showAddForm ? '#f0fdf4' : 'var(--primary)' }}; color:{{ $showAddForm ? '#16a34a' : '#fff' }}; border:{{ $showAddForm ? '1.5px solid #bbf7d0' : 'none' }}; border-radius:10px; padding:0.6rem 1.25rem; font-weight:800; font-size:0.85rem; cursor:pointer; font-family:'Tajawal',sans-serif; display:flex; align-items:center; gap:0.5rem;">
+                {{ $showAddForm ? '✕ إغلاق' : '+ مستخدم جديد' }}
+            </button>
+            @if(!$confirmDisableAll)
+            <button wire:click="confirmDisableAll"
+                style="background:#fef2f2; color:#dc2626; border:1.5px solid #fecaca; border-radius:10px; padding:0.6rem 1.25rem; font-weight:800; font-size:0.85rem; cursor:pointer; font-family:'Tajawal',sans-serif;"
+                onmouseover="this.style.background='#dc2626'; this.style.color='#fff'"
+                onmouseout="this.style.background='#fef2f2'; this.style.color='#dc2626'">
+                🔒 تعطيل الجميع ما عدا حسابي
+            </button>
+            @endif
+        </div>
     </div>
 
+    {{-- رسائل --}}
     @if($successMsg)
-    <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:0.85rem 1.25rem; margin-bottom:1.25rem; color:#15803d; font-weight:700; font-size:0.9rem;">
-        ✅ {{ $successMsg }}
-    </div>
+    <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:0.85rem 1.25rem; margin-bottom:1.25rem; color:#15803d; font-weight:700; font-size:0.9rem;">✅ {{ $successMsg }}</div>
     @endif
-
     @if($errorMsg)
-    <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:10px; padding:0.85rem 1.25rem; margin-bottom:1.25rem; color:#dc2626; font-weight:700; font-size:0.9rem;">
-        ⚠️ {{ $errorMsg }}
+    <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:10px; padding:0.85rem 1.25rem; margin-bottom:1.25rem; color:#dc2626; font-weight:700; font-size:0.9rem;">⚠️ {{ $errorMsg }}</div>
+    @endif
+
+    {{-- فورم إضافة مستخدم جديد --}}
+    @if($showAddForm)
+    <div style="background:#fff; border:2px solid var(--primary); border-radius:14px; overflow:hidden; box-shadow:0 4px 16px rgba(139,28,43,0.12); margin-bottom:1.5rem; animation:fadeIn 0.25s ease;">
+        <div style="background:var(--primary); padding:0.85rem 1.5rem; display:flex; align-items:center; gap:0.65rem;">
+            <span style="font-size:1.1rem;">👤</span>
+            <span style="color:#fff; font-weight:900; font-size:1rem; font-family:'Tajawal',sans-serif;">إضافة مستخدم جديد</span>
+        </div>
+        <div style="padding:1.25rem;">
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin-bottom:1rem;">
+                <div>
+                    <label style="display:block; font-size:0.75rem; font-weight:800; color:#6b7280; margin-bottom:0.35rem;">الاسم <span style="color:#dc2626;">*</span></label>
+                    <input type="text" wire:model="newFirstName" placeholder="الاسم الأول"
+                        class="form-input" style="width:100%; box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.75rem; font-weight:800; color:#6b7280; margin-bottom:0.35rem;">اسم الأب</label>
+                    <input type="text" wire:model="newMiddleName" placeholder="اسم الأب (اختياري)"
+                        class="form-input" style="width:100%; box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.75rem; font-weight:800; color:#6b7280; margin-bottom:0.35rem;">اسم المستخدم <span style="color:#dc2626;">*</span></label>
+                    <input type="text" wire:model="newUserName" placeholder="username"
+                        class="form-input" style="width:100%; box-sizing:border-box; direction:ltr;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.75rem; font-weight:800; color:#6b7280; margin-bottom:0.35rem;">كلمة المرور <span style="color:#dc2626;">*</span></label>
+                    <input type="password" wire:model="newPassword" placeholder="••••••••"
+                        class="form-input" style="width:100%; box-sizing:border-box; direction:ltr;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.75rem; font-weight:800; color:#6b7280; margin-bottom:0.35rem;">الصلاحية <span style="color:#dc2626;">*</span></label>
+                    <select wire:model="newRole" class="form-input" style="width:100%; box-sizing:border-box;">
+                        <option value="reception">استقبال</option>
+                        <option value="admin">مدير</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display:flex; gap:0.6rem;">
+                <button wire:click="createUser" wire:loading.attr="disabled"
+                    style="background:var(--primary); color:#fff; border:none; border-radius:9px; padding:0.65rem 2rem; font-weight:900; font-size:0.9rem; cursor:pointer; font-family:'Tajawal',sans-serif;">
+                    <span wire:loading.remove wire:target="createUser">💾 حفظ المستخدم</span>
+                    <span wire:loading wire:target="createUser">جارٍ الحفظ...</span>
+                </button>
+                <button wire:click="toggleAddForm"
+                    style="background:#f1f5f9; color:var(--text-dim); border:1px solid var(--border); border-radius:9px; padding:0.65rem 1.25rem; font-weight:700; font-size:0.88rem; cursor:pointer; font-family:'Tajawal',sans-serif;">
+                    إلغاء
+                </button>
+            </div>
+        </div>
     </div>
     @endif
 
-    <!-- تعطيل الجميع -->
+    {{-- تعطيل الجميع --}}
     @if($confirmDisableAll)
     <div style="background:#fff3cd; border:2px solid #ffc107; border-radius:12px; padding:1.1rem 1.5rem; margin-bottom:1.25rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
         <div>
             <div style="font-weight:900; color:#856404; font-size:0.95rem;">⚠️ تأكيد تعطيل جميع المستخدمين</div>
-            <div style="font-size:0.82rem; color:#856404; margin-top:0.25rem;">سيتم تعطيل كل الحسابات ما عدا حسابك — فقط أنت ستتمكن من تسجيل الدخول</div>
+            <div style="font-size:0.82rem; color:#856404; margin-top:0.25rem;">سيتم تعطيل كل الحسابات ما عدا حسابك</div>
         </div>
         <div style="display:flex; gap:0.6rem;">
             <button wire:click="disableAllExceptMe"
@@ -51,10 +105,10 @@
     </div>
     @endif
 
-    <!-- الجدول -->
+    {{-- الجدول --}}
     <div style="background:#fff; border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
 
-        <!-- فلاتر -->
+        {{-- فلاتر --}}
         <div style="padding:0.85rem 1.25rem; background:#f8fafc; border-bottom:1px solid var(--border); display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
             <div style="position:relative; flex:1; min-width:200px;">
                 <input type="text" wire:model.live.debounce.300ms="search"
@@ -69,7 +123,6 @@
             </select>
         </div>
 
-        <!-- الجدول -->
         <div style="overflow-x:auto;">
             <table style="width:100%; border-collapse:collapse;">
                 <thead>
@@ -77,6 +130,7 @@
                         <th style="padding:0.75rem 1.25rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim);">#</th>
                         <th style="padding:0.75rem 1rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim);">الاسم</th>
                         <th style="padding:0.75rem 1rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim);">اسم المستخدم</th>
+                        <th style="padding:0.75rem 1rem; text-align:center; font-size:0.78rem; font-weight:800; color:var(--text-dim);">الصلاحية</th>
                         <th style="padding:0.75rem 1rem; text-align:center; font-size:0.78rem; font-weight:800; color:var(--text-dim);">الحالة</th>
                         <th style="padding:0.75rem 1rem; text-align:center; font-size:0.78rem; font-weight:800; color:var(--text-dim);">إجراءات</th>
                     </tr>
@@ -93,9 +147,9 @@
                             @if($editingId === $user->id)
                                 <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
                                     <input type="text" wire:model="editFirstName" placeholder="الاسم الأول"
-                                        class="form-input" style="width:130px; font-size:0.85rem; padding:0.4rem 0.7rem;">
+                                        class="form-input" style="width:120px; font-size:0.85rem; padding:0.4rem 0.7rem;">
                                     <input type="text" wire:model="editMiddleName" placeholder="اسم الأب"
-                                        class="form-input" style="width:130px; font-size:0.85rem; padding:0.4rem 0.7rem;">
+                                        class="form-input" style="width:120px; font-size:0.85rem; padding:0.4rem 0.7rem;">
                                 </div>
                             @else
                                 <div style="font-weight:800; color:var(--navy); font-size:0.92rem;">
@@ -108,9 +162,9 @@
                             @if($editingId === $user->id)
                                 <div style="display:flex; gap:0.5rem; flex-direction:column;">
                                     <input type="text" wire:model="editUserName" placeholder="اسم المستخدم"
-                                        class="form-input" style="width:150px; font-size:0.85rem; padding:0.4rem 0.7rem; direction:ltr;">
+                                        class="form-input" style="width:140px; font-size:0.85rem; padding:0.4rem 0.7rem; direction:ltr;">
                                     <input type="password" wire:model="editPassword" placeholder="كلمة مرور جديدة (اختياري)"
-                                        class="form-input" style="width:150px; font-size:0.85rem; padding:0.4rem 0.7rem; direction:ltr;">
+                                        class="form-input" style="width:140px; font-size:0.85rem; padding:0.4rem 0.7rem; direction:ltr;">
                                 </div>
                             @else
                                 <span style="font-family:monospace; font-size:0.88rem; color:#1565c0; font-weight:700; direction:ltr; display:inline-block;">{{ $user->user_name }}</span>
@@ -118,10 +172,28 @@
                         </td>
 
                         <td style="padding:0.85rem 1rem; text-align:center;">
-                            @if($user->state === 1)
-                                <span style="display:inline-block; background:#dcfce7; color:#16a34a; border:1px solid #bbf7d0; padding:0.25rem 0.85rem; border-radius:20px; font-size:0.78rem; font-weight:800;">نشط</span>
+                            @if($editingId === $user->id)
+                                <select wire:model="editRole" class="form-input" style="font-size:0.82rem; padding:0.35rem 0.6rem;">
+                                    <option value="">— بدون —</option>
+                                    <option value="admin">مدير</option>
+                                    <option value="reception">استقبال</option>
+                                </select>
                             @else
-                                <span style="display:inline-block; background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; padding:0.25rem 0.85rem; border-radius:20px; font-size:0.78rem; font-weight:800;">معطل</span>
+                                @if($user->role === 'admin')
+                                    <span style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; padding:0.2rem 0.7rem; border-radius:20px; font-size:0.75rem; font-weight:800;">مدير</span>
+                                @elseif($user->role === 'reception')
+                                    <span style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; padding:0.2rem 0.7rem; border-radius:20px; font-size:0.75rem; font-weight:800;">استقبال</span>
+                                @else
+                                    <span style="color:#9ca3af; font-size:0.78rem;">—</span>
+                                @endif
+                            @endif
+                        </td>
+
+                        <td style="padding:0.85rem 1rem; text-align:center;">
+                            @if($user->state === 1)
+                                <span style="background:#dcfce7; color:#16a34a; border:1px solid #bbf7d0; padding:0.25rem 0.85rem; border-radius:20px; font-size:0.78rem; font-weight:800;">نشط</span>
+                            @else
+                                <span style="background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; padding:0.25rem 0.85rem; border-radius:20px; font-size:0.78rem; font-weight:800;">معطل</span>
                             @endif
                         </td>
 
@@ -154,7 +226,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" style="padding:4rem; text-align:center; color:var(--text-muted);">
+                        <td colspan="6" style="padding:4rem; text-align:center; color:var(--text-muted);">
                             <div style="font-size:2rem; opacity:0.2; margin-bottom:0.5rem;">👤</div>
                             <div style="font-weight:800;">لا توجد نتائج</div>
                         </td>
