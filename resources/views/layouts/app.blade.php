@@ -676,6 +676,8 @@
                 </ul>
             </li>
 
+            @php $isAdmin = (auth()->user()?->role ?? '') === 'admin'; @endphp
+            @if($isAdmin)
             <li class="{{ request()->routeIs('finance.reports') ? 'active' : '' }}">
                 <a href="{{ route('finance.reports') }}">
                     <span class="nav-icon">📊</span> التقارير
@@ -692,8 +694,6 @@
                 </ul>
             </li>
 
-            @php $authId = auth()->user()?->getAuthIdentifier(); @endphp
-            @if(in_array($authId, [107, 189]))
             <li class="{{ request()->routeIs('system.*') ? 'active' : '' }}">
                 <a href="{{ route('system.settings') }}">
                     <span class="nav-icon">⚙️</span> الإعدادات
@@ -788,15 +788,15 @@
                 <button class="more-sheet-close" onclick="toggleMore()">✕</button>
             </div>
             <div class="more-links">
-                <a href="{{ route('finance.reports') }}" class="more-link">📊 التقارير</a>
                 <a href="{{ route('finance.invoices') }}" class="more-link">💳 الفواتير</a>
                 <a href="{{ route('finance.vouchers') }}" class="more-link">📑 السندات</a>
                 <a href="{{ route('finance.statement') }}" class="more-link">📄 بيان حساب</a>
+                @if($isAdmin ?? false)
+                <a href="{{ route('finance.reports') }}" class="more-link">📊 التقارير</a>
                 <a href="{{ route('finance.reports') }}?type=pb" class="more-link">💰 أرصدة العملاء</a>
                 <a href="{{ route('finance.reports') }}?type=services" class="more-link">🔬 الخدمات</a>
                 <a href="{{ route('finance.reports') }}?type=clinics" class="more-link">🏛 العيادات</a>
                 <a href="{{ route('finance.reports') }}?type=pfs" class="more-link">📈 البيان المالي</a>
-                @if(in_array($authId, [107, 189]))
                 <a href="{{ route('clinics.index') }}" class="more-link">🏥 العيادات</a>
                 <a href="{{ route('employees.index') }}" class="more-link">👨‍⚕️ الموظفين</a>
                 <a href="{{ route('system.users') }}" class="more-link">👤 المستخدمين</a>

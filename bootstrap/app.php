@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'auth.employee' => \App\Http\Middleware\RequireAuth::class,
             'require.2fa'   => \App\Http\Middleware\Require2FA::class,
+            'require.admin' => \App\Http\Middleware\RequireAdmin::class,
         ]);
         $middleware->redirectUsersTo('/');
         $middleware->redirectGuestsTo('/login');

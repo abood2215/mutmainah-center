@@ -196,18 +196,19 @@ Route::middleware(['auth.employee', 'require.2fa'])->group(function () {
         ]);
     })->name('finance.movement-print');
 
-    Route::get('/finance/reports', \App\Livewire\Finance\Reports::class)->name('finance.reports');
-    Route::get('/finance/branch-report', \App\Livewire\Finance\BranchReport::class)->name('finance.branch-report');
+    // Admin only
+    Route::middleware('require.admin')->group(function () {
+        Route::get('/finance/reports',      \App\Livewire\Finance\Reports::class)->name('finance.reports');
+        Route::get('/finance/branch-report',\App\Livewire\Finance\BranchReport::class)->name('finance.branch-report');
+        Route::get('/system/users',         \App\Livewire\System\Users::class)->name('system.users');
+        Route::get('/system/settings',      \App\Livewire\System\Settings::class)->name('system.settings');
+    });
 
     // Clinics
     Route::get('/clinics', \App\Livewire\Clinics\Index::class)->name('clinics.index');
 
     // Employees
     Route::get('/employees', \App\Livewire\Employees\Index::class)->name('employees.index');
-
-    // System
-    Route::get('/system/users',    \App\Livewire\System\Users::class)->name('system.users');
-    Route::get('/system/settings', \App\Livewire\System\Settings::class)->name('system.settings');
 
     // Backup — مدير النظام ونجيبة فقط
     Route::get('/system/backup', function () {
