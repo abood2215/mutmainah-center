@@ -238,10 +238,12 @@
                     style="border-bottom:1px solid #f1f5f9; transition:background 0.15s;"
                     onmouseover="this.style.background='{{ $isReceipt ? '#f0fdf4' : '#fff8f8' }}'"
                     onmouseout="this.style.background='transparent'">
-                    <td style="padding:0.65rem 0.75rem; text-align:center; color:var(--text-muted); font-size:0.75rem; font-weight:700;">{{ ($movements->currentPage()-1)*$movements->perPage()+$loop->iteration }}</td>
+                    <td style="padding:0.65rem 0.75rem; text-align:center; color:#374151; font-size:0.78rem; font-weight:700;">{{ ($movements->currentPage()-1)*$movements->perPage()+$loop->iteration }}</td>
                     <td style="padding:0.65rem 0.75rem; text-align:center; font-size:0.82rem; font-weight:700; color:#1e40af; white-space:nowrap; direction:ltr;">{{ fmt_date($mov->pdate) }}</td>
                     <td style="padding:0.65rem 0.75rem; text-align:center;">
-                        <span style="background:#e3f2fd; color:#1565c0; padding:0.15rem 0.55rem; border-radius:5px; font-weight:900; font-size:0.78rem; font-family:'Inter';">#{{ $mov->id }}</span>
+                        <a href="{{ route('finance.movement-print', $mov->id) }}" target="_blank"
+                            style="background:#e3f2fd; color:#1565c0; padding:0.15rem 0.55rem; border-radius:5px; font-weight:900; font-size:0.78rem; font-family:'Inter'; text-decoration:none; display:inline-flex; align-items:center; gap:3px;"
+                            title="طباعة الوصل">#{{ $mov->id }} 🖨️</a>
                     </td>
                     <td style="padding:0.65rem 1rem; font-weight:800; color:var(--navy); font-size:0.88rem; white-space:nowrap;">
                         @if($mov->patient_id)
@@ -257,12 +259,12 @@
                             $hasRef = str_contains($desc, '| Ref:');
                             $parts = $hasRef ? explode('| Ref:', $desc, 2) : [$desc, null];
                         @endphp
-                        <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="{{ $desc }}">{{ trim($parts[0]) ?: '—' }}</div>
+                        <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#374151; font-weight:600;" title="{{ $desc }}">{{ trim($parts[0]) ?: '—' }}</div>
                         @if($hasRef && $parts[1])
                         <div style="margin-top:0.2rem; background:#dbeafe; color:#1d4ed8; font-size:0.7rem; font-weight:800; padding:0.1rem 0.4rem; border-radius:4px; display:inline-block; direction:ltr; font-family:'Inter';">Ref: {{ trim($parts[1]) }}</div>
                         @endif
                     </td>
-                    <td style="padding:0.65rem 0.75rem; text-align:center; font-size:0.82rem; color:var(--text-dim); white-space:nowrap;">
+                    <td style="padding:0.65rem 0.75rem; text-align:center; font-size:0.82rem; color:#374151; font-weight:600; white-space:nowrap;">
                         {{ trim($mov->emp_name) ?: '—' }}
                     </td>
                     <td style="padding:0.65rem 0.75rem; text-align:center;">

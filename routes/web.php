@@ -51,6 +51,7 @@ Route::middleware(['auth.employee', 'require.2fa'])->group(function () {
 
     // Finance
     Route::get('/finance/movements', \App\Livewire\Finance\Movements::class)->name('finance.movements');
+    Route::get('/finance/reprint',   \App\Livewire\Finance\Reprint::class)->name('finance.reprint');
     Route::get('/finance/statement', \App\Livewire\Finance\Statement::class)->name('finance.statement');
     Route::get('/finance/vouchers',  \App\Livewire\Finance\Vouchers::class)->name('finance.vouchers');
     Route::get('/finance/invoices',  \App\Livewire\Finance\Invoices::class)->name('finance.invoices');

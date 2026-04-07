@@ -671,6 +671,7 @@
                 </a>
                 <ul class="dd-menu">
                     <li><a href="{{ route('finance.movements') }}"><span>💳</span> حركات مالية</a></li>
+                    <li><a href="{{ route('finance.reprint') }}"><span>🖨️</span> إعادة طباعة سند</a></li>
                     <li><a href="{{ route('finance.statement') }}"><span>📄</span> بيان حساب</a></li>
                 </ul>
             </li>
