@@ -153,6 +153,7 @@ class Dashboard extends Component
 
 
         return view('livewire.dashboard', [
+            'isAdmin'          => (auth()->user()?->role ?? '') === 'admin',
             'branchStats'      => $branchStats,
             'totalPatients'    => $totalPatients,
             'lastPatient'      => $lastPatient,

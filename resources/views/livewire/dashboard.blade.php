@@ -18,6 +18,7 @@
     <!-- المحتوى -->
     <div class="pg-inner" style="padding:1.75rem; display:flex; flex-direction:column; gap:1.25rem;">
 
+        @if($isAdmin)
         <!-- ═══ بطاقات الفروع ═══ -->
         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1rem;">
             @foreach($branchStats as $branch)
@@ -41,6 +42,7 @@
             </div>
             @endforeach
         </div>
+        @endif
 
         <!-- بطاقات الإحصائيات -->
         <div class="dash-stats" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.25rem;">
@@ -77,6 +79,7 @@
                 </div>
             </div>
 
+            @if($isAdmin)
             <div class="card" style="padding:1.25rem; display:flex; align-items:center; gap:1rem; border-right:4px solid var(--success);">
                 <div style="width:52px; height:52px; background:rgba(46,125,50,0.08); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.6rem; flex-shrink:0;">💵</div>
                 <div>
@@ -94,9 +97,11 @@
                     <div style="font-size:0.72rem; color:var(--text-muted);">{{ now()->locale('ar')->isoFormat('MMMM YYYY') }}</div>
                 </div>
             </div>
+            @endif
 
         </div>
 
+        @if($isAdmin)
         <!-- ═══ الرسوم البيانية ═══ -->
         <style>
             .dash-charts-row { display:grid; grid-template-columns:2fr 1fr; gap:1.25rem; }
@@ -141,6 +146,7 @@
                 <canvas id="monthlyCompareChart"></canvas>
             </div>
         </div>
+        @endif
 
         <!-- جدول + عيادات + روابط -->
         <div class="dash-bottom-row pg-2col">
@@ -209,12 +215,14 @@
                         <a href="{{ route('finance.invoices') }}" wire:navigate style="display:flex; align-items:center; gap:0.75rem; padding:0.65rem 0.9rem; border-radius:8px; text-decoration:none; color:var(--text-dim); font-weight:700; font-size:0.88rem; transition:all 0.2s;" onmouseover="this.style.background='#fef5f5'; this.style.color='var(--primary)'" onmouseout="this.style.background=''; this.style.color='var(--text-dim)'">
                             <span>🧾</span> الفواتير
                         </a>
+                        @if($isAdmin)
                         <a href="{{ route('finance.reports') }}" wire:navigate style="display:flex; align-items:center; gap:0.75rem; padding:0.65rem 0.9rem; border-radius:8px; text-decoration:none; color:var(--text-dim); font-weight:700; font-size:0.88rem; transition:all 0.2s;" onmouseover="this.style.background='#fef5f5'; this.style.color='var(--primary)'" onmouseout="this.style.background=''; this.style.color='var(--text-dim)'">
                             <span>📊</span> التقارير
                         </a>
                         <a href="{{ route('employees.index') }}" wire:navigate style="display:flex; align-items:center; gap:0.75rem; padding:0.65rem 0.9rem; border-radius:8px; text-decoration:none; color:var(--text-dim); font-weight:700; font-size:0.88rem; transition:all 0.2s;" onmouseover="this.style.background='#fef5f5'; this.style.color='var(--primary)'" onmouseout="this.style.background=''; this.style.color='var(--text-dim)'">
                             <span>👨‍⚕️</span> الموظفين
                         </a>
+                        @endif
                     </div>
                 </div>
 
@@ -232,6 +240,7 @@
 </div>
 </div>
 
+@if($isAdmin)
 <script>
 (function(){
     var dailyLabels  = @json($chartDailyLabels);
@@ -338,3 +347,4 @@
     document.addEventListener('livewire:navigated', initCharts);
 })();
 </script>
+@endif
