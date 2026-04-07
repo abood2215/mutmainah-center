@@ -190,9 +190,14 @@ body {
 .print-btn:hover { background:#6d1622; }
 
 @media print {
-    body { background:#fff; padding:0; }
-    .print-btn { display:none; }
-    .page { box-shadow:none; border-radius:0; max-width:100%; }
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+    body { background:#fff !important; padding:0; margin:0; }
+    .print-btn { display:none !important; }
+    .page { box-shadow:none !important; border-radius:0; max-width:100%; margin:0; }
 }
 </style>
 </head>
