@@ -334,7 +334,6 @@ body {
                 <tr>
                     <th style="width:36px;">م</th>
                     <th class="r">الخدمة : Service</th>
-                    <th>الكود : Code</th>
                     <th style="width:95px;">السعر : Price</th>
                     <th style="width:80px;">التأمين % : % Insur</th>
                 </tr>
@@ -344,13 +343,12 @@ body {
                 <tr>
                     <td class="num">{{ $i + 1 }}</td>
                     <td class="r">{{ $item->pdesc_clean ?? '—' }}</td>
-                    <td>{{ '—' }}</td>
                     <td class="price">{{ number_format($item->price, 3) }}</td>
                     <td>{{ number_format($item->insur_amount ?? 0, 0) }}</td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" style="text-align:center; padding:20px; color:#9e9e9e;">لا توجد خدمات مسجلة</td>
+                    <td colspan="4" style="text-align:center; padding:20px; color:#9e9e9e;">لا توجد خدمات مسجلة</td>
                 </tr>
                 @endforelse
 
@@ -365,7 +363,7 @@ body {
                         <span style="font-size:11px; color:#555;">العميل</span><br>
                         <strong style="color:#1b5e20;">{{ number_format($clientAmount, 3) }}</strong>
                     </td>
-                    <td colspan="2">
+                    <td>
                         <span style="font-size:11px; color:#555;">التأمين</span><br>
                         <strong>{{ number_format($insuranceAmount, 0) }}</strong>
                     </td>
