@@ -381,9 +381,13 @@ body {
     </div>
 
     {{-- ملاحظات --}}
+    @php
+        $notesRaw = $rec->notes ?? $rec->pres ?? '';
+        $notesClean = strip_tags(html_entity_decode(str_replace("\xc2\xa0", ' ', $notesRaw), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+    @endphp
     <div class="notes-row">
         <span class="lbl">ملاحظات :</span>
-        <span class="val">{{ $rec->notes ?? '' }}</span>
+        <span class="val">{{ $notesClean }}</span>
     </div>
 
 
