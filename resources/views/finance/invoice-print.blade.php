@@ -344,7 +344,7 @@ body {
                 <tr>
                     <td class="num">{{ $i + 1 }}</td>
                     <td class="r">{{ $item->pdesc_clean ?? '—' }}</td>
-                    <td>{{ $item->ccode ?? '—' }}</td>
+                    <td>{{ '—' }}</td>
                     <td class="price">{{ number_format($item->price, 3) }}</td>
                     <td>{{ number_format($item->insur_amount ?? 0, 0) }}</td>
                 </tr>

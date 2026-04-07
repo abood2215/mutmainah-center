@@ -51,11 +51,6 @@ Route::middleware(['auth.employee'])->group(function () {
     Route::get('/finance/invoices',  \App\Livewire\Finance\Invoices::class)->name('finance.invoices');
     Route::get('/finance/invoice/{recId}', function ($recId) {
         $rec = DB::table('rec')->where('id', $recId)->firstOrFail();
-        // دمج الملاحظات من كل الحقول الممكنة
-        $recNotes = collect(['notes','pres','sym','dia'])
-            ->map(fn($f) => strip_tags(html_entity_decode(str_replace("\xc2\xa0",' ',$rec->$f ?? ''), ENT_QUOTES|ENT_HTML5,'UTF-8')))
-            ->filter()
-            ->implode(' | ');
 
         $patient = DB::table('kstu as k')
             ->leftJoin('kcom as c', 'c.id', '=', 'k.com_id')
@@ -71,6 +66,7 @@ Route::middleware(['auth.employee'])->group(function () {
 
         // صف header لجلب ptime و user_id (بدون فلتر السعر لدعم الخدمات المجانية)
         $invoiceHeader = DB::table('kpayments')->where('rec_id', $recId)->first();
+        $recNotes = strip_tags(html_entity_decode(str_replace("\xc2\xa0", ' ', $invoiceHeader->notes ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
 
         $items = DB::table('kpayments')
             ->where('rec_id', $recId)
