@@ -159,6 +159,41 @@ Route::middleware(['auth.employee', 'require.2fa'])->group(function () {
         ));
     })->name('finance.invoice-print');
 
+    Route::get('/finance/movement/{id}/print', function ($id) {
+        $mov = DB::table('kpayments as k')
+            ->join('acck as a', 'a.id', '=', 'k.acc_id')
+            ->leftJoin('kstu as s', 's.id', '=', 'a.stu_id')
+            ->leftJoin('employees as e', 'e.id', '=', 'k.user_id')
+            ->where('k.id', $id)
+            ->select(
+                'k.id', 'k.pdate', 'k.ptime', 'k.pdesc', 'k.status', 'k.payment_method',
+                DB::raw('COALESCE(NULLIF(k.amount,0), NULLIF(k.price,0), 0) as mov_amount'),
+                's.full_name as patient_name',
+                's.file_id as patient_file',
+                's.phone as patient_phone',
+                'a.name as acck_name',
+                DB::raw("TRIM(CONCAT(IFNULL(e.first_name,''), ' ', IFNULL(e.middle_initial,''))) as emp_name")
+            )
+            ->firstOrFail();
+
+        $payMethods = [
+            1=>'نقدا', 3=>'شبكة', 6=>'فيزا', 4=>'تحويل بنكي',
+            11=>'MyFatoorah', 12=>'STC Pay', 14=>'دفع سريع', 20=>'Deema', 21=>'زكاء', 22=>'نقل رصيد',
+        ];
+
+        $desc = $mov->pdesc ?? '';
+        $hasRef = str_contains($desc, '| Ref:');
+        $refNo = $hasRef ? trim(explode('| Ref:', $desc, 2)[1]) : null;
+        $descClean = $hasRef ? trim(explode('| Ref:', $desc, 2)[0]) : trim($desc);
+
+        return view('finance.movement-print', [
+            'mov'        => $mov,
+            'payMethods' => $payMethods,
+            'refNo'      => $refNo,
+            'descClean'  => $descClean,
+        ]);
+    })->name('finance.movement-print');
+
     Route::get('/finance/reports', \App\Livewire\Finance\Reports::class)->name('finance.reports');
     Route::get('/finance/branch-report', \App\Livewire\Finance\BranchReport::class)->name('finance.branch-report');
 

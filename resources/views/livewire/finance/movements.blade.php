@@ -1,10 +1,16 @@
 <div class="pg-outer" style="min-height:80vh; padding:1.25rem 1.5rem;">
 
-{{-- رسالة نجاح --}}
-@if(session('movement_saved'))
-<div style="margin-bottom:1rem; background:#ecfdf5; border:2px solid #4caf50; border-radius:10px; padding:0.85rem 1.25rem; display:flex; align-items:center; gap:0.75rem;">
-    <span style="font-size:1.2rem;">✅</span>
-    <span style="font-weight:800; color:#1b5e20; font-size:0.9rem; font-family:'Tajawal',sans-serif;">{{ session('movement_saved') }}</span>
+{{-- رسالة نجاح + زر الطباعة --}}
+@if($lastSavedId)
+<div style="margin-bottom:1rem; background:#ecfdf5; border:2px solid #4caf50; border-radius:10px; padding:0.85rem 1.25rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.75rem;">
+    <div style="display:flex; align-items:center; gap:0.65rem;">
+        <span style="font-size:1.2rem;">✅</span>
+        <span style="font-weight:800; color:#1b5e20; font-size:0.9rem; font-family:'Tajawal',sans-serif;">تم حفظ السند بنجاح — رقم السند: <strong>#{{ $lastSavedId }}</strong></span>
+    </div>
+    <a href="{{ route('finance.movement-print', $lastSavedId) }}" target="_blank"
+        style="padding:0.55rem 1.4rem; background:#1b5e20; color:#fff; border-radius:8px; font-family:'Tajawal',sans-serif; font-weight:800; font-size:0.88rem; text-decoration:none; display:flex; align-items:center; gap:0.4rem; white-space:nowrap;">
+        🖨️ طباعة الوصل
+    </a>
 </div>
 @endif
 

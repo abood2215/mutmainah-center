@@ -22,6 +22,7 @@ class Movements extends Component
     /* ══ نموذج إضافة حركة جديدة ══ */
     public bool   $showAddModal     = true;
     public bool   $showMovements    = false;
+    public ?int   $lastSavedId      = null;
     public string $newClientSearch  = '';
     public array  $newClientResults = [];
     public ?int   $newClientId      = null;
@@ -207,8 +208,7 @@ class Movements extends Component
         DB::table('kpayments')->where('id', $newId)->update(['vno' => $newId]);
 
         $this->resetAddModal();
-        $this->showAddModal = false;
-        session()->flash('movement_saved', "تم حفظ سند " . ($isReceipt ? 'القبض' : 'الصرف') . " بنجاح — رقم السند: #{$newId}");
+        $this->lastSavedId = $newId;
     }
 
     public function openAddModal(): void  { }
