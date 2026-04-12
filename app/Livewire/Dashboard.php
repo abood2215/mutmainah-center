@@ -10,6 +10,34 @@ use Illuminate\Support\Facades\Cache;
 class Dashboard extends Component
 {
     #[Title('لوحة التحكم')]
+
+    public string $monthModalLabel   = '';
+    public array  $monthModalClinics = [];
+    public bool   $showMonthModal    = false;
+
+    public function loadMonthClinics(int $year, int $month, string $label): void
+    {
+        $clinics = DB::table('rec as r')
+            ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
+            ->where('r.confirm_id', 1)
+            ->whereRaw("MONTH(STR_TO_DATE(r.rec_date, '%e-%c-%Y')) = ?", [$month])
+            ->whereRaw("YEAR(STR_TO_DATE(r.rec_date, '%e-%c-%Y')) = ?",  [$year])
+            ->select('c.name as clinic_name', DB::raw('COUNT(r.id) as count'))
+            ->groupBy('r.clinic_id', 'c.name')
+            ->orderBy('count', 'desc')
+            ->limit(12)
+            ->get();
+
+        $this->monthModalLabel   = $label;
+        $this->monthModalClinics = $clinics->toArray();
+        $this->showMonthModal    = true;
+    }
+
+    public function closeMonthModal(): void
+    {
+        $this->showMonthModal = false;
+    }
+
     public function render()
     {
         $totalPatients = DB::table('kstu')->count();
@@ -41,7 +69,7 @@ class Dashboard extends Component
         $cacheKey = "dash_month_{$currentYear}_{$currentMonth}";
 
         // الإيرادات والرسوم البيانية: cache 10 دقائق (لا تتغير كثيراً)
-        [$monthlyRevenue, $chartDailyLabels, $chartDailyData, $chartMonthLabels, $chartMonthData, $clinicChartData, $branchStats] =
+        [$monthlyRevenue, $chartDailyLabels, $chartDailyData, $chartMonthLabels, $chartMonthData, $chartMonthKeys, $clinicChartData, $branchStats] =
             Cache::remember($cacheKey, 600, function () use ($currentMonth, $currentYear) {
 
             $monthlyRevenue = DB::table('kpayments')
@@ -70,6 +98,7 @@ class Dashboard extends Component
             // مقارنة آخر 6 أشهر
             $chartMonthLabels = [];
             $chartMonthData   = [];
+            $chartMonthKeys   = []; // year-month للـ JavaScript
             for ($i = 5; $i >= 0; $i--) {
                 $dt  = now()->subMonths($i);
                 $m   = $dt->month;
@@ -81,6 +110,7 @@ class Dashboard extends Component
                     ->sum('price');
                 $chartMonthLabels[] = $dt->locale('ar')->isoFormat('MMM YY');
                 $chartMonthData[]   = round($rev, 3);
+                $chartMonthKeys[]   = ['year' => $y, 'month' => $m, 'label' => $dt->locale('ar')->isoFormat('MMMM YYYY')];
             }
 
             // توزيع العيادات هذا الشهر
@@ -120,7 +150,7 @@ class Dashboard extends Component
                 return $b;
             });
 
-            return [$monthlyRevenue, $chartDailyLabels, $chartDailyData, $chartMonthLabels, $chartMonthData, $clinicChartData, $branchStats];
+            return [$monthlyRevenue, $chartDailyLabels, $chartDailyData, $chartMonthLabels, $chartMonthData, $chartMonthKeys, $clinicChartData, $branchStats];
         });
 
         // إيرادات اليوم (لا cache — تتغير لحظياً)
@@ -169,6 +199,7 @@ class Dashboard extends Component
             'chartDailyData'   => $chartDailyData,
             'chartMonthLabels' => $chartMonthLabels,
             'chartMonthData'   => $chartMonthData,
+            'chartMonthKeys'   => $chartMonthKeys,
             'clinicChartData'  => $clinicChartData,
         ])->layout('layouts.app');
     }

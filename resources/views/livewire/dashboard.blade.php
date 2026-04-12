@@ -159,11 +159,51 @@
         <div class="card">
             <div class="card-header">
                 <span class="card-title">📊 مقارنة الإيرادات — آخر 6 أشهر</span>
+                <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">اضغط على أي شهر لعرض توزيع العيادات</span>
             </div>
             <div style="padding:1.25rem; position:relative; height:200px;">
-                <canvas id="monthlyCompareChart"></canvas>
+                <canvas id="monthlyCompareChart" style="cursor:pointer;"></canvas>
             </div>
         </div>
+
+        {{-- مودال توزيع عيادات الشهر --}}
+        @if($showMonthModal)
+        <div style="position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:9999; display:flex; align-items:center; justify-content:center; padding:1rem;"
+             wire:click.self="closeMonthModal">
+            <div style="background:#fff; border-radius:14px; width:100%; max-width:520px; box-shadow:0 20px 60px rgba(0,0,0,0.25); overflow:hidden; animation:fadeIn .2s ease;">
+                <div style="background:var(--navy); padding:1rem 1.4rem; display:flex; align-items:center; justify-content:space-between;">
+                    <div>
+                        <div style="color:rgba(255,255,255,.6); font-size:.7rem; font-weight:800; letter-spacing:1px; margin-bottom:3px;">توزيع العيادات</div>
+                        <div style="color:#fff; font-weight:900; font-size:1rem; font-family:'Tajawal',sans-serif;">🏥 {{ $monthModalLabel }}</div>
+                    </div>
+                    <button wire:click="closeMonthModal" style="background:rgba(255,255,255,.15); border:none; color:#fff; border-radius:8px; width:32px; height:32px; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;">&times;</button>
+                </div>
+                <div style="padding:1.25rem;">
+                    @if(count($monthModalClinics) > 0)
+                    @php $maxCount = max(array_column($monthModalClinics, 'count')); @endphp
+                    @foreach($monthModalClinics as $row)
+                    @php $pct = $maxCount > 0 ? round(($row->count / $maxCount) * 100) : 0; @endphp
+                    <div style="margin-bottom:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <span style="font-size:.84rem; font-weight:700; color:var(--navy);">{{ $row->clinic_name ?: 'غير محدد' }}</span>
+                            <span style="font-size:.84rem; font-weight:900; color:var(--primary);">{{ $row->count }} كشف</span>
+                        </div>
+                        <div style="height:7px; background:#f0f2f5; border-radius:4px; overflow:hidden;">
+                            <div style="height:100%; width:{{ $pct }}%; background:var(--primary); border-radius:4px; transition:width .4s ease;"></div>
+                        </div>
+                    </div>
+                    @endforeach
+                    @else
+                    <div style="text-align:center; color:var(--text-muted); padding:2rem; font-size:.9rem;">لا توجد بيانات لهذا الشهر</div>
+                    @endif
+                </div>
+                <div style="padding:0.75rem 1.4rem; border-top:1px solid #f0f2f5; text-align:center;">
+                    <button wire:click="closeMonthModal" style="background:#f4f6f9; border:1px solid #e2e8f0; border-radius:8px; padding:7px 24px; font-family:'Tajawal',sans-serif; font-size:.85rem; font-weight:800; color:#555; cursor:pointer;">إغلاق</button>
+                </div>
+            </div>
+        </div>
+        @endif
+
         @endif
 
         <!-- جدول + عيادات + روابط -->
@@ -265,6 +305,7 @@
     var dailyData    = @json($chartDailyData);
     var monthLabels  = @json($chartMonthLabels);
     var monthData    = @json($chartMonthData);
+    var monthKeys    = @json($chartMonthKeys);
     var clinicLabels = @json($clinicChartData->pluck('clinic_name'));
     var clinicCounts = @json($clinicChartData->pluck('count'));
 
@@ -337,7 +378,7 @@
         });
 
         destroyChart('monthlyCompareChart');
-        new Chart(document.getElementById('monthlyCompareChart'), {
+        var monthChart = new Chart(document.getElementById('monthlyCompareChart'), {
             type: 'bar',
             data: {
                 labels: monthLabels,
@@ -345,6 +386,7 @@
                     label: 'الإيرادات (د.ك)',
                     data: monthData,
                     backgroundColor: monthData.map(function(_, i){ return i === monthData.length - 1 ? '#8b1c2b' : 'rgba(139,28,43,0.25)'; }),
+                    hoverBackgroundColor: monthData.map(function(){ return '#8b1c2b'; }),
                     borderRadius: 6,
                     borderSkipped: false,
                 }]
@@ -352,10 +394,24 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            footer: function() { return 'اضغط لعرض توزيع العيادات'; }
+                        }
+                    }
+                },
                 scales: {
                     x: { grid: { display: false }, ticks: { font: { size: 12 } } },
                     y: { beginAtZero: true, grid: { color: '#f0f2f5' }, ticks: { font: { size: 11 } } }
+                },
+                onClick: function(evt, elements) {
+                    if (!elements.length) return;
+                    var idx = elements[0].index;
+                    var key = monthKeys[idx];
+                    if (!key) return;
+                    @this.call('loadMonthClinics', key.year, key.month, key.label);
                 }
             }
         });
