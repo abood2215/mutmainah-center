@@ -68,9 +68,9 @@ class Dashboard extends Component
         $currentYear  = now()->format('Y');
         $cacheKey = "dash_month_v2_{$currentYear}_{$currentMonth}";
 
-        // الإيرادات والرسوم البيانية: cache 10 دقائق (لا تتغير كثيراً)
+        // الإيرادات والرسوم البيانية: cache ساعة واحدة (لا تتغير كثيراً)
         [$monthlyRevenue, $chartDailyLabels, $chartDailyData, $chartMonthLabels, $chartMonthData, $chartMonthKeys, $clinicChartData, $branchStats, $allMonthsData] =
-            Cache::remember($cacheKey, 600, function () use ($currentMonth, $currentYear) {
+            Cache::remember($cacheKey, 3600, function () use ($currentMonth, $currentYear) {
 
             $monthlyRevenue = DB::table('kpayments')
                 ->where('price', '>', 0)
