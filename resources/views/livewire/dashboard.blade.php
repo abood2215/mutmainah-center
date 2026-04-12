@@ -25,56 +25,64 @@
             @php
                 $isThird = str_contains($branch->name, 'الثالث');
                 $isSixth = str_contains($branch->name, 'السادس');
-                $floorNum = $isThird ? '3' : ($isSixth ? '6' : '');
+                $floorNum   = $isThird ? '3' : ($isSixth ? '6' : '');
+                $floorLabel = $isThird ? 'الطابق الثالث' : ($isSixth ? 'الطابق السادس' : 'الفرع');
                 if ($isThird) {
-                    $bg1 = '#9d174d'; $bg2 = '#db2777';
-                    $accent = '#f9a8d4'; $accentDim = 'rgba(249,168,212,0.15)';
+                    $bandBg  = 'linear-gradient(180deg,#db2777 0%,#9d174d 100%)';
+                    $glow    = '0 4px 24px rgba(219,39,119,0.22)';
+                    $tagBg   = '#fdf2f8';
+                    $tagClr  = '#9d174d';
+                    $dotClr  = '#db2777';
                 } elseif ($isSixth) {
-                    $bg1 = '#1e3a8a'; $bg2 = '#2563eb';
-                    $accent = '#93c5fd'; $accentDim = 'rgba(147,197,253,0.15)';
+                    $bandBg  = 'linear-gradient(180deg,#2563eb 0%,#1e3a8a 100%)';
+                    $glow    = '0 4px 24px rgba(37,99,235,0.22)';
+                    $tagBg   = '#eff6ff';
+                    $tagClr  = '#1e3a8a';
+                    $dotClr  = '#2563eb';
                 } else {
-                    $bg1 = '#1a1a2e'; $bg2 = '#252550';
-                    $accent = '#fbbf24'; $accentDim = 'rgba(251,191,36,0.15)';
+                    $bandBg  = 'linear-gradient(180deg,#374151 0%,#111827 100%)';
+                    $glow    = '0 4px 24px rgba(55,65,81,0.22)';
+                    $tagBg   = '#f9fafb';
+                    $tagClr  = '#111827';
+                    $dotClr  = '#c8941a';
                 }
             @endphp
-            <div style="background:linear-gradient(145deg, {{ $bg1 }} 0%, {{ $bg2 }} 100%); border-radius:16px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.2); position:relative;">
+            <div style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:{{ $glow }}, 0 1px 4px rgba(0,0,0,0.07); display:flex; border:1px solid rgba(0,0,0,0.05);">
 
-                {{-- رقم الدور الخلفي الزخرفي --}}
-                @if($floorNum)
-                <div style="position:absolute; left:-10px; top:50%; transform:translateY(-50%); font-size:9rem; font-weight:900; color:rgba(255,255,255,0.06); font-family:'Inter',sans-serif; line-height:1; user-select:none; pointer-events:none;">
-                    {{ $floorNum }}
-                </div>
-                @endif
-
-                {{-- خط علوي ملون --}}
-                <div style="height:3px; background:linear-gradient(90deg, {{ $accent }}, transparent);"></div>
-
-                <div style="padding:1.4rem 1.6rem; display:flex; align-items:stretch; gap:1rem; position:relative;">
-
-                    {{-- رقم الدور البارز --}}
+                {{-- شريط الطابق الجانبي --}}
+                <div style="width:80px; flex-shrink:0; background:{{ $bandBg }}; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:1.25rem 0; gap:4px; position:relative; overflow:hidden;">
+                    {{-- خلفية زخرفية --}}
+                    <div style="position:absolute; top:-18px; right:-18px; width:60px; height:60px; border-radius:50%; background:rgba(255,255,255,0.07); pointer-events:none;"></div>
+                    <div style="position:absolute; bottom:-12px; left:-12px; width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.05); pointer-events:none;"></div>
                     @if($floorNum)
-                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:{{ $accentDim }}; border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:0.5rem 1rem; flex-shrink:0; min-width:56px;">
-                        <div style="font-size:2.8rem; font-weight:900; color:{{ $accent }}; font-family:'Inter',sans-serif; line-height:1;">{{ $floorNum }}</div>
-                        <div style="font-size:0.58rem; color:rgba(255,255,255,0.5); font-weight:700; letter-spacing:1px; margin-top:2px;">FLOOR</div>
-                    </div>
+                    <div style="font-size:2.6rem; font-weight:900; color:#fff; font-family:'Inter',sans-serif; line-height:1; position:relative; z-index:1;">{{ $floorNum }}</div>
+                    <div style="font-size:0.55rem; font-weight:800; color:rgba(255,255,255,0.6); letter-spacing:1.5px; text-transform:uppercase; position:relative; z-index:1;">FLOOR</div>
+                    @else
+                    <div style="font-size:1.6rem; color:rgba(255,255,255,0.8); position:relative; z-index:1;">🏢</div>
                     @endif
+                </div>
 
-                    {{-- اسم الفرع + الإحصائيات --}}
-                    <div style="flex:1; min-width:0; display:flex; flex-direction:column; justify-content:space-between; gap:0.75rem;">
-                        <div>
-                            <div style="color:{{ $accent }}; font-size:0.65rem; font-weight:800; letter-spacing:1.5px; margin-bottom:0.3rem; opacity:0.85;">BRANCH · فرع</div>
-                            <div style="color:#fff; font-weight:900; font-size:0.95rem; font-family:'Tajawal',sans-serif; line-height:1.35;">{{ $branch->name }}</div>
+                {{-- المحتوى --}}
+                <div style="flex:1; padding:1.1rem 1.25rem; display:flex; flex-direction:column; justify-content:space-between; min-width:0;">
+
+                    {{-- العنوان --}}
+                    <div style="margin-bottom:0.85rem;">
+                        <div style="display:inline-flex; align-items:center; gap:5px; background:{{ $tagBg }}; color:{{ $tagClr }}; font-size:0.62rem; font-weight:800; letter-spacing:1.2px; padding:2px 8px; border-radius:20px; margin-bottom:6px;">
+                            <span style="width:5px; height:5px; border-radius:50%; background:{{ $dotClr }}; display:inline-block;"></span>
+                            {{ $floorLabel }}
                         </div>
+                        <div style="font-size:0.97rem; font-weight:900; color:#1a1a2e; font-family:'Tajawal',sans-serif; line-height:1.3;">{{ $branch->name }}</div>
+                    </div>
 
-                        <div style="display:flex; gap:0.6rem;">
-                            <div style="flex:1; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:0.6rem 0.8rem; text-align:center;">
-                                <div style="color:rgba(255,255,255,0.5); font-size:0.6rem; font-weight:800; letter-spacing:1px; margin-bottom:4px;">العملاء</div>
-                                <div style="color:#fff; font-weight:900; font-size:1.75rem; font-family:'Inter',sans-serif; line-height:1;">{{ number_format($branch->patients_count) }}</div>
-                            </div>
-                            <div style="flex:1; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:0.6rem 0.8rem; text-align:center;">
-                                <div style="color:rgba(255,255,255,0.5); font-size:0.6rem; font-weight:800; letter-spacing:1px; margin-bottom:4px;">إيرادات الشهر</div>
-                                <div style="color:{{ $accent }}; font-weight:900; font-size:1.45rem; font-family:'Inter',sans-serif; line-height:1;">{{ number_format($branch->monthly_revenue, 0) }}<span style="font-size:0.65rem; opacity:0.7; margin-right:2px;">د.ك</span></div>
-                            </div>
+                    {{-- الإحصائيات --}}
+                    <div style="display:flex; gap:0.6rem;">
+                        <div style="flex:1; background:#f8fafc; border-radius:10px; padding:0.55rem 0.75rem; border:1px solid #e8eef4;">
+                            <div style="font-size:0.62rem; font-weight:800; color:#94a3b8; margin-bottom:3px; white-space:nowrap;">👥 إجمالي العملاء</div>
+                            <div style="font-size:1.5rem; font-weight:900; color:#1a1a2e; font-family:'Inter',sans-serif; line-height:1;">{{ number_format($branch->patients_count) }}</div>
+                        </div>
+                        <div style="flex:1; background:#f8fafc; border-radius:10px; padding:0.55rem 0.75rem; border:1px solid #e8eef4;">
+                            <div style="font-size:0.62rem; font-weight:800; color:#94a3b8; margin-bottom:3px; white-space:nowrap;">📈 إيرادات الشهر</div>
+                            <div style="font-size:1.3rem; font-weight:900; color:{{ $dotClr }}; font-family:'Inter',sans-serif; line-height:1;">{{ number_format($branch->monthly_revenue, 0) }}<span style="font-size:0.6rem; color:#94a3b8; margin-right:2px; font-weight:800;">د.ك</span></div>
                         </div>
                     </div>
 
@@ -158,7 +166,7 @@
             <!-- منحنى الإيرادات اليومية -->
             <div class="card" wire:ignore>
                 <div class="card-header">
-                    <span class="card-title">📈 إيرادات {{ now()->locale('ar')->isoFormat('MMMM YYYY') }}</span>
+                    <span class="card-title" id="dailyChartTitle">📈 إيرادات {{ now()->locale('ar')->isoFormat('MMMM YYYY') }}</span>
                 </div>
                 <div style="padding:1.25rem; position:relative; height:220px;">
                     <canvas id="dailyRevenueChart"></canvas>
@@ -168,7 +176,7 @@
             <!-- دونات توزيع العيادات -->
             <div class="card" wire:ignore>
                 <div class="card-header">
-                    <span class="card-title">🏥 العيادات هذا الشهر</span>
+                    <span class="card-title" id="clinicChartTitle">🏥 العيادات — <span id="clinicChartMonth">{{ now()->locale('ar')->isoFormat('MMMM YYYY') }}</span></span>
                 </div>
                 <div style="padding:1rem; position:relative; height:220px;">
                     <canvas id="clinicDonutChart"></canvas>
@@ -181,7 +189,7 @@
         <div class="card" wire:ignore>
             <div class="card-header">
                 <span class="card-title">📊 مقارنة الإيرادات — آخر 6 أشهر</span>
-                <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">اضغط على أي شهر لعرض توزيع العيادات</span>
+                <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">اضغط على أي شهر لتحديث الرسوم</span>
             </div>
             <div style="padding:1.25rem; position:relative; height:200px;">
                 <canvas id="monthlyCompareChart" style="cursor:pointer;"></canvas>
@@ -189,55 +197,6 @@
         </div>
 
         @endif
-
-        {{-- مودال توزيع عيادات الشهر — خارج layout --}}
-        @teleport('body')
-        @if($showMonthModal)
-        <div id="month-modal-backdrop"
-             style="position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:99999; display:flex; align-items:center; justify-content:center; padding:1rem; font-family:'Tajawal',sans-serif;"
-             wire:click.self="closeMonthModal">
-            <div style="background:#fff; border-radius:14px; width:100%; max-width:520px; max-height:90vh; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,0.3); overflow:hidden; animation:fadeIn .2s ease;">
-
-                {{-- رأس --}}
-                <div style="background:var(--navy); padding:1rem 1.4rem; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;">
-                    <div>
-                        <div style="color:rgba(255,255,255,.6); font-size:.7rem; font-weight:800; letter-spacing:1px; margin-bottom:3px;">توزيع العيادات</div>
-                        <div style="color:#fff; font-weight:900; font-size:1rem;">🏥 {{ $monthModalLabel }}</div>
-                    </div>
-                    <button wire:click="closeMonthModal"
-                        style="background:rgba(255,255,255,.15); border:none; color:#fff; border-radius:8px; width:34px; height:34px; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">&times;</button>
-                </div>
-
-                {{-- محتوى قابل للتمرير --}}
-                <div style="padding:1.25rem; overflow-y:auto; flex:1;">
-                    @if(count($monthModalClinics) > 0)
-                    @php $maxCount = max(array_column($monthModalClinics, 'count')); @endphp
-                    @foreach($monthModalClinics as $row)
-                    @php $pct = $maxCount > 0 ? round(($row->count / $maxCount) * 100) : 0; @endphp
-                    <div style="margin-bottom:12px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-                            <span style="font-size:.84rem; font-weight:700; color:var(--navy); flex:1; padding-left:8px;">{{ $row->clinic_name ?: 'غير محدد' }}</span>
-                            <span style="font-size:.84rem; font-weight:900; color:var(--primary); white-space:nowrap;">{{ $row->count }} كشف</span>
-                        </div>
-                        <div style="height:8px; background:#f0f2f5; border-radius:4px; overflow:hidden;">
-                            <div style="height:100%; width:{{ $pct }}%; background:var(--primary); border-radius:4px;"></div>
-                        </div>
-                    </div>
-                    @endforeach
-                    @else
-                    <div style="text-align:center; color:var(--text-muted); padding:2rem; font-size:.9rem;">لا توجد بيانات لهذا الشهر</div>
-                    @endif
-                </div>
-
-                {{-- ذيل --}}
-                <div style="padding:0.75rem 1.4rem; border-top:1px solid #f0f2f5; text-align:center; flex-shrink:0;">
-                    <button wire:click="closeMonthModal"
-                        style="background:var(--navy); color:#fff; border:none; border-radius:8px; padding:8px 28px; font-family:'Tajawal',sans-serif; font-size:.85rem; font-weight:800; cursor:pointer;">إغلاق</button>
-                </div>
-            </div>
-        </div>
-        @endif
-        @endteleport
 
         <!-- جدول + عيادات + روابط -->
         <div class="dash-bottom-row pg-2col">
@@ -334,17 +293,58 @@
 @if($isAdmin)
 <script>
 (function(){
-    var dailyLabels  = @json($chartDailyLabels);
-    var dailyData    = @json($chartDailyData);
-    var monthLabels  = @json($chartMonthLabels);
-    var monthData    = @json($chartMonthData);
-    var monthKeys    = @json($chartMonthKeys);
-    var clinicLabels = @json($clinicChartData->pluck('clinic_name'));
-    var clinicCounts = @json($clinicChartData->pluck('count'));
+    var monthLabels    = @json($chartMonthLabels);
+    var monthData      = @json($chartMonthData);
+    var allMonthsData  = @json($allMonthsData);
+
+    var selectedIdx = allMonthsData.length - 1; // الشهر الحالي افتراضياً
+
+    var palette = ['#8b1c2b','#1a1a2e','#c8941a','#2e7d32','#1565c0','#6a1b9a','#e65100','#00838f'];
 
     function destroyChart(id) {
-        var existing = Chart.getChart(id);
-        if (existing) existing.destroy();
+        var c = Chart.getChart(id);
+        if (c) c.destroy();
+    }
+
+    function getBarColors(activeIdx) {
+        return monthData.map(function(_, i) {
+            return i === activeIdx ? '#8b1c2b' : 'rgba(139,28,43,0.22)';
+        });
+    }
+
+    function updateDailyChart(md) {
+        var dc = Chart.getChart('dailyRevenueChart');
+        if (!dc) return;
+        dc.data.labels = md.dailyLabels;
+        dc.data.datasets[0].data = md.dailyData;
+        dc.update('active');
+        var el = document.getElementById('dailyChartTitle');
+        if (el) el.textContent = '📈 إيرادات ' + md.label;
+    }
+
+    function updateClinicChart(md) {
+        var cc = Chart.getChart('clinicDonutChart');
+        if (!cc) return;
+        cc.data.labels = md.clinicLabels;
+        cc.data.datasets[0].data = md.clinicCounts;
+        cc.update('active');
+        var el = document.getElementById('clinicChartMonth');
+        if (el) el.textContent = md.label;
+    }
+
+    function updateMonthBarColors(activeIdx) {
+        var mc = Chart.getChart('monthlyCompareChart');
+        if (!mc) return;
+        mc.data.datasets[0].backgroundColor = getBarColors(activeIdx);
+        mc.update('none');
+    }
+
+    function selectMonth(idx) {
+        selectedIdx = idx;
+        var md = allMonthsData[idx];
+        updateDailyChart(md);
+        updateClinicChart(md);
+        updateMonthBarColors(idx);
     }
 
     function initCharts() {
@@ -354,16 +354,16 @@
         Chart.defaults.font.family = "'Tajawal', sans-serif";
         Chart.defaults.color = '#546e7a';
 
-        var palette = ['#8b1c2b','#1a1a2e','#c8941a','#2e7d32','#1565c0','#6a1b9a','#e65100','#00838f'];
+        var md = allMonthsData[selectedIdx];
 
         destroyChart('dailyRevenueChart');
         new Chart(document.getElementById('dailyRevenueChart'), {
             type: 'line',
             data: {
-                labels: dailyLabels,
+                labels: md.dailyLabels,
                 datasets: [{
                     label: 'الإيرادات (د.ك)',
-                    data: dailyData,
+                    data: md.dailyData,
                     borderColor: '#8b1c2b',
                     backgroundColor: 'rgba(139,28,43,0.08)',
                     borderWidth: 2.5,
@@ -388,9 +388,9 @@
         new Chart(document.getElementById('clinicDonutChart'), {
             type: 'doughnut',
             data: {
-                labels: clinicLabels,
+                labels: md.clinicLabels,
                 datasets: [{
-                    data: clinicCounts,
+                    data: md.clinicCounts,
                     backgroundColor: palette,
                     borderWidth: 2,
                     borderColor: '#fff',
@@ -411,15 +411,15 @@
         });
 
         destroyChart('monthlyCompareChart');
-        var monthChart = new Chart(document.getElementById('monthlyCompareChart'), {
+        new Chart(document.getElementById('monthlyCompareChart'), {
             type: 'bar',
             data: {
                 labels: monthLabels,
                 datasets: [{
                     label: 'الإيرادات (د.ك)',
                     data: monthData,
-                    backgroundColor: monthData.map(function(_, i){ return i === monthData.length - 1 ? '#8b1c2b' : 'rgba(139,28,43,0.25)'; }),
-                    hoverBackgroundColor: monthData.map(function(){ return '#8b1c2b'; }),
+                    backgroundColor: getBarColors(selectedIdx),
+                    hoverBackgroundColor: monthData.map(function() { return '#8b1c2b'; }),
                     borderRadius: 6,
                     borderSkipped: false,
                 }]
@@ -431,7 +431,7 @@
                     legend: { display: false },
                     tooltip: {
                         callbacks: {
-                            footer: function() { return 'اضغط لعرض توزيع العيادات'; }
+                            footer: function() { return 'اضغط لتحديث الرسوم'; }
                         }
                     }
                 },
@@ -441,10 +441,7 @@
                 },
                 onClick: function(evt, elements) {
                     if (!elements.length) return;
-                    var idx = elements[0].index;
-                    var key = monthKeys[idx];
-                    if (!key) return;
-                    @this.call('loadMonthClinics', key.year, key.month, key.label);
+                    selectMonth(elements[0].index);
                 }
             }
         });
