@@ -11,8 +11,9 @@ class NewCheck extends Component
 {
     public $patientId;
     public $patient;
-    public float $balance  = 0.0;
-    public array $clinics  = [];
+    public float $balance    = 0.0;
+    public bool  $hasAccount = false;
+    public array $clinics    = [];
     public array $services = [];
 
     // حقول إضافة الخدمة
@@ -47,6 +48,7 @@ class NewCheck extends Component
         // حساب رصيد العميل الحالي
         $acck   = DB::table('acck')->where('stu_id', $id)->first();
         $acckId = $acck?->id;
+        $this->hasAccount = (bool) $acckId;
         if ($acckId) {
             $totalDeposited = (float) DB::table('kpayments')
                 ->where('acc_id', $acckId)
@@ -185,6 +187,18 @@ class NewCheck extends Component
     public function save(): void
     {
         if (empty($this->items)) return;
+
+        // منع الحجز إذا كان الرصيد غير كافٍ
+        if ($this->hasAccount && !$this->isFree) {
+            $due = $this->getPatientAmount();
+            if ($due > 0 && $this->balance < $due) {
+                session()->flash('balance_error',
+                    'الرصيد غير كافٍ — الرصيد المتاح: ' . number_format($this->balance, 3) .
+                    ' د.ك، المطلوب: ' . number_format($due, 3) . ' د.ك'
+                );
+                return;
+            }
+        }
 
         $today         = now()->format('j-n-Y');
         $firstClinicId = $this->items[0]['clinic_id'] ?? 0;

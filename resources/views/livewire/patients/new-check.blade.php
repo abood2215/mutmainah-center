@@ -499,11 +499,28 @@
     </div>
 
     {{-- شريط الأزرار --}}
+    @php
+        $balanceInsufficient = $hasAccount && !$isFree && $patientAmount > 0 && $balance < $patientAmount;
+    @endphp
     <div class="nc-footer">
+        @if(session('balance_error'))
+        <div style="width:100%; background:#c62828; color:#fff; padding:8px 14px; border-radius:5px; font-size:.85rem; font-weight:800; margin-bottom:6px;">
+            ⛔ {{ session('balance_error') }}
+        </div>
+        @endif
+        @if($balanceInsufficient)
+        <div style="width:100%; background:#b71c1c; color:#fff; padding:8px 14px; border-radius:5px; font-size:.84rem; font-weight:800; margin-bottom:6px;">
+            ⛔ لا يمكن الحجز — الرصيد غير كافٍ &nbsp;|&nbsp;
+            المتاح: <strong>{{ number_format($balance, 3) }}</strong> د.ك &nbsp;/&nbsp;
+            المطلوب: <strong>{{ number_format($patientAmount, 3) }}</strong> د.ك &nbsp;|&nbsp;
+            ينقص: <strong>{{ number_format($patientAmount - $balance, 3) }}</strong> د.ك
+        </div>
+        @endif
         <div class="btns">
             <button wire:click="save" wire:loading.attr="disabled" type="button"
-                    @if(empty($items)) disabled @endif
-                    class="nc-btn nc-btn-ref">
+                    @if(empty($items) || $balanceInsufficient) disabled @endif
+                    class="nc-btn nc-btn-ref"
+                    style="{{ $balanceInsufficient ? 'background:#888; cursor:not-allowed;' : '' }}">
                 <span wire:loading.remove wire:target="save">🧾 تحويل العميل : Referral</span>
                 <span wire:loading wire:target="save">⏳ جارٍ الحفظ...</span>
             </button>
