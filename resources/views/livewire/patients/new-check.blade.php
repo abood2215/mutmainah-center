@@ -295,6 +295,11 @@
         <span class="sep">|</span>
         <span class="lbl">Insurance : التأمين</span>
         <span class="val" style="color:var(--primary);">{{ $patient->insurance ?? 'على نفقته' }}</span>
+        @if($balance > 0)
+            <span class="sep">|</span>
+            <span class="lbl">Balance : الرصيد</span>
+            <span class="val" style="color:#1b5e20; font-size:.9rem;">{{ number_format($balance, 3) }} د.ك</span>
+        @endif
     </div>
 
     {{-- صف الإضافة --}}
@@ -444,6 +449,21 @@
 
         {{-- يمين: بيانات الدفع --}}
         <div class="nc-pay-right">
+
+            @if($balance > 0)
+            <div style="background:{{ $balance >= $patientAmount && $patientAmount > 0 ? '#e8f5e9' : '#fff3e0' }}; border:1px solid {{ $balance >= $patientAmount && $patientAmount > 0 ? '#a5d6a7' : '#ffcc80' }}; border-radius:6px; padding:8px 14px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:.82rem; font-weight:800; color:#555;">رصيد الحساب</span>
+                <span style="font-size:1rem; font-weight:900; color:{{ $balance >= $patientAmount && $patientAmount > 0 ? '#1b5e20' : '#e65100' }};">
+                    {{ number_format($balance, 3) }} د.ك
+                </span>
+            </div>
+            @if($patientAmount > 0 && $balance < $patientAmount && $paymentMethod == '5')
+            <div style="background:#fdecea; border:1px solid #f5c6cb; border-radius:5px; padding:6px 12px; margin-bottom:10px; font-size:.8rem; font-weight:800; color:#c62828;">
+                ⚠ الرصيد غير كافٍ — ينقص {{ number_format($patientAmount - $balance, 3) }} د.ك
+            </div>
+            @endif
+            @endif
+
             <div class="nc-field-row">
                 <label class="lbl-gold">Credit : المبلغ المدفوع</label>
                 <input type="number" wire:model="credit" step="0.001" min="0"
@@ -453,7 +473,7 @@
 
             <div class="nc-field-row">
                 <label class="lbl-gold">P Method : طريقة الدفع</label>
-                <select wire:model="paymentMethod"
+                <select wire:model.live="paymentMethod"
                         @if($isFree) disabled @endif
                         class="nc-input-full"
                         style="{{ $isFree ? 'background:#eee; opacity:.7;' : '' }}">
@@ -463,11 +483,14 @@
                     <option value="4">Bank Transfer</option>
                     <option value="6">Visa</option>
                     <option value="11">MyFatoorah</option>
+                    @if($balance > 0)
+                    <option value="5">من الرصيد ({{ number_format($balance, 3) }} د.ك)</option>
+                    @endif
                     <option value="7">Free</option>
                 </select>
             </div>
 
-            <div class="nc-amount-box">
+            <div class="nc-amount-box" style="{{ $patientAmount > 0 && $balance < $patientAmount && $paymentMethod == '5' ? 'background:#c62828;' : '' }}">
                 <div class="ab-lbl">المبلغ على العميل</div>
                 <div class="ab-val">{{ number_format($patientAmount, 3) }} <span class="ab-cur">د.ك</span></div>
             </div>

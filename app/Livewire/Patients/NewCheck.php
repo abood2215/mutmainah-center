@@ -11,6 +11,7 @@ class NewCheck extends Component
 {
     public $patientId;
     public $patient;
+    public float $balance  = 0.0;
     public array $clinics  = [];
     public array $services = [];
 
@@ -42,6 +43,29 @@ class NewCheck extends Component
             ->first();
 
         abort_if(!$this->patient, 404);
+
+        // حساب رصيد العميل الحالي
+        $acck   = DB::table('acck')->where('stu_id', $id)->first();
+        $acckId = $acck?->id;
+        if ($acckId) {
+            $totalDeposited = (float) DB::table('kpayments')
+                ->where('acc_id', $acckId)
+                ->where('status', 1)
+                ->selectRaw('COALESCE(SUM(COALESCE(NULLIF(amount,0), NULLIF(price,0), 0)),0) as total')
+                ->value('total');
+
+            $recIds = DB::table('rec')->where('st_id', $id)->pluck('id');
+            $totalCharged = 0.0;
+            if ($recIds->isNotEmpty()) {
+                $def = DB::table('kpayments')
+                    ->whereIn('rec_id', $recIds)
+                    ->where('payment_method', 5)
+                    ->selectRaw('COALESCE(SUM(price),0) as tp, COALESCE(SUM(discount),0) as td')
+                    ->first();
+                $totalCharged = max(0.0, (float)($def->tp ?? 0) - (float)($def->td ?? 0));
+            }
+            $this->balance = round($totalDeposited - $totalCharged, 3);
+        }
 
         $this->clinics = DB::table('clinic')->where('state_id', 1)->orderBy('name')->get(['id', 'name'])->all();
         $this->loadServices();
@@ -283,6 +307,6 @@ class NewCheck extends Component
 
         return view('livewire.patients.new-check', compact(
             'total', 'insuranceTotal', 'discount', 'patientAmount'
-        ))->layout('layouts.app');
+        ) + ['balance' => $this->balance])->layout('layouts.app');
     }
 }
