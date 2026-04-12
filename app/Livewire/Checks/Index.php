@@ -27,6 +27,8 @@ class Index extends Component
     public function mount(): void
     {
         $this->branches = DB::table('branches')->where('is_active', 1)->get(['id', 'name'])->all();
+        // تعيين اليوم كـ filter افتراضي
+        $this->filterDate = now()->format('j-n-Y');
     }
 
     public function render()
