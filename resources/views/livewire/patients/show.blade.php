@@ -84,6 +84,16 @@
                 ➕ كشف جديد
             </a>
             <div style="width:1px; height:20px; background:#cbd5e1;"></div>
+            @if($hasAccount)
+            <div style="display:flex; align-items:center; gap:8px; background:{{ $balance > 0 ? '#e8f5e9' : ($balance == 0 ? '#f0f4ff' : '#ffebee') }}; border:1.5px solid {{ $balance > 0 ? '#a5d6a7' : ($balance == 0 ? '#c7d2fe' : '#ffcdd2') }}; border-radius:8px; padding:6px 14px;">
+                <span style="font-size:.74rem; font-weight:800; color:#777;">رصيد الحساب</span>
+                <span style="font-size:1rem; font-weight:900; color:{{ $balance > 0 ? '#1b5e20' : ($balance == 0 ? '#3730a3' : '#b71c1c') }}; font-family:'Inter',sans-serif;">
+                    {{ number_format(abs($balance), 3) }} د.ك
+                    @if($balance < 0)<span style="font-size:.72rem;"> (مديونية)</span>@endif
+                </span>
+            </div>
+            <div style="width:1px; height:20px; background:#cbd5e1;"></div>
+            @endif
             <a href="{{ route('patients.medical-history', $patient->id) }}" wire:navigate
                style="color:var(--text-dim); text-decoration:none; font-size:0.85rem; font-weight:800; padding:0.5rem 1rem; border-radius:8px; background:#fff; border:1px solid #e2e8f0;"
                onmouseover="this.style.borderColor='var(--primary)'; this.style.color='var(--primary)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.color='var(--text-dim)'">

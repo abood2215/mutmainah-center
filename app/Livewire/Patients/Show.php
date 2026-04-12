@@ -10,8 +10,10 @@ use Illuminate\Support\Facades\DB;
 class Show extends Component
 {
     public $patient;
-    public int $editBranch = 0;
-    public array $branches  = [];
+    public int   $editBranch = 0;
+    public array $branches   = [];
+    public float $balance    = 0.0;
+    public bool  $hasAccount = false;
 
     #[Title('ملف العميل')]
     public function mount($id): void
@@ -32,6 +34,27 @@ class Show extends Component
         abort_if(!$this->patient, 404);
         $this->editBranch = (int) ($this->patient->branch_id ?? 0);
         $this->branches   = DB::table('branches')->where('is_active', 1)->get(['id', 'name'])->all();
+
+        // حساب رصيد العميل
+        $acck   = DB::table('acck')->where('stu_id', $id)->first();
+        $acckId = $acck?->id;
+        $this->hasAccount = (bool) $acckId;
+        if ($acckId) {
+            $totalDeposited = (float) DB::table('kpayments')
+                ->where('acc_id', $acckId)->where('status', 1)
+                ->selectRaw('COALESCE(SUM(COALESCE(NULLIF(amount,0), NULLIF(price,0), 0)),0) as total')
+                ->value('total');
+            $recIds = DB::table('rec')->where('st_id', $id)->pluck('id');
+            $totalCharged = 0.0;
+            if ($recIds->isNotEmpty()) {
+                $svc = DB::table('kpayments')
+                    ->whereIn('rec_id', $recIds)->where('payment_method', 5)
+                    ->selectRaw('COALESCE(SUM(price),0) as tp, COALESCE(SUM(discount),0) as td')
+                    ->first();
+                $totalCharged = max(0.0, (float)($svc->tp ?? 0) - (float)($svc->td ?? 0));
+            }
+            $this->balance = round($totalDeposited - $totalCharged, 3);
+        }
     }
 
     public function saveBranch(): void
