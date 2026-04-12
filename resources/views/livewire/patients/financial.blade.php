@@ -46,10 +46,10 @@
         <div style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:1.25rem 1.5rem; margin-bottom:1.75rem; direction:rtl;">
             <div style="font-size:0.8rem; font-weight:900; color:var(--text-dim); letter-spacing:1px; margin-bottom:1rem; text-transform:uppercase;">تفصيل حساب الرصيد</div>
             <div style="display:flex; flex-direction:column; gap:0; max-width:420px;">
-                <!-- إجمالي الخدمات -->
+                <!-- خدمات من الرصيد -->
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:0.55rem 0.75rem; background:#fff; border-radius:8px 8px 0 0; border:1px solid #e2e8f0;">
-                    <span style="font-size:0.88rem; color:var(--text);">إجمالي الخدمات المقدّمة</span>
-                    <span style="font-weight:900; font-family:'Inter'; color:#c2410c; font-size:0.95rem;">{{ number_format($totalServices, 3) }} د.ك</span>
+                    <span style="font-size:0.88rem; color:var(--text);">خدمات مدفوعة من الرصيد</span>
+                    <span style="font-weight:900; font-family:'Inter'; color:#c2410c; font-size:0.95rem;">{{ number_format($totalCharged + $totalDiscount, 3) }} د.ك</span>
                 </div>
                 @if($totalDiscount > 0)
                 <!-- الخصومات -->

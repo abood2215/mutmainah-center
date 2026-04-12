@@ -59,14 +59,19 @@ class NewCheck extends Component
             $recIds = DB::table('rec')->where('st_id', $id)->pluck('id');
             $totalCharged = 0.0;
             if ($recIds->isNotEmpty()) {
+                // نخصم فقط الخدمات المدفوعة من الرصيد (payment_method=5)
                 $svc = DB::table('kpayments')
                     ->whereIn('rec_id', $recIds)
-                    ->whereNotIn('payment_method', [4, 7])
+                    ->where('payment_method', 5)
                     ->selectRaw('COALESCE(SUM(price),0) as tp, COALESCE(SUM(discount),0) as td')
                     ->first();
                 $totalCharged = max(0.0, (float)($svc->tp ?? 0) - (float)($svc->td ?? 0));
             }
             $this->balance = round($totalDeposited - $totalCharged, 3);
+            // إذا كان في رصيد — اجعل طريقة الدفع "من الرصيد" تلقائياً
+            if ($this->balance > 0) {
+                $this->paymentMethod = '5';
+            }
         }
 
         $this->clinics = DB::table('clinic')->where('state_id', 1)->orderBy('name')->get(['id', 'name'])->all();

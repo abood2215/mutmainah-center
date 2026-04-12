@@ -60,13 +60,12 @@ class Financial extends Component
             ->whereNotIn('payment_method', $freeMethods)
             ->sum('price');
 
-        $totalDiscount = $services
-            ->whereNotIn('payment_method', $freeMethods)
-            ->sum('discount');
+        // الخدمات المدفوعة من رصيد الحساب فقط (payment_method=5 = آجل/من الرصيد)
+        $deferredServices = $services->where('payment_method', 5);
+        $totalDiscount    = $deferredServices->sum('discount');
+        $totalCharged     = max(0, $deferredServices->sum('price') - $totalDiscount);
 
-        $totalCharged = max(0, $totalServices - $totalDiscount);
-
-        // الرصيد المتبقي = الإيداعات − جميع الخدمات الفعلية (بغض النظر عن طريقة الدفع)
+        // الرصيد المتبقي = الإيداعات − الخدمات المدفوعة من الرصيد فقط
         $balance = round($totalDeposited - $totalCharged, 3);
 
         return view('livewire.patients.financial', [
