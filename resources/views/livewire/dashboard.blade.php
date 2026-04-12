@@ -156,7 +156,7 @@
         <div class="dash-charts-row">
 
             <!-- منحنى الإيرادات اليومية -->
-            <div class="card">
+            <div class="card" wire:ignore>
                 <div class="card-header">
                     <span class="card-title">📈 إيرادات {{ now()->locale('ar')->isoFormat('MMMM YYYY') }}</span>
                 </div>
@@ -166,7 +166,7 @@
             </div>
 
             <!-- دونات توزيع العيادات -->
-            <div class="card">
+            <div class="card" wire:ignore>
                 <div class="card-header">
                     <span class="card-title">🏥 العيادات هذا الشهر</span>
                 </div>
@@ -178,7 +178,7 @@
         </div>
 
         <!-- مقارنة الأشهر -->
-        <div class="card">
+        <div class="card" wire:ignore>
             <div class="card-header">
                 <span class="card-title">📊 مقارنة الإيرادات — آخر 6 أشهر</span>
                 <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">اضغط على أي شهر لعرض توزيع العيادات</span>
@@ -452,16 +452,6 @@
 
     document.addEventListener('DOMContentLoaded', initCharts);
     document.addEventListener('livewire:navigated', initCharts);
-
-    // أعد رسم الـ charts فقط إذا كانت الـ canvas موجودة ولا تحتوي chart
-    document.addEventListener('livewire:updated', function() {
-        var canvas = document.getElementById('dailyRevenueChart');
-        if (!canvas) return;
-        var existing = Chart.getChart('dailyRevenueChart');
-        if (!existing) {
-            initCharts();
-        }
-    });
 })();
 </script>
 @endif
