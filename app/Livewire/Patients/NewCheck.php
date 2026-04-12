@@ -57,12 +57,12 @@ class NewCheck extends Component
             $recIds = DB::table('rec')->where('st_id', $id)->pluck('id');
             $totalCharged = 0.0;
             if ($recIds->isNotEmpty()) {
-                $def = DB::table('kpayments')
+                $svc = DB::table('kpayments')
                     ->whereIn('rec_id', $recIds)
-                    ->where('payment_method', 5)
+                    ->whereNotIn('payment_method', [4, 7])
                     ->selectRaw('COALESCE(SUM(price),0) as tp, COALESCE(SUM(discount),0) as td')
                     ->first();
-                $totalCharged = max(0.0, (float)($def->tp ?? 0) - (float)($def->td ?? 0));
+                $totalCharged = max(0.0, (float)($svc->tp ?? 0) - (float)($svc->td ?? 0));
             }
             $this->balance = round($totalDeposited - $totalCharged, 3);
         }

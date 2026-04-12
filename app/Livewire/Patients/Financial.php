@@ -55,33 +55,25 @@ class Financial extends Component
             ->orderBy('k.id', 'desc')
             ->get();
 
-        // الخدمات الآجلة (على الحساب) — method=5
-        $deferredServices = $services->where('payment_method', 5);
-        $totalDeferred    = $deferredServices->sum('price');
-        $totalDiscount    = $deferredServices->sum('discount');
-        $totalCharged     = max(0, $totalDeferred - $totalDiscount);
-
-        // الخدمات المدفوعة نقداً أو K-Net أو فيزا مباشرة (ما عدا آجل ومجاني)
-        $totalDirectPaid = $services
-            ->filter(fn($s) => ! in_array($s->payment_method, [5, ...$freeMethods]) && $s->price > 0)
-            ->sum('price');
-
         // إجمالي الخدمات المُقدَّمة الفعلية (تستثني المجانية)
         $totalServices = $services
-            ->filter(fn($s) => ! in_array($s->payment_method, $freeMethods) || $s->price > 0)
             ->whereNotIn('payment_method', $freeMethods)
             ->sum('price');
 
-        // الرصيد المتبقي = الإيداعات − الخدمات الآجلة الصافية
-        $balance = $totalDeposited - $totalCharged;
+        $totalDiscount = $services
+            ->whereNotIn('payment_method', $freeMethods)
+            ->sum('discount');
+
+        $totalCharged = max(0, $totalServices - $totalDiscount);
+
+        // الرصيد المتبقي = الإيداعات − جميع الخدمات الفعلية (بغض النظر عن طريقة الدفع)
+        $balance = round($totalDeposited - $totalCharged, 3);
 
         return view('livewire.patients.financial', [
             'deposits'        => $deposits,
             'services'        => $services,
             'totalDeposited'  => $totalDeposited,
             'totalDiscount'   => $totalDiscount,
-            'totalDeferred'   => $totalDeferred,
-            'totalDirectPaid' => $totalDirectPaid,
             'totalCharged'    => $totalCharged,
             'totalServices'   => $totalServices,
             'balance'         => $balance,

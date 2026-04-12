@@ -26,9 +26,6 @@
             <div style="background:linear-gradient(135deg,#fff8e1,#fffde7); border:1px solid #ffe082; border-radius:12px; padding:1.25rem 1.5rem;">
                 <div style="color:#e65100; font-size:0.78rem; font-weight:800; letter-spacing:1px; margin-bottom:0.5rem;">إجمالي الخدمات | TOTAL SERVICES</div>
                 <div style="font-size:1.9rem; font-weight:900; color:#bf360c; font-family:'Inter';">{{ number_format($totalServices, 3) }} <span style="font-size:0.85rem; color:#ff8f00; font-weight:600;">د.ك</span></div>
-                @if($totalDirectPaid > 0)
-                <div style="font-size:0.72rem; color:#9e5000; margin-top:0.35rem;">منها {{ number_format($totalDirectPaid, 3) }} د.ك مدفوعة نقداً / K-Net</div>
-                @endif
             </div>
             <div style="background:linear-gradient(135deg,#e8f5e9,#f1faf2); border:1px solid #c8e6c9; border-radius:12px; padding:1.25rem 1.5rem;">
                 <div style="color:#2e7d32; font-size:0.78rem; font-weight:800; letter-spacing:1px; margin-bottom:0.5rem;">إيداعات على الحساب | DEPOSITS</div>
@@ -49,10 +46,10 @@
         <div style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:1.25rem 1.5rem; margin-bottom:1.75rem; direction:rtl;">
             <div style="font-size:0.8rem; font-weight:900; color:var(--text-dim); letter-spacing:1px; margin-bottom:1rem; text-transform:uppercase;">تفصيل حساب الرصيد</div>
             <div style="display:flex; flex-direction:column; gap:0; max-width:420px;">
-                <!-- إجمالي الآجل -->
+                <!-- إجمالي الخدمات -->
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:0.55rem 0.75rem; background:#fff; border-radius:8px 8px 0 0; border:1px solid #e2e8f0;">
-                    <span style="font-size:0.88rem; color:var(--text);">خدمات على الحساب (آجل)</span>
-                    <span style="font-weight:900; font-family:'Inter'; color:#c2410c; font-size:0.95rem;">{{ number_format($totalDeferred, 3) }} د.ك</span>
+                    <span style="font-size:0.88rem; color:var(--text);">إجمالي الخدمات المقدّمة</span>
+                    <span style="font-weight:900; font-family:'Inter'; color:#c2410c; font-size:0.95rem;">{{ number_format($totalServices, 3) }} د.ك</span>
                 </div>
                 @if($totalDiscount > 0)
                 <!-- الخصومات -->
@@ -83,11 +80,6 @@
                     </span>
                 </div>
             </div>
-            @if($totalDirectPaid > 0)
-            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.85rem; padding-top:0.75rem; border-top:1px dashed #e2e8f0;">
-                * الخدمات المدفوعة مباشرة (نقد / K-Net / فيزا) بمبلغ <strong>{{ number_format($totalDirectPaid, 3) }} د.ك</strong> لا تدخل في حساب الرصيد
-            </div>
-            @endif
         </div>
 
         <!-- جدول الإيداعات -->
