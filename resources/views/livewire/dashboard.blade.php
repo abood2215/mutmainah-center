@@ -47,7 +47,7 @@
                     $dotClr  = '#c8941a';
                 }
             @endphp
-            <div style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:{{ $glow }}, 0 1px 4px rgba(0,0,0,0.07); display:flex; border:1px solid rgba(0,0,0,0.05);">
+            <div style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:{{ $glow }}, 0 1px 4px rgba(0,0,0,0.07); display:flex; border:2px solid {{ $dotClr }}33;">
 
                 {{-- شريط الطابق الجانبي --}}
                 <div style="width:80px; flex-shrink:0; background:{{ $bandBg }}; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:1.25rem 0; gap:4px; position:relative; overflow:hidden;">
