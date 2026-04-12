@@ -419,6 +419,12 @@
 
     document.addEventListener('DOMContentLoaded', initCharts);
     document.addEventListener('livewire:navigated', initCharts);
+    document.addEventListener('livewire:updated', function() {
+        // أعد رسم الـ charts بعد أي تحديث Livewire (مثل فتح/إغلاق المودال)
+        if (document.getElementById('dailyRevenueChart')) {
+            initCharts();
+        }
+    });
 })();
 </script>
 @endif
