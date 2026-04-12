@@ -20,8 +20,7 @@ class Dashboard extends Component
         $clinics = DB::table('rec as r')
             ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
             ->where('r.confirm_id', 1)
-            ->whereRaw("MONTH(STR_TO_DATE(r.rec_date, '%e-%c-%Y')) = ?", [$month])
-            ->whereRaw("YEAR(STR_TO_DATE(r.rec_date, '%e-%c-%Y')) = ?",  [$year])
+            ->where('r.rec_date', 'like', "%-{$month}-{$year}")
             ->select('c.name as clinic_name', DB::raw('COUNT(r.id) as count'))
             ->groupBy('r.clinic_id', 'c.name')
             ->orderBy('count', 'desc')
@@ -74,18 +73,16 @@ class Dashboard extends Component
 
             $monthlyRevenue = DB::table('kpayments')
                 ->where('price', '>', 0)
-                ->whereRaw("MONTH(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?", [$currentMonth])
-                ->whereRaw("YEAR(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?",  [$currentYear])
+                ->where('pdate', 'like', "%-{$currentMonth}-{$currentYear}")
                 ->sum('price');
 
             // إيرادات يومية للشهر الحالي
             $daysInMonth  = now()->daysInMonth;
             $dailyRevenue = DB::table('kpayments')
                 ->where('price', '>', 0)
-                ->whereRaw("MONTH(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?", [$currentMonth])
-                ->whereRaw("YEAR(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?",  [$currentYear])
-                ->select(DB::raw("DAY(STR_TO_DATE(pdate, '%e-%c-%Y')) as day"), DB::raw('SUM(price) as total'))
-                ->groupBy('day')
+                ->where('pdate', 'like', "%-{$currentMonth}-{$currentYear}")
+                ->select(DB::raw("CAST(SUBSTRING_INDEX(pdate, '-', 1) AS UNSIGNED) as day"), DB::raw('SUM(price) as total'))
+                ->groupBy(DB::raw("CAST(SUBSTRING_INDEX(pdate, '-', 1) AS UNSIGNED)"))
                 ->pluck('total', 'day');
 
             $chartDailyLabels = [];
@@ -105,8 +102,7 @@ class Dashboard extends Component
                 $y   = $dt->year;
                 $rev = DB::table('kpayments')
                     ->where('price', '>', 0)
-                    ->whereRaw("MONTH(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?", [$m])
-                    ->whereRaw("YEAR(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?",  [$y])
+                    ->where('pdate', 'like', "%-{$m}-{$y}")
                     ->sum('price');
                 $chartMonthLabels[] = $dt->locale('ar')->isoFormat('MMM YY');
                 $chartMonthData[]   = round($rev, 3);
@@ -117,8 +113,7 @@ class Dashboard extends Component
             $clinicChartData = DB::table('rec as r')
                 ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
                 ->where('r.confirm_id', 1)
-                ->whereRaw("MONTH(STR_TO_DATE(r.rec_date, '%e-%c-%Y')) = ?", [$currentMonth])
-                ->whereRaw("YEAR(STR_TO_DATE(r.rec_date, '%e-%c-%Y')) = ?",  [$currentYear])
+                ->where('r.rec_date', 'like', "%-{$currentMonth}-{$currentYear}")
                 ->select('c.name as clinic_name', DB::raw('COUNT(r.id) as count'))
                 ->groupBy('r.clinic_id', 'c.name')
                 ->orderBy('count', 'desc')
@@ -137,8 +132,7 @@ class Dashboard extends Component
                 ->join('rec as r', 'r.id', '=', 'p.rec_id')
                 ->join('kstu as k', 'k.id', '=', 'r.st_id')
                 ->where('p.price', '>', 0)
-                ->whereRaw("MONTH(STR_TO_DATE(p.pdate, '%e-%c-%Y')) = ?", [$currentMonth])
-                ->whereRaw("YEAR(STR_TO_DATE(p.pdate, '%e-%c-%Y')) = ?",  [$currentYear])
+                ->where('p.pdate', 'like', "%-{$currentMonth}-{$currentYear}")
                 ->whereIn('k.branch_id', $allBranches->pluck('id'))
                 ->select('k.branch_id', DB::raw('SUM(p.price) as revenue'))
                 ->groupBy('k.branch_id')
@@ -160,10 +154,9 @@ class Dashboard extends Component
 
                 $dr = DB::table('kpayments')
                     ->where('price', '>', 0)
-                    ->whereRaw("MONTH(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?", [$m])
-                    ->whereRaw("YEAR(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?",  [$y])
-                    ->select(DB::raw("DAY(STR_TO_DATE(pdate, '%e-%c-%Y')) as day"), DB::raw('SUM(price) as total'))
-                    ->groupBy('day')
+                    ->where('pdate', 'like', "%-{$m}-{$y}")
+                    ->select(DB::raw("CAST(SUBSTRING_INDEX(pdate, '-', 1) AS UNSIGNED) as day"), DB::raw('SUM(price) as total'))
+                    ->groupBy(DB::raw("CAST(SUBSTRING_INDEX(pdate, '-', 1) AS UNSIGNED)"))
                     ->pluck('total', 'day');
 
                 $dLabels = []; $dData = [];
@@ -175,8 +168,7 @@ class Dashboard extends Component
                 $cl = DB::table('rec as r')
                     ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
                     ->where('r.confirm_id', 1)
-                    ->whereRaw("MONTH(STR_TO_DATE(r.rec_date, '%e-%c-%Y')) = ?", [$m])
-                    ->whereRaw("YEAR(STR_TO_DATE(r.rec_date, '%e-%c-%Y')) = ?",  [$y])
+                    ->where('r.rec_date', 'like', "%-{$m}-{$y}")
                     ->select('c.name as clinic_name', DB::raw('COUNT(r.id) as count'))
                     ->groupBy('r.clinic_id', 'c.name')
                     ->orderBy('count', 'desc')
