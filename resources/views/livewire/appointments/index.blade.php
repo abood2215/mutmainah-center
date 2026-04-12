@@ -241,40 +241,53 @@
         </div>
 
         <!-- القائمة -->
-        <div style="max-height:440px; overflow-y:auto;">
+        <div style="max-height:480px; overflow-y:auto;">
             @forelse($todayList as $i => $w)
-            <div style="display:flex; align-items:center; gap:0.85rem; padding:0.85rem 1.5rem; border-bottom:1px solid #f1f5f9; transition:background 0.15s;"
+            <div style="display:flex; align-items:center; gap:0.9rem; padding:0.9rem 1.4rem; border-bottom:1px solid #f1f5f9; transition:background 0.15s;"
                 onmouseover="this.style.background='#fef9f9'"
                 onmouseout="this.style.background=''">
 
-                <div style="width:26px; height:26px; background:#f1f5f9; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:0.72rem; font-weight:900; color:var(--text-muted); flex-shrink:0;">
+                {{-- رقم كبير --}}
+                <div style="width:44px; height:44px; background:var(--navy); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.4rem; font-weight:900; color:#fff; flex-shrink:0; font-family:'Inter',sans-serif;">
                     {{ $i + 1 }}
                 </div>
 
-                <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:0.28rem 0.65rem; font-size:0.82rem; font-weight:900; color:#92400e; white-space:nowrap; flex-shrink:0; direction:ltr;">
+                {{-- الوقت --}}
+                <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:0.3rem 0.7rem; font-size:0.88rem; font-weight:900; color:#92400e; white-space:nowrap; flex-shrink:0; direction:ltr; font-family:'Inter',sans-serif;">
                     {{ $w->rec_time ? preg_replace('/^(\d+):(\d)$/', '$1:0$2', $w->rec_time) : '--:--' }}
                 </div>
 
+                {{-- بيانات العميل --}}
                 <div style="flex:1; min-width:0;">
-                    <div style="font-weight:800; color:var(--navy); font-size:0.93rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    <div style="font-weight:800; color:var(--navy); font-size:0.95rem;">
                         {{ $w->full_name ?: 'غير محدد' }}
+                        @if($w->file_id)
+                        <span style="font-size:0.72rem; color:#1565c0; font-weight:800; background:#e3f2fd; padding:0.1rem 0.5rem; border-radius:5px; margin-right:4px;">#{{ $w->file_id }}</span>
+                        @endif
                     </div>
-                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.2rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
                         @if($w->clinic_name)<span>🏥 {{ $w->clinic_name }}</span>@endif
                         @if($w->phone)<span>📞 {{ $w->phone }}</span>@endif
                     </div>
                 </div>
 
-                @if($w->file_id)
-                <div style="font-size:0.75rem; color:#1565c0; font-weight:800; background:#e3f2fd; padding:0.2rem 0.6rem; border-radius:6px; white-space:nowrap; flex-shrink:0;">
-                    #{{ $w->file_id }}
-                </div>
-                @endif
-
+                {{-- الحالة --}}
                 @if($w->state_id == 1)
                     <span style="background:#dcfce7; color:#15803d; border:1px solid #bbf7d0; padding:0.2rem 0.65rem; border-radius:20px; font-size:0.72rem; font-weight:800; flex-shrink:0;">✓ تم الكشف</span>
                 @else
                     <span style="background:#fffbeb; color:#b45309; border:1px solid #fde68a; padding:0.2rem 0.65rem; border-radius:20px; font-size:0.72rem; font-weight:800; flex-shrink:0;">انتظار</span>
+                @endif
+
+                {{-- زر إلغاء الموعد --}}
+                @if($w->state_id != 1)
+                <button wire:click="cancelAppointment({{ $w->id }})"
+                    wire:confirm="إلغاء موعد {{ $w->full_name }}؟ لا يمكن التراجع."
+                    style="width:30px; height:30px; background:#fff0f0; border:1.5px solid #fca5a5; border-radius:7px; color:#dc2626; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all .2s;"
+                    onmouseover="this.style.background='#dc2626'; this.style.color='#fff'; this.style.borderColor='#dc2626'"
+                    onmouseout="this.style.background='#fff0f0'; this.style.color='#dc2626'; this.style.borderColor='#fca5a5'"
+                    title="إلغاء الموعد">
+                    ✕
+                </button>
                 @endif
             </div>
             @empty

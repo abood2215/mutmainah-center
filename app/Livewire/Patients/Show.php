@@ -78,7 +78,7 @@ class Show extends Component
         try {
             $activityLogs = DB::table('activity_logs')
                 ->where('subject_id', $this->patient->id)
-                ->whereIn('subject', ['patient', 'check', 'attachment'])
+                ->whereIn('subject', ['patient', 'check', 'attachment', 'appointment'])
                 ->orderBy('id', 'desc')
                 ->limit(20)
                 ->get();

@@ -43,7 +43,9 @@ class Index extends Component
             ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
             ->where('r.rec_date', $today)
             ->where('r.confirm_id', 0)
-            ->select('k.full_name', 'k.phone', 'k.file_id', 'r.rec_time', 'r.state_id', 'c.name as clinic_name')
+            ->select('r.id', 'r.rec_time', 'r.state_id', 'r.st_id',
+                     'k.full_name', 'k.phone', 'k.file_id',
+                     'c.name as clinic_name')
             ->orderBy('r.rec_time')
             ->get()
             ->toArray();
@@ -59,6 +61,35 @@ class Index extends Component
     public function markChecked(int $recId): void
     {
         DB::table('rec')->where('id', $recId)->where('confirm_id', 0)->update(['confirm_id' => 1]);
+    }
+
+    public function cancelAppointment(int $recId): void
+    {
+        $rec = DB::table('rec')->where('id', $recId)->where('confirm_id', 0)->first();
+        if (!$rec) return;
+
+        $patient   = DB::table('kstu')->where('id', $rec->st_id)->first();
+        $user      = auth()->user();
+        $cancelledBy = $user ? ($user->getName() ?? $user->user_name ?? 'غير معروف') : 'غير معروف';
+
+        // حذف الموعد
+        DB::table('rec')->where('id', $recId)->delete();
+
+        // تسجيل الإلغاء في activity_logs
+        try {
+            DB::table('activity_logs')->insert([
+                'action'     => 'cancelled',
+                'subject'    => 'appointment',
+                'subject_id' => $rec->st_id,
+                'description'=> 'إلغاء موعد بتاريخ ' . $rec->rec_date . ' الساعة ' . ($rec->rec_time ?: '--') . ' — بواسطة: ' . $cancelledBy,
+                'user_id'    => $user?->id ?? 0,
+                'user_name'  => $cancelledBy,
+                'created_at' => now(),
+            ]);
+        } catch (\Throwable) {}
+
+        // تحديث القائمة
+        $this->openTodayModal();
     }
 
     #[Title('جدول المواعيد : Appointments')]
