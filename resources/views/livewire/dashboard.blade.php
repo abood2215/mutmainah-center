@@ -20,49 +20,64 @@
 
         @if($isAdmin)
         <!-- ═══ بطاقات الفروع ═══ -->
-        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1rem;">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:1.25rem;">
             @foreach($branchStats as $branch)
             @php
                 $isThird = str_contains($branch->name, 'الثالث');
                 $isSixth = str_contains($branch->name, 'السادس');
+                $floorNum = $isThird ? '3' : ($isSixth ? '6' : '');
                 if ($isThird) {
-                    $bg        = 'linear-gradient(135deg, #9d174d 0%, #be185d 60%, #831843 100%)';
-                    $border    = 'rgba(251,113,133,0.35)';
-                    $tagColor  = '#fda4af';
-                    $revColor  = '#fce7f3';
+                    $bg1 = '#9d174d'; $bg2 = '#db2777';
+                    $accent = '#f9a8d4'; $accentDim = 'rgba(249,168,212,0.15)';
                 } elseif ($isSixth) {
-                    $bg        = 'linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 60%, #1e40af 100%)';
-                    $border    = 'rgba(147,197,253,0.35)';
-                    $tagColor  = '#93c5fd';
-                    $revColor  = '#dbeafe';
+                    $bg1 = '#1e3a8a'; $bg2 = '#2563eb';
+                    $accent = '#93c5fd'; $accentDim = 'rgba(147,197,253,0.15)';
                 } else {
-                    $bg        = 'linear-gradient(135deg, var(--navy) 0%, #252550 100%)';
-                    $border    = 'rgba(200,148,26,0.25)';
-                    $tagColor  = '#fbbf24';
-                    $revColor  = '#fde68a';
+                    $bg1 = '#1a1a2e'; $bg2 = '#252550';
+                    $accent = '#fbbf24'; $accentDim = 'rgba(251,191,36,0.15)';
                 }
             @endphp
-            <div style="background:{{ $bg }}; border-radius:14px; padding:1.5rem 1.8rem; display:flex; align-items:center; justify-content:space-between; gap:1.2rem; border:1px solid {{ $border }}; box-shadow:0 6px 24px rgba(0,0,0,0.22);">
-                <div style="flex:1; min-width:0; display:flex; align-items:center; gap:1rem;">
-                    @if($isThird || $isSixth)
-                    <div style="font-size:5rem; font-weight:900; color:rgba(255,255,255,0.15); font-family:'Inter',sans-serif; line-height:1; flex-shrink:0; user-select:none;">
-                        {{ $isThird ? '3' : '6' }}
+            <div style="background:linear-gradient(145deg, {{ $bg1 }} 0%, {{ $bg2 }} 100%); border-radius:16px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.2); position:relative;">
+
+                {{-- رقم الدور الخلفي الزخرفي --}}
+                @if($floorNum)
+                <div style="position:absolute; left:-10px; top:50%; transform:translateY(-50%); font-size:9rem; font-weight:900; color:rgba(255,255,255,0.06); font-family:'Inter',sans-serif; line-height:1; user-select:none; pointer-events:none;">
+                    {{ $floorNum }}
+                </div>
+                @endif
+
+                {{-- خط علوي ملون --}}
+                <div style="height:3px; background:linear-gradient(90deg, {{ $accent }}, transparent);"></div>
+
+                <div style="padding:1.4rem 1.6rem; display:flex; align-items:stretch; gap:1rem; position:relative;">
+
+                    {{-- رقم الدور البارز --}}
+                    @if($floorNum)
+                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:{{ $accentDim }}; border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:0.5rem 1rem; flex-shrink:0; min-width:56px;">
+                        <div style="font-size:2.8rem; font-weight:900; color:{{ $accent }}; font-family:'Inter',sans-serif; line-height:1;">{{ $floorNum }}</div>
+                        <div style="font-size:0.58rem; color:rgba(255,255,255,0.5); font-weight:700; letter-spacing:1px; margin-top:2px;">FLOOR</div>
                     </div>
                     @endif
-                    <div>
-                        <div style="color:{{ $tagColor }}; font-size:0.68rem; font-weight:800; letter-spacing:1px; margin-bottom:0.6rem; font-family:'Tajawal',sans-serif;">🏢 فرع</div>
-                        <div style="color:#fff; font-weight:900; font-size:1.05rem; font-family:'Tajawal',sans-serif; line-height:1.4;">{{ $branch->name }}</div>
+
+                    {{-- اسم الفرع + الإحصائيات --}}
+                    <div style="flex:1; min-width:0; display:flex; flex-direction:column; justify-content:space-between; gap:0.75rem;">
+                        <div>
+                            <div style="color:{{ $accent }}; font-size:0.65rem; font-weight:800; letter-spacing:1.5px; margin-bottom:0.3rem; opacity:0.85;">BRANCH · فرع</div>
+                            <div style="color:#fff; font-weight:900; font-size:0.95rem; font-family:'Tajawal',sans-serif; line-height:1.35;">{{ $branch->name }}</div>
+                        </div>
+
+                        <div style="display:flex; gap:0.6rem;">
+                            <div style="flex:1; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:0.6rem 0.8rem; text-align:center;">
+                                <div style="color:rgba(255,255,255,0.5); font-size:0.6rem; font-weight:800; letter-spacing:1px; margin-bottom:4px;">العملاء</div>
+                                <div style="color:#fff; font-weight:900; font-size:1.75rem; font-family:'Inter',sans-serif; line-height:1;">{{ number_format($branch->patients_count) }}</div>
+                            </div>
+                            <div style="flex:1; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:0.6rem 0.8rem; text-align:center;">
+                                <div style="color:rgba(255,255,255,0.5); font-size:0.6rem; font-weight:800; letter-spacing:1px; margin-bottom:4px;">إيرادات الشهر</div>
+                                <div style="color:{{ $accent }}; font-weight:900; font-size:1.45rem; font-family:'Inter',sans-serif; line-height:1;">{{ number_format($branch->monthly_revenue, 0) }}<span style="font-size:0.65rem; opacity:0.7; margin-right:2px;">د.ك</span></div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div style="flex-shrink:0; display:flex; flex-direction:column; align-items:flex-end; gap:0.6rem;">
-                    <div style="background:rgba(255,255,255,0.13); border:1px solid rgba(255,255,255,0.18); border-radius:10px; padding:0.55rem 1.1rem; text-align:center; min-width:100px;">
-                        <div style="color:rgba(255,255,255,0.55); font-size:0.62rem; font-weight:800; letter-spacing:.5px; margin-bottom:3px;">العملاء</div>
-                        <div style="color:#fff; font-weight:900; font-size:2.2rem; font-family:'Inter'; line-height:1;">{{ number_format($branch->patients_count) }}</div>
-                    </div>
-                    <div style="background:rgba(255,255,255,0.13); border:1px solid rgba(255,255,255,0.18); border-radius:10px; padding:0.55rem 1.1rem; text-align:center; min-width:100px;">
-                        <div style="color:rgba(255,255,255,0.55); font-size:0.62rem; font-weight:800; letter-spacing:.5px; margin-bottom:3px;">إيرادات الشهر</div>
-                        <div style="color:{{ $revColor }}; font-weight:900; font-size:1.7rem; font-family:'Inter'; line-height:1;">{{ number_format($branch->monthly_revenue, 0) }}<span style="font-size:0.72rem; opacity:.75; margin-right:3px;">د.ك</span></div>
-                    </div>
+
                 </div>
             </div>
             @endforeach
