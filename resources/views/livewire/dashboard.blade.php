@@ -43,9 +43,16 @@
                 }
             @endphp
             <div style="background:{{ $bg }}; border-radius:14px; padding:1.5rem 1.8rem; display:flex; align-items:center; justify-content:space-between; gap:1.2rem; border:1px solid {{ $border }}; box-shadow:0 6px 24px rgba(0,0,0,0.22);">
-                <div style="flex:1; min-width:0;">
-                    <div style="color:{{ $tagColor }}; font-size:0.68rem; font-weight:800; letter-spacing:1px; margin-bottom:0.6rem; font-family:'Tajawal',sans-serif;">🏢 فرع</div>
-                    <div style="color:#fff; font-weight:900; font-size:1.05rem; font-family:'Tajawal',sans-serif; line-height:1.4;">{{ $branch->name }}</div>
+                <div style="flex:1; min-width:0; display:flex; align-items:center; gap:1rem;">
+                    @if($isThird || $isSixth)
+                    <div style="font-size:5rem; font-weight:900; color:rgba(255,255,255,0.15); font-family:'Inter',sans-serif; line-height:1; flex-shrink:0; user-select:none;">
+                        {{ $isThird ? '3' : '6' }}
+                    </div>
+                    @endif
+                    <div>
+                        <div style="color:{{ $tagColor }}; font-size:0.68rem; font-weight:800; letter-spacing:1px; margin-bottom:0.6rem; font-family:'Tajawal',sans-serif;">🏢 فرع</div>
+                        <div style="color:#fff; font-weight:900; font-size:1.05rem; font-family:'Tajawal',sans-serif; line-height:1.4;">{{ $branch->name }}</div>
+                    </div>
                 </div>
                 <div style="flex-shrink:0; display:flex; flex-direction:column; align-items:flex-end; gap:0.6rem;">
                     <div style="background:rgba(255,255,255,0.13); border:1px solid rgba(255,255,255,0.18); border-radius:10px; padding:0.55rem 1.1rem; text-align:center; min-width:100px;">
