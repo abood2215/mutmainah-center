@@ -173,30 +173,39 @@
             </div>
         </div>
 
-        {{-- مودال توزيع عيادات الشهر --}}
+        @endif
+
+        {{-- مودال توزيع عيادات الشهر — خارج layout --}}
+        @teleport('body')
         @if($showMonthModal)
-        <div style="position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:9999; display:flex; align-items:center; justify-content:center; padding:1rem;"
+        <div id="month-modal-backdrop"
+             style="position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:99999; display:flex; align-items:center; justify-content:center; padding:1rem; font-family:'Tajawal',sans-serif;"
              wire:click.self="closeMonthModal">
-            <div style="background:#fff; border-radius:14px; width:100%; max-width:520px; box-shadow:0 20px 60px rgba(0,0,0,0.25); overflow:hidden; animation:fadeIn .2s ease;">
-                <div style="background:var(--navy); padding:1rem 1.4rem; display:flex; align-items:center; justify-content:space-between;">
+            <div style="background:#fff; border-radius:14px; width:100%; max-width:520px; max-height:90vh; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,0.3); overflow:hidden; animation:fadeIn .2s ease;">
+
+                {{-- رأس --}}
+                <div style="background:var(--navy); padding:1rem 1.4rem; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;">
                     <div>
                         <div style="color:rgba(255,255,255,.6); font-size:.7rem; font-weight:800; letter-spacing:1px; margin-bottom:3px;">توزيع العيادات</div>
-                        <div style="color:#fff; font-weight:900; font-size:1rem; font-family:'Tajawal',sans-serif;">🏥 {{ $monthModalLabel }}</div>
+                        <div style="color:#fff; font-weight:900; font-size:1rem;">🏥 {{ $monthModalLabel }}</div>
                     </div>
-                    <button wire:click="closeMonthModal" style="background:rgba(255,255,255,.15); border:none; color:#fff; border-radius:8px; width:32px; height:32px; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;">&times;</button>
+                    <button wire:click="closeMonthModal"
+                        style="background:rgba(255,255,255,.15); border:none; color:#fff; border-radius:8px; width:34px; height:34px; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">&times;</button>
                 </div>
-                <div style="padding:1.25rem;">
+
+                {{-- محتوى قابل للتمرير --}}
+                <div style="padding:1.25rem; overflow-y:auto; flex:1;">
                     @if(count($monthModalClinics) > 0)
                     @php $maxCount = max(array_column($monthModalClinics, 'count')); @endphp
                     @foreach($monthModalClinics as $row)
                     @php $pct = $maxCount > 0 ? round(($row->count / $maxCount) * 100) : 0; @endphp
-                    <div style="margin-bottom:10px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                            <span style="font-size:.84rem; font-weight:700; color:var(--navy);">{{ $row->clinic_name ?: 'غير محدد' }}</span>
-                            <span style="font-size:.84rem; font-weight:900; color:var(--primary);">{{ $row->count }} كشف</span>
+                    <div style="margin-bottom:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                            <span style="font-size:.84rem; font-weight:700; color:var(--navy); flex:1; padding-left:8px;">{{ $row->clinic_name ?: 'غير محدد' }}</span>
+                            <span style="font-size:.84rem; font-weight:900; color:var(--primary); white-space:nowrap;">{{ $row->count }} كشف</span>
                         </div>
-                        <div style="height:7px; background:#f0f2f5; border-radius:4px; overflow:hidden;">
-                            <div style="height:100%; width:{{ $pct }}%; background:var(--primary); border-radius:4px; transition:width .4s ease;"></div>
+                        <div style="height:8px; background:#f0f2f5; border-radius:4px; overflow:hidden;">
+                            <div style="height:100%; width:{{ $pct }}%; background:var(--primary); border-radius:4px;"></div>
                         </div>
                     </div>
                     @endforeach
@@ -204,14 +213,16 @@
                     <div style="text-align:center; color:var(--text-muted); padding:2rem; font-size:.9rem;">لا توجد بيانات لهذا الشهر</div>
                     @endif
                 </div>
-                <div style="padding:0.75rem 1.4rem; border-top:1px solid #f0f2f5; text-align:center;">
-                    <button wire:click="closeMonthModal" style="background:#f4f6f9; border:1px solid #e2e8f0; border-radius:8px; padding:7px 24px; font-family:'Tajawal',sans-serif; font-size:.85rem; font-weight:800; color:#555; cursor:pointer;">إغلاق</button>
+
+                {{-- ذيل --}}
+                <div style="padding:0.75rem 1.4rem; border-top:1px solid #f0f2f5; text-align:center; flex-shrink:0;">
+                    <button wire:click="closeMonthModal"
+                        style="background:var(--navy); color:#fff; border:none; border-radius:8px; padding:8px 28px; font-family:'Tajawal',sans-serif; font-size:.85rem; font-weight:800; cursor:pointer;">إغلاق</button>
                 </div>
             </div>
         </div>
         @endif
-
-        @endif
+        @endteleport
 
         <!-- جدول + عيادات + روابط -->
         <div class="dash-bottom-row pg-2col">
@@ -426,9 +437,13 @@
 
     document.addEventListener('DOMContentLoaded', initCharts);
     document.addEventListener('livewire:navigated', initCharts);
+
+    // أعد رسم الـ charts فقط إذا كانت الـ canvas موجودة ولا تحتوي chart
     document.addEventListener('livewire:updated', function() {
-        // أعد رسم الـ charts بعد أي تحديث Livewire (مثل فتح/إغلاق المودال)
-        if (document.getElementById('dailyRevenueChart')) {
+        var canvas = document.getElementById('dailyRevenueChart');
+        if (!canvas) return;
+        var existing = Chart.getChart('dailyRevenueChart');
+        if (!existing) {
             initCharts();
         }
     });
