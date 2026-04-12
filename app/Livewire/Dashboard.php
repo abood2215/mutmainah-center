@@ -66,10 +66,10 @@ class Dashboard extends Component
         // إيرادات هذا الشهر — pdate بصيغة j-n-Y
         $currentMonth = now()->format('n');
         $currentYear  = now()->format('Y');
-        $cacheKey = "dash_month_{$currentYear}_{$currentMonth}";
+        $cacheKey = "dash_month_v2_{$currentYear}_{$currentMonth}";
 
         // الإيرادات والرسوم البيانية: cache 10 دقائق (لا تتغير كثيراً)
-        [$monthlyRevenue, $chartDailyLabels, $chartDailyData, $chartMonthLabels, $chartMonthData, $chartMonthKeys, $clinicChartData, $branchStats] =
+        [$monthlyRevenue, $chartDailyLabels, $chartDailyData, $chartMonthLabels, $chartMonthData, $chartMonthKeys, $clinicChartData, $branchStats, $allMonthsData] =
             Cache::remember($cacheKey, 600, function () use ($currentMonth, $currentYear) {
 
             $monthlyRevenue = DB::table('kpayments')
@@ -150,7 +150,49 @@ class Dashboard extends Component
                 return $b;
             });
 
-            return [$monthlyRevenue, $chartDailyLabels, $chartDailyData, $chartMonthLabels, $chartMonthData, $chartMonthKeys, $clinicChartData, $branchStats];
+            // بيانات كل شهر من آخر 6 أشهر (للرسوم التفاعلية)
+            $allMonthsData = [];
+            for ($i = 5; $i >= 0; $i--) {
+                $dt  = now()->subMonths($i);
+                $m   = (int) $dt->month;
+                $y   = (int) $dt->year;
+                $dim = $dt->daysInMonth;
+
+                $dr = DB::table('kpayments')
+                    ->where('price', '>', 0)
+                    ->whereRaw("MONTH(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?", [$m])
+                    ->whereRaw("YEAR(STR_TO_DATE(pdate, '%e-%c-%Y')) = ?",  [$y])
+                    ->select(DB::raw("DAY(STR_TO_DATE(pdate, '%e-%c-%Y')) as day"), DB::raw('SUM(price) as total'))
+                    ->groupBy('day')
+                    ->pluck('total', 'day');
+
+                $dLabels = []; $dData = [];
+                for ($d = 1; $d <= $dim; $d++) {
+                    $dLabels[] = $d;
+                    $dData[]   = round($dr[$d] ?? 0, 3);
+                }
+
+                $cl = DB::table('rec as r')
+                    ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
+                    ->where('r.confirm_id', 1)
+                    ->whereRaw("MONTH(STR_TO_DATE(r.rec_date, '%e-%c-%Y')) = ?", [$m])
+                    ->whereRaw("YEAR(STR_TO_DATE(r.rec_date, '%e-%c-%Y')) = ?",  [$y])
+                    ->select('c.name as clinic_name', DB::raw('COUNT(r.id) as count'))
+                    ->groupBy('r.clinic_id', 'c.name')
+                    ->orderBy('count', 'desc')
+                    ->limit(8)
+                    ->get();
+
+                $allMonthsData[] = [
+                    'label'        => $dt->locale('ar')->isoFormat('MMMM YYYY'),
+                    'dailyLabels'  => $dLabels,
+                    'dailyData'    => $dData,
+                    'clinicLabels' => $cl->pluck('clinic_name')->map(fn($n) => $n ?: 'غير محدد')->values()->toArray(),
+                    'clinicCounts' => $cl->pluck('count')->values()->toArray(),
+                ];
+            }
+
+            return [$monthlyRevenue, $chartDailyLabels, $chartDailyData, $chartMonthLabels, $chartMonthData, $chartMonthKeys, $clinicChartData, $branchStats, $allMonthsData];
         });
 
         // إيرادات اليوم (لا cache — تتغير لحظياً)
@@ -201,6 +243,7 @@ class Dashboard extends Component
             'chartMonthData'   => $chartMonthData,
             'chartMonthKeys'   => $chartMonthKeys,
             'clinicChartData'  => $clinicChartData,
+            'allMonthsData'    => $allMonthsData,
         ])->layout('layouts.app');
     }
 }
