@@ -145,7 +145,7 @@
                                 14=>'دفع سريع', 20=>'Deema',
                             ];
                             $isDeferred = $svc->payment_method == 5;
-                            $isFree = $svc->price == 0;
+                            $isFree = $svc->effective_price == 0;
                         @endphp
                         <tr style="border-bottom:1px solid #f1f5f9;" onmouseover="this.style.background='#fafbfc'" onmouseout="this.style.background='transparent'">
                             <td style="padding:0.7rem 1rem; text-align:center;"><span style="padding:0.25rem 0.6rem; background:#e3f2fd; color:#1565c0; border-radius:6px; font-weight:900; font-size:0.82rem; border:1px solid #bbdefb;">#{{ $svc->id }}</span></td>
@@ -164,7 +164,7 @@
                                 @if($isFree)
                                     <span style="color:var(--text-muted); font-size:0.88rem;">مجاني</span>
                                 @else
-                                    <span style="font-weight:900; color:{{ $isDeferred ? '#c2410c' : '#2e7d32' }}; font-size:1rem; font-family:'Inter';">{{ number_format($svc->price, 3) }}</span>
+                                    <span style="font-weight:900; color:{{ $isDeferred ? '#c2410c' : '#2e7d32' }}; font-size:1rem; font-family:'Inter';">{{ number_format($svc->effective_price, 3) }}</span>
                                 @endif
                             </td>
                             @if($totalDiscount > 0)

@@ -51,15 +51,27 @@ class Financial extends Component
                 'k.discount', 'k.payment_method', 'k.rec_id'
             )
             ->orderBy('k.id', 'desc')
-            ->get();
+            ->get()
+            ->map(function ($svc) {
+                // إذا price=0 نحاول استخراج السعر من نص البيان (مثل "جلسة 40 د.ك")
+                $effective = (float) $svc->price;
+                if ($effective == 0 && !empty($svc->pdesc)) {
+                    $desc = strip_tags(html_entity_decode(str_replace("\xc2\xa0", ' ', $svc->pdesc ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+                    if (preg_match_all('/([\d.]+)\s*(?:د\.ك|KD|D\.K)/ui', $desc, $m)) {
+                        $effective = array_sum(array_map('floatval', $m[1]));
+                    }
+                }
+                $svc->effective_price = $effective;
+                return $svc;
+            });
 
-        // إجمالي الخدمات المُقدَّمة الفعلية (السجلات ذات قيمة فعلية)
-        $totalServices = $services->where('price', '>', 0)->sum('price');
+        // إجمالي الخدمات المُقدَّمة الفعلية
+        $totalServices = $services->sum('effective_price');
 
         // الخدمات المدفوعة من رصيد الحساب فقط (payment_method=5 = آجل/من الرصيد)
         $deferredServices = $services->where('payment_method', 5);
         $totalDiscount    = $deferredServices->sum('discount');
-        $totalCharged     = max(0, $deferredServices->sum('price') - $totalDiscount);
+        $totalCharged     = max(0, $deferredServices->sum('effective_price') - $totalDiscount);
 
         // الرصيد المتبقي = الإيداعات − الخدمات المدفوعة من الرصيد فقط
         $balance = round($totalDeposited - $totalCharged, 3);
@@ -77,7 +89,7 @@ class Financial extends Component
         }
 
         foreach ($deferredServices as $svc) {
-            $net = max(0.0, (float)$svc->price - (float)($svc->discount ?? 0));
+            $net = max(0.0, (float)$svc->effective_price - (float)($svc->discount ?? 0));
             if ($net > 0) {
                 $statementItems->push([
                     'date'   => $svc->pdate,
