@@ -642,7 +642,7 @@
             <img src="/logo.jpg" alt="مطمئنة">
             <div>
                 <div class="t-name">مطمئنة</div>
-                <div class="t-gold">المركز الاستشاري</div>
+                <div class="t-gold">شركة مركز مطمئنة للأستشارات التربوية والتدريب</div>
             </div>
         </a>
 
