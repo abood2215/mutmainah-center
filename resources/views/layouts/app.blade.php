@@ -673,6 +673,7 @@
                     <li><a href="{{ route('finance.movements') }}"><span>💳</span> حركات مالية</a></li>
                     <li><a href="{{ route('finance.reprint') }}"><span>🖨️</span> إعادة طباعة سند</a></li>
                     <li><a href="{{ route('finance.statement') }}"><span>📄</span> بيان حساب</a></li>
+                    <li><a href="{{ route('finance.balances') }}"><span>💰</span> أرصدة العملاء</a></li>
                 </ul>
             </li>
 
@@ -782,6 +783,7 @@
                 <a href="{{ route('finance.invoices') }}" class="more-link">💳 الفواتير</a>
                 <a href="{{ route('finance.vouchers') }}" class="more-link">📑 السندات</a>
                 <a href="{{ route('finance.statement') }}" class="more-link">📄 بيان حساب</a>
+                <a href="{{ route('finance.balances') }}" class="more-link">💰 أرصدة العملاء</a>
                 @if($isAdmin ?? false)
                 <a href="{{ route('finance.reports') }}" class="more-link">📊 التقارير</a>
                 <a href="{{ route('finance.reports') }}?type=pb" class="more-link">💰 أرصدة العملاء</a>
