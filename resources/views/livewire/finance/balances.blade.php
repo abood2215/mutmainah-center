@@ -100,11 +100,7 @@
             </table>
         </div>
 
-        @if($rows->hasPages())
-        <div style="padding:1rem 1.5rem; border-top:1px solid var(--border);">
-            {{ $rows->links() }}
-        </div>
-        @endif
+        <x-pg-nav :paginator="$rows" />
     </div>
 
 </div>

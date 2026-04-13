@@ -299,10 +299,8 @@
                 </table>
             </div>
 
-            @if($rows instanceof \Illuminate\Pagination\LengthAwarePaginator && $rows->hasPages())
-            <div style="padding:0.85rem 1.25rem; border-top:1px solid var(--border); background:#fafbfc;">
-                {{ $rows->links() }}
-            </div>
+            @if($rows instanceof \Illuminate\Pagination\LengthAwarePaginator)
+            <x-pg-nav :paginator="$rows" />
             @endif
         </div>
 

@@ -224,11 +224,7 @@
             </table>
         </div>
 
-        @if($users->hasPages())
-        <div style="padding:0.85rem 1.25rem; border-top:1px solid var(--border); background:#fafbfc;">
-            <div class="custom-pagination">{{ $users->links() }}</div>
-        </div>
-        @endif
+        <x-pg-nav :paginator="$users" />
 
     </div>
 

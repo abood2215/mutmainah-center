@@ -291,11 +291,7 @@
             </tbody>
         </table>
     </div>
-    @if($movements->hasPages())
-    <div style="padding:0.75rem 1.25rem; border-top:1px solid var(--border); background:#fcfdfe;">
-        {{ $movements->links() }}
-    </div>
-    @endif
+    <x-pg-nav :paginator="$movements" />
 
     @elseif($searched)
     <div style="text-align:center; padding:2.5rem; color:var(--text-muted);">

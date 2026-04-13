@@ -140,25 +140,7 @@
     @endif
 
     <!-- Pagination -->
-    <div style="background:#1a5276; padding:0.6rem 1rem; display:flex; align-items:center; justify-content:center; gap:0.3rem; flex-wrap:wrap;">
-        @if($employees->onFirstPage())
-            <span style="padding:0.3rem 0.7rem; color:rgba(255,255,255,0.4); font-size:0.85rem; font-weight:700;">السابق</span>
-        @else
-            <button wire:click="previousPage" style="padding:0.3rem 0.7rem; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:3px; color:#fff; cursor:pointer; font-size:0.85rem; font-weight:700; font-family:'Tajawal',sans-serif;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">السابق</button>
-        @endif
-        @foreach($employees->getUrlRange(1, $employees->lastPage()) as $page => $url)
-            @if($page == $employees->currentPage())
-                <span style="padding:0.3rem 0.7rem; background:#fff; border-radius:3px; color:#1a5276; font-weight:900; font-size:0.85rem; min-width:32px; text-align:center;">{{ $page }}</span>
-            @else
-                <button wire:click="gotoPage({{ $page }})" style="padding:0.3rem 0.7rem; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); border-radius:3px; color:#fff; cursor:pointer; font-size:0.85rem; min-width:32px; font-family:'Tajawal',sans-serif;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">{{ $page }}</button>
-            @endif
-        @endforeach
-        @if($employees->hasMorePages())
-            <button wire:click="nextPage" style="padding:0.3rem 0.7rem; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:3px; color:#fff; cursor:pointer; font-size:0.85rem; font-weight:700; font-family:'Tajawal',sans-serif;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">التالي Next</button>
-        @else
-            <span style="padding:0.3rem 0.7rem; color:rgba(255,255,255,0.4); font-size:0.85rem; font-weight:700;">التالي Next</span>
-        @endif
-    </div>
+    <x-pg-nav :paginator="$employees" />
 
 {{-- ═══════════ مودال التعديل ═══════════ --}}
 @if($showEditModal)

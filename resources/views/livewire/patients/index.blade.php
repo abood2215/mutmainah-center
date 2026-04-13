@@ -233,11 +233,7 @@
             </table>
         </div>
 
-        @if($patients->hasPages())
-        <div style="padding:0.9rem 1.5rem; border-top:1px solid #f3f4f6; background:#fcfdfe; display:flex; justify-content:flex-end;">
-            <div class="custom-pagination">{{ $patients->links() }}</div>
-        </div>
-        @endif
+        <x-pg-nav :paginator="$patients" />
 
     </div>
 

@@ -232,55 +232,7 @@
                 </div>
 
                 <!-- الترقيم -->
-                @if($checks->hasPages())
-                @php
-                    $cur   = $checks->currentPage();
-                    $last  = $checks->lastPage();
-                    $delta = 3; // عدد الصفحات يمين ويسار الحالية
-                    $start = max(1, $cur - $delta);
-                    $end   = min($last, $cur + $delta);
-                @endphp
-                <div style="background:#1a1a2e; padding:0.55rem 1rem; display:flex; align-items:center; justify-content:center; gap:0.25rem; flex-wrap:wrap; border-top:2px solid var(--gold);">
-                    {{-- السابق --}}
-                    @if($checks->onFirstPage())
-                        <span style="padding:0.3rem 0.75rem; color:rgba(255,255,255,0.3); font-size:0.82rem; font-weight:700;">السابق</span>
-                    @else
-                        <button wire:click="previousPage" style="padding:0.3rem 0.75rem; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25); border-radius:4px; color:#fff; cursor:pointer; font-size:0.82rem; font-weight:700; font-family:'Tajawal',sans-serif;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">السابق</button>
-                    @endif
-
-                    {{-- الصفحة الأولى دائماً --}}
-                    @if($start > 1)
-                        <button wire:click="gotoPage(1)" style="padding:0.3rem 0.6rem; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:4px; color:#fff; cursor:pointer; font-size:0.82rem; min-width:30px; font-family:'Tajawal',sans-serif;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">1</button>
-                        @if($start > 2)
-                            <span style="color:rgba(255,255,255,0.4); font-size:0.85rem; padding:0 2px;">…</span>
-                        @endif
-                    @endif
-
-                    {{-- النطاق المحيط بالصفحة الحالية --}}
-                    @for($p = $start; $p <= $end; $p++)
-                        @if($p == $cur)
-                            <span style="padding:0.3rem 0.6rem; background:#c8941a; border-radius:4px; color:#fff; font-weight:900; font-size:0.82rem; min-width:30px; text-align:center;">{{ $p }}</span>
-                        @else
-                            <button wire:click="gotoPage({{ $p }})" style="padding:0.3rem 0.6rem; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:4px; color:#fff; cursor:pointer; font-size:0.82rem; min-width:30px; font-family:'Tajawal',sans-serif;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">{{ $p }}</button>
-                        @endif
-                    @endfor
-
-                    {{-- الصفحة الأخيرة دائماً --}}
-                    @if($end < $last)
-                        @if($end < $last - 1)
-                            <span style="color:rgba(255,255,255,0.4); font-size:0.85rem; padding:0 2px;">…</span>
-                        @endif
-                        <button wire:click="gotoPage({{ $last }})" style="padding:0.3rem 0.6rem; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:4px; color:#fff; cursor:pointer; font-size:0.82rem; min-width:30px; font-family:'Tajawal',sans-serif;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">{{ $last }}</button>
-                    @endif
-
-                    {{-- التالي --}}
-                    @if($checks->hasMorePages())
-                        <button wire:click="nextPage" style="padding:0.3rem 0.75rem; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25); border-radius:4px; color:#fff; cursor:pointer; font-size:0.82rem; font-weight:700; font-family:'Tajawal',sans-serif;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">التالي</button>
-                    @else
-                        <span style="padding:0.3rem 0.75rem; color:rgba(255,255,255,0.3); font-size:0.82rem; font-weight:700;">التالي</span>
-                    @endif
-                </div>
-                @endif
+                <x-pg-nav :paginator="$checks" />
             </div>
 
         </div>
