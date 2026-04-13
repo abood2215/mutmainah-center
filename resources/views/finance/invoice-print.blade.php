@@ -387,7 +387,7 @@ body {
 
     {{-- تذييل --}}
     <div class="footer">
-        مركز مطمئنة الاستشاري &nbsp;|&nbsp; <b>Mutmainah Advisory Center</b>
+        مركز مطمئنة للاستشارات التربوية والتدريب &nbsp;|&nbsp; <b>Mutmainah Advisory Center</b>
     </div>
 
 </div>
