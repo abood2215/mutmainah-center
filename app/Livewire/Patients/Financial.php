@@ -68,9 +68,47 @@ class Financial extends Component
         // الرصيد المتبقي = الإيداعات − الخدمات المدفوعة من الرصيد فقط
         $balance = round($totalDeposited - $totalCharged, 3);
 
+        // ═══ كشف الحساب: إيداعات + مسحوبات مرتبة حسب التاريخ مع رصيد متراكم ═══
+        $statementItems = collect();
+
+        foreach ($deposits as $dep) {
+            $statementItems->push([
+                'date'   => $dep->pdate,
+                'type'   => 'deposit',
+                'credit' => (float) $dep->dep_amount,
+                'debit'  => 0.0,
+            ]);
+        }
+
+        foreach ($deferredServices as $svc) {
+            $net = max(0.0, (float)$svc->price - (float)($svc->discount ?? 0));
+            if ($net > 0) {
+                $statementItems->push([
+                    'date'   => $svc->pdate,
+                    'type'   => 'debit',
+                    'credit' => 0.0,
+                    'debit'  => $net,
+                ]);
+            }
+        }
+
+        // ترتيب بالتاريخ (صيغة j-n-Y)
+        $statementItems = $statementItems->sortBy(function ($item) {
+            $p = explode('-', $item['date']);
+            return count($p) === 3 ? mktime(0, 0, 0, (int)$p[1], (int)$p[0], (int)$p[2]) : 0;
+        })->values();
+
+        // رصيد متراكم لكل سطر
+        $running = 0.0;
+        $statement = $statementItems->map(function ($item) use (&$running) {
+            $running += $item['credit'] - $item['debit'];
+            return array_merge($item, ['balance' => round($running, 3)]);
+        });
+
         return view('livewire.patients.financial', [
             'deposits'        => $deposits,
             'services'        => $services,
+            'statement'       => $statement,
             'totalDeposited'  => $totalDeposited,
             'totalDiscount'   => $totalDiscount,
             'totalCharged'    => $totalCharged,

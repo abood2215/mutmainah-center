@@ -14,7 +14,10 @@
                     <div style="font-size:0.78rem; color:var(--text-muted); font-weight:700; margin-top:0.1rem;">{{ $patient->full_name }}</div>
                 </div>
             </div>
-            <a href="{{ route('patients.index') }}" wire:navigate class="btn btn-secondary no-print">⬅️ العودة للبحث</a>
+            <div style="display:flex; gap:0.5rem;" class="no-print">
+                <button onclick="printStatement()" style="padding:0.5rem 1.1rem; background:#166534; color:#fff; border:none; border-radius:8px; font-family:'Tajawal',sans-serif; font-weight:800; font-size:0.85rem; cursor:pointer;">🖨️ طباعة بيان الحساب</button>
+                <a href="{{ route('patients.index') }}" wire:navigate class="btn btn-secondary">⬅️ العودة للبحث</a>
+            </div>
         </div>
     </div>
  <!-- المحتوى -->
@@ -187,6 +190,123 @@
 
     </div>
 </div>{{-- end #print-area --}}
+
+{{-- ═══ كشف الحساب — للطباعة فقط ═══ --}}
+<div id="statement-print-area" style="display:none;">
+    <div style="font-family:'Tajawal',sans-serif; padding:1.5rem; max-width:700px; margin:0 auto; direction:rtl;">
+
+        {{-- رأس الكشف --}}
+        <div style="text-align:center; border-bottom:2px solid #1a1a2e; padding-bottom:1rem; margin-bottom:1.25rem;">
+            <div style="font-size:1.1rem; font-weight:900; color:#1a1a2e; margin-bottom:4px;">مركز مطمئنة الاستشاري</div>
+            <div style="font-size:1.4rem; font-weight:900; color:#8b1c2b; margin-bottom:8px;">كشف حساب عميل</div>
+            <div style="display:flex; justify-content:center; gap:2rem; font-size:0.88rem; color:#374151;">
+                <span><strong>الاسم:</strong> {{ $patient->full_name }}</span>
+                <span><strong>رقم الملف:</strong> {{ $patient->file_id ?? $patient->id }}</span>
+                <span><strong>تاريخ الإصدار:</strong> {{ now()->format('d/m/Y') }}</span>
+            </div>
+        </div>
+
+        {{-- ملخص الرصيد --}}
+        <div style="display:flex; gap:1rem; margin-bottom:1.25rem; justify-content:center;">
+            <div style="border:1px solid #c8e6c9; background:#f0fdf4; border-radius:8px; padding:0.6rem 1.25rem; text-align:center;">
+                <div style="font-size:0.7rem; font-weight:800; color:#166534; margin-bottom:3px;">إجمالي الإيداعات</div>
+                <div style="font-size:1.1rem; font-weight:900; color:#166534;">{{ number_format($totalDeposited, 3) }} د.ك</div>
+            </div>
+            <div style="border:1px solid #fed7aa; background:#fff7ed; border-radius:8px; padding:0.6rem 1.25rem; text-align:center;">
+                <div style="font-size:0.7rem; font-weight:800; color:#9a3412; margin-bottom:3px;">إجمالي المسحوبات</div>
+                <div style="font-size:1.1rem; font-weight:900; color:#9a3412;">{{ number_format($totalCharged, 3) }} د.ك</div>
+            </div>
+            <div style="border:2px solid {{ $balance >= 0 ? '#93c5fd' : '#fca5a5' }}; background:{{ $balance >= 0 ? '#eff6ff' : '#fff0f0' }}; border-radius:8px; padding:0.6rem 1.25rem; text-align:center;">
+                <div style="font-size:0.7rem; font-weight:800; color:{{ $balance >= 0 ? '#1d4ed8' : '#b91c1c' }}; margin-bottom:3px;">الرصيد المتبقي</div>
+                <div style="font-size:1.1rem; font-weight:900; color:{{ $balance >= 0 ? '#1d4ed8' : '#b91c1c' }};">{{ number_format(abs($balance), 3) }} د.ك{{ $balance < 0 ? ' (مديونية)' : '' }}</div>
+            </div>
+        </div>
+
+        {{-- جدول الحركات --}}
+        @if($statement->count() > 0)
+        <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+            <thead>
+                <tr style="background:#1a1a2e; color:#fff;">
+                    <th style="padding:0.6rem 0.85rem; text-align:center; font-weight:800; width:40px;">#</th>
+                    <th style="padding:0.6rem 0.85rem; text-align:center; font-weight:800;">التاريخ</th>
+                    <th style="padding:0.6rem 0.85rem; text-align:center; font-weight:800;">البيان</th>
+                    <th style="padding:0.6rem 0.85rem; text-align:center; font-weight:800;">إيداع (د.ك)</th>
+                    <th style="padding:0.6rem 0.85rem; text-align:center; font-weight:800;">سحب (د.ك)</th>
+                    <th style="padding:0.6rem 0.85rem; text-align:center; font-weight:800;">الرصيد (د.ك)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($statement as $i => $row)
+                <tr style="border-bottom:1px solid #e5e7eb; background:{{ $i % 2 == 0 ? '#fff' : '#f9fafb' }};">
+                    <td style="padding:0.55rem 0.85rem; text-align:center; color:#6b7280; font-size:0.78rem;">{{ $i + 1 }}</td>
+                    <td style="padding:0.55rem 0.85rem; text-align:center; direction:ltr; unicode-bidi:isolate; color:#374151;">{{ fmt_date($row['date']) }}</td>
+                    <td style="padding:0.55rem 0.85rem; text-align:center;">
+                        @if($row['type'] === 'deposit')
+                            <span style="background:#dcfce7; color:#166534; padding:2px 10px; border-radius:20px; font-weight:800; font-size:0.78rem;">إيداع</span>
+                        @else
+                            <span style="background:#fff7ed; color:#c2410c; padding:2px 10px; border-radius:20px; font-weight:800; font-size:0.78rem;">سحب</span>
+                        @endif
+                    </td>
+                    <td style="padding:0.55rem 0.85rem; text-align:center; font-weight:700; color:#166534;">
+                        {{ $row['credit'] > 0 ? number_format($row['credit'], 3) : '—' }}
+                    </td>
+                    <td style="padding:0.55rem 0.85rem; text-align:center; font-weight:700; color:#c2410c;">
+                        {{ $row['debit'] > 0 ? number_format($row['debit'], 3) : '—' }}
+                    </td>
+                    <td style="padding:0.55rem 0.85rem; text-align:center; font-weight:900; color:{{ $row['balance'] >= 0 ? '#1d4ed8' : '#b91c1c' }};">
+                        {{ number_format(abs($row['balance']), 3) }}{{ $row['balance'] < 0 ? ' (م)' : '' }}
+                    </td>
+                </tr>
+                @endforeach
+                {{-- صف الإجمالي --}}
+                <tr style="background:#1a1a2e; color:#fff; font-weight:900;">
+                    <td colspan="3" style="padding:0.65rem 0.85rem; text-align:center;">الإجمالي</td>
+                    <td style="padding:0.65rem 0.85rem; text-align:center;">{{ number_format($totalDeposited, 3) }}</td>
+                    <td style="padding:0.65rem 0.85rem; text-align:center;">{{ number_format($totalCharged, 3) }}</td>
+                    <td style="padding:0.65rem 0.85rem; text-align:center; color:{{ $balance >= 0 ? '#86efac' : '#fca5a5' }};">{{ number_format(abs($balance), 3) }}</td>
+                </tr>
+            </tbody>
+        </table>
+        @else
+        <div style="text-align:center; padding:2rem; color:#9ca3af;">لا توجد حركات مسجلة</div>
+        @endif
+
+        {{-- تذييل --}}
+        <div style="margin-top:1.5rem; border-top:1px solid #e5e7eb; padding-top:0.75rem; display:flex; justify-content:space-between; font-size:0.72rem; color:#9ca3af;">
+            <span>تاريخ الطباعة: {{ now()->format('d/m/Y H:i') }}</span>
+            <span>مركز مطمئنة الاستشاري</span>
+        </div>
+    </div>
+</div>
+
+<script>
+function printStatement() {
+    var content = document.getElementById('statement-print-area').innerHTML;
+    var win = window.open('', '_blank', 'width=800,height=700');
+    win.document.write(`
+        <!DOCTYPE html>
+        <html dir="rtl" lang="ar">
+        <head>
+            <meta charset="UTF-8">
+            <title>كشف حساب</title>
+            <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800;900&display=swap" rel="stylesheet">
+            <style>
+                * { box-sizing: border-box; margin: 0; padding: 0; }
+                body { font-family: 'Tajawal', sans-serif; background: #fff; direction: rtl; }
+                @media print {
+                    body { padding: 0; }
+                    @page { margin: 1.5cm; size: A4; }
+                }
+            </style>
+        </head>
+        <body>${content}</body>
+        </html>
+    `);
+    win.document.close();
+    win.focus();
+    setTimeout(function() { win.print(); }, 600);
+}
+</script>
 
 </div>
 </div>
