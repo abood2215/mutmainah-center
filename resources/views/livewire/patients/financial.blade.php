@@ -138,9 +138,14 @@
                     <tbody>
                         @forelse($services as $svc)
                         @php
-                            $methods = [1=>'نقدي',2=>'K-Net',3=>'فيزا',4=>'مجاني',5=>'آجل'];
+                            $methods = [
+                                1=>'نقدي', 2=>'K-Net', 3=>'شبكة',
+                                4=>'تحويل بنكي', 5=>'سند', 6=>'فيزا',
+                                11=>'Myfatoorah', 12=>'STC Pay',
+                                14=>'دفع سريع', 20=>'Deema',
+                            ];
                             $isDeferred = $svc->payment_method == 5;
-                            $isFree = $svc->payment_method == 4 || $svc->price == 0;
+                            $isFree = $svc->price == 0;
                         @endphp
                         <tr style="border-bottom:1px solid #f1f5f9;" onmouseover="this.style.background='#fafbfc'" onmouseout="this.style.background='transparent'">
                             <td style="padding:0.7rem 1rem; text-align:center;"><span style="padding:0.25rem 0.6rem; background:#e3f2fd; color:#1565c0; border-radius:6px; font-weight:900; font-size:0.82rem; border:1px solid #bbdefb;">#{{ $svc->id }}</span></td>

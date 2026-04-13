@@ -21,8 +21,6 @@ class Financial extends Component
 
     public function render()
     {
-        // طرق الدفع المجانية (لا تُحتسب في أي مجموع مالي)
-        $freeMethods = [4, 7]; // 4=مجاني، 7=مجاني via isFree
 
         // حساب المريض في acck (مرتبط بـ stu_id)
         $acck   = DB::table('acck')->where('stu_id', $this->patientId)->first();
@@ -55,10 +53,8 @@ class Financial extends Component
             ->orderBy('k.id', 'desc')
             ->get();
 
-        // إجمالي الخدمات المُقدَّمة الفعلية (تستثني المجانية)
-        $totalServices = $services
-            ->whereNotIn('payment_method', $freeMethods)
-            ->sum('price');
+        // إجمالي الخدمات المُقدَّمة الفعلية (السجلات ذات قيمة فعلية)
+        $totalServices = $services->where('price', '>', 0)->sum('price');
 
         // الخدمات المدفوعة من رصيد الحساب فقط (payment_method=5 = آجل/من الرصيد)
         $deferredServices = $services->where('payment_method', 5);
