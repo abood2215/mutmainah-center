@@ -74,7 +74,7 @@
                             </span>
                         </td>
                         <td style="padding:0.75rem 1rem; text-align:center;">
-                            <a href="{{ route('patients.financial', $r->id) }}" wire:navigate
+                            <a href="{{ route('patients.financial-statement', $r->id) }}" wire:navigate
                                style="font-size:0.78rem; font-weight:800; color:var(--primary); text-decoration:none; padding:4px 10px; border:1px solid var(--primary); border-radius:6px; white-space:nowrap;"
                                onmouseover="this.style.background='var(--primary)'; this.style.color='#fff'"
                                onmouseout="this.style.background=''; this.style.color='var(--primary)'">

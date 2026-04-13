@@ -47,6 +47,7 @@ Route::middleware(['auth.employee'])->group(function () {
     Route::get('/finance/movements', \App\Livewire\Finance\Movements::class)->name('finance.movements');
     Route::get('/finance/reprint',   \App\Livewire\Finance\Reprint::class)->name('finance.reprint');
     Route::get('/finance/statement', \App\Livewire\Finance\Statement::class)->name('finance.statement');
+    Route::get('/finance/balances',  \App\Livewire\Finance\Balances::class)->name('finance.balances');
     Route::get('/finance/vouchers',  \App\Livewire\Finance\Vouchers::class)->name('finance.vouchers');
     Route::get('/finance/invoices',  \App\Livewire\Finance\Invoices::class)->name('finance.invoices');
     Route::get('/finance/invoice/{recId}', function ($recId) {
