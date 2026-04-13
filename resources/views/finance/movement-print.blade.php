@@ -117,7 +117,7 @@ body { font-family:'Inter',sans-serif; background:#94a3b8; color:#0f172a; paddin
         <img src="{{ asset('images/logo.jpg') }}" alt="Logo" onerror="this.style.display='none'">
     </div>
     <div class="hdr-txt">
-        <h1>مركز مطمئنة للاستشارات التربوية والتدريب</h1>
+        <h1>شركة مركز مطمئنة للأستشارات التربوية والتدريب</h1>
         <div class="en">Mutmainah Advisory Center</div>
         <div class="dept">{{ $deptEn }} &nbsp;·&nbsp; {{ $deptAr }}</div>
     </div>

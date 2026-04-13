@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title ?? 'مركز مطمئنة للاستشارات التربوية والتدريب' }}</title>
+    <title>{{ $title ?? 'شركة مركز مطمئنة للأستشارات التربوية والتدريب' }}</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -747,7 +747,7 @@
 
     <!-- ═══════ FOOTER ═══════ -->
     <footer class="page-footer">
-        جميع الحقوق محفوظة &copy; {{ date('Y') }} &mdash; <strong>مركز مطمئنة للاستشارات التربوية والتدريب</strong>
+        جميع الحقوق محفوظة &copy; {{ date('Y') }} &mdash; <strong>شركة مركز مطمئنة للأستشارات التربوية والتدريب</strong>
     </footer>
 
     <!-- ═══════ BOTTOM NAV (موبايل فقط) ═══════ -->
