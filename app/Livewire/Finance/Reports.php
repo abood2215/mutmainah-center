@@ -351,17 +351,34 @@ class Reports extends Component
     ══════════════════════════════════════════════ */
     private function getPbData()
     {
+        $depSub = DB::raw('(
+            SELECT acc_id,
+                SUM(COALESCE(NULLIF(amount,0), NULLIF(price,0), 0)) as deposited
+            FROM kpayments WHERE status = 1
+            GROUP BY acc_id
+        ) as dep');
+
+        $chgSub = DB::raw('(
+            SELECT r.st_id,
+                SUM(GREATEST(COALESCE(p.price,0) - COALESCE(p.discount,0), 0)) as charged
+            FROM kpayments p
+            INNER JOIN rec r ON r.id = p.rec_id
+            WHERE p.payment_method = 5
+            GROUP BY r.st_id
+        ) as chg');
+
         $query = DB::table('kstu as s')
-            ->leftJoin('rec as r', fn($j) => $j->on('r.st_id', '=', 's.id')->where('r.confirm_id', 1))
-            ->leftJoin('kpayments as k', fn($j) => $j->on('k.rec_id', '=', 'r.id')->where('k.price', '>', 0))
+            ->join('acck as ac', 'ac.stu_id', '=', 's.id')
+            ->leftJoin($depSub, 'dep.acc_id', '=', 'ac.id')
+            ->leftJoin($chgSub, 'chg.st_id', '=', 's.id')
             ->select(
                 's.id', 's.file_id', 's.full_name', 's.phone',
-                DB::raw('COUNT(DISTINCT r.id) as visits'),
-                DB::raw('COALESCE(SUM(k.price), 0) as total_paid')
+                DB::raw('COALESCE(dep.deposited, 0) as deposited'),
+                DB::raw('COALESCE(chg.charged, 0) as charged'),
+                DB::raw('ROUND(COALESCE(dep.deposited,0) - COALESCE(chg.charged,0), 3) as balance')
             )
-            ->groupBy('s.id', 's.file_id', 's.full_name', 's.phone')
-            ->having('total_paid', '>', 0)
-            ->orderBy('total_paid', 'desc');
+            ->havingRaw('balance > 0')
+            ->orderBy('balance', 'desc');
 
         if ($this->search) {
             $t = '%' . $this->search . '%';
@@ -370,8 +387,10 @@ class Reports extends Component
                 ->orWhere('s.phone', 'like', $t));
         }
 
-        $rows = $query->paginate(20);
-        return ['rows' => $rows, 'summary' => []];
+        $rows         = $query->paginate(20);
+        $totalBalance = round((float) (clone $query)->sum(DB::raw('COALESCE(dep.deposited,0) - COALESCE(chg.charged,0)')), 3);
+
+        return ['rows' => $rows, 'summary' => ['total_balance' => $totalBalance]];
     }
 
     /* ══════════════════════════════════════════════

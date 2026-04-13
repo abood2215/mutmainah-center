@@ -15,43 +15,48 @@ class Balances extends Component
 
     public function updatingSearch(): void { $this->resetPage(); }
 
+    private function baseQuery()
+    {
+        return DB::table('kstu as s')
+            ->join('acck as ac', 'ac.stu_id', '=', 's.id')
+            ->leftJoin(DB::raw('(
+                SELECT acc_id,
+                    SUM(COALESCE(NULLIF(amount,0), NULLIF(price,0), 0)) as deposited
+                FROM kpayments
+                WHERE status = 1
+                GROUP BY acc_id
+            ) as dep'), 'dep.acc_id', '=', 'ac.id')
+            ->leftJoin(DB::raw('(
+                SELECT r.st_id,
+                    SUM(GREATEST(COALESCE(p.price,0) - COALESCE(p.discount,0), 0)) as charged
+                FROM kpayments p
+                INNER JOIN rec r ON r.id = p.rec_id
+                WHERE p.payment_method = 5
+                GROUP BY r.st_id
+            ) as chg'), 'chg.st_id', '=', 's.id')
+            ->select(
+                's.id', 's.file_id', 's.full_name', 's.phone',
+                DB::raw('COALESCE(dep.deposited, 0) as deposited'),
+                DB::raw('COALESCE(chg.charged, 0) as charged'),
+                DB::raw('ROUND(COALESCE(dep.deposited, 0) - COALESCE(chg.charged, 0), 3) as balance')
+            )
+            ->havingRaw('balance > 0');
+    }
+
     #[Title('أرصدة العملاء')]
     public function render()
     {
-        $query = DB::table(DB::raw("(
-            SELECT s.id, s.file_id, s.full_name, s.phone,
-                COALESCE((
-                    SELECT SUM(COALESCE(NULLIF(p2.amount,0), NULLIF(p2.price,0), 0))
-                    FROM kpayments p2
-                    WHERE p2.acc_id = ac.id AND p2.status = 1
-                ), 0) AS deposited,
-                COALESCE((
-                    SELECT SUM(GREATEST(COALESCE(p3.price,0) - COALESCE(p3.discount,0), 0))
-                    FROM kpayments p3
-                    INNER JOIN rec r3 ON r3.id = p3.rec_id
-                    WHERE r3.st_id = s.id AND p3.payment_method = 5
-                ), 0) AS charged
-            FROM kstu s
-            INNER JOIN acck ac ON ac.stu_id = s.id
-        ) as pb"))
-            ->selectRaw('*, ROUND(deposited - charged, 3) as balance')
-            ->havingRaw('ROUND(deposited - charged, 3) > 0')
-            ->orderByRaw('ROUND(deposited - charged, 3) DESC');
+        $query = $this->baseQuery()->orderBy('balance', 'desc');
 
         if ($this->search) {
             $t = '%' . $this->search . '%';
-            $query->where(fn($q) => $q->where('full_name', 'like', $t)
-                ->orWhere('file_id', 'like', $t)
-                ->orWhere('phone', 'like', $t));
+            $query->where(fn($q) => $q->where('s.full_name', 'like', $t)
+                ->orWhere('s.file_id', 'like', $t)
+                ->orWhere('s.phone', 'like', $t));
         }
 
         $rows         = $query->paginate(25);
-        $totalBalance = DB::table(DB::raw("(
-            SELECT s.id,
-                COALESCE((SELECT SUM(COALESCE(NULLIF(p2.amount,0),NULLIF(p2.price,0),0)) FROM kpayments p2 WHERE p2.acc_id=ac.id AND p2.status=1),0)
-                - COALESCE((SELECT SUM(GREATEST(COALESCE(p3.price,0)-COALESCE(p3.discount,0),0)) FROM kpayments p3 INNER JOIN rec r3 ON r3.id=p3.rec_id WHERE r3.st_id=s.id AND p3.payment_method=5),0) as balance
-            FROM kstu s INNER JOIN acck ac ON ac.stu_id=s.id
-        ) as t"))->where('balance', '>', 0)->sum('balance');
+        $totalBalance = round((float) $this->baseQuery()->sum(DB::raw('COALESCE(dep.deposited,0) - COALESCE(chg.charged,0)')), 3);
 
         return view('livewire.finance.balances', compact('rows', 'totalBalance'))
             ->layout('layouts.app');
