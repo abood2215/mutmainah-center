@@ -1,59 +1,369 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Clinic Desk - Healthcare Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A comprehensive web-based clinic management system built with Laravel and Livewire. This platform enables clinics to manage appointments, patient records, medical documentation, and financial operations efficiently.
 
-## About Laravel
+## Table of Contents
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Environment Setup](#environment-setup)
+- [Database Setup](#database-setup)
+- [Running the Application](#running-the-application)
+- [Project Structure](#project-structure)
+- [Key Features](#key-features)
+- [Development Guidelines](#development-guidelines)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Patient Management** - Register and manage patient profiles with medical history
+- **Appointment Scheduling** - Book, track, and manage clinic appointments
+- **Medical Records** - Store and retrieve detailed medical records for each patient
+- **Invoice Management** - Generate and track invoices for clinic services
+- **Employee Management** - Manage staff and employee access levels
+- **Activity Logging** - Track all system activities for audit purposes
+- **Real-time Dashboard** - Monitor clinic operations with live statistics
+- **Role-Based Access Control** - Different permission levels for admin, doctors, and staff
 
-## Learning Laravel
+## Tech Stack
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- **Backend**: Laravel 11
+- **Frontend**: Livewire, Blade Templates, Alpine.js
+- **Database**: MySQL/PostgreSQL
+- **Build Tool**: Vite
+- **Package Manager**: Composer (PHP), NPM (JavaScript)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Prerequisites
 
-## Laravel Sponsors
+Before you begin, ensure you have the following installed on your system:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **PHP** 8.2 or higher
+- **Composer** (latest version)
+- **Node.js** 18 or higher
+- **npm** or **yarn**
+- **MySQL** 8.0 or **PostgreSQL** 14+
+- **Git**
 
-### Premium Partners
+## Installation
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 1. Clone the Repository
 
-## Contributing
+```bash
+git clone https://github.com/motmaina/clinic-desk.git
+cd clinic-desk
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 2. Install PHP Dependencies
 
-## Code of Conduct
+```bash
+composer install
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 3. Install Node Dependencies
 
-## Security Vulnerabilities
+```bash
+npm install
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 4. Generate Application Key
+
+```bash
+php artisan key:generate
+```
+
+## Environment Setup
+
+### 1. Create Environment File
+
+Copy the example environment file:
+
+```bash
+cp .env.example .env
+```
+
+### 2. Configure Environment Variables
+
+Edit `.env` file with your local settings:
+
+```env
+APP_NAME=ClinicDesk
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=clinic_desk
+DB_USERNAME=root
+DB_PASSWORD=
+
+MAIL_MAILER=log
+MAIL_FROM_ADDRESS=admin@mutmainah.com
+```
+
+**Important Database Fields:**
+- `DB_DATABASE` - Create a new database with this name
+- `DB_USERNAME` - Your database user (usually `root` on local)
+- `DB_PASSWORD` - Your database password
+
+## Database Setup
+
+### 1. Create Database
+
+Create a new database in MySQL:
+
+```bash
+mysql -u root -p
+```
+
+In MySQL shell:
+
+```sql
+CREATE DATABASE clinic_desk;
+EXIT;
+```
+
+### 2. Run Migrations
+
+```bash
+php artisan migrate
+```
+
+This creates all necessary database tables for patients, appointments, invoices, medical records, and user management.
+
+### 3. Seed Demo Data (Optional)
+
+```bash
+php artisan db:seed
+```
+
+This creates an admin user:
+- **Email**: admin@mutmainah.com
+- **Password**: password
+
+**Note**: Change the admin password immediately after first login.
+
+## Running the Application
+
+### 1. Build Frontend Assets
+
+For development with hot reload:
+
+```bash
+npm run dev
+```
+
+For production build:
+
+```bash
+npm run build
+```
+
+### 2. Start Laravel Development Server
+
+In a separate terminal:
+
+```bash
+php artisan serve
+```
+
+The application will be available at: `http://localhost:8000`
+
+### 3. Access the Dashboard
+
+- Navigate to `http://localhost:8000` in your browser
+- Log in with admin credentials (if seeded)
+- Start managing clinic operations
+
+## Project Structure
+
+```
+clinic-desk/
+├── app/
+│   ├── Http/              # Controllers and Middleware
+│   ├── Livewire/          # Livewire components for interactive UI
+│   ├── Models/            # Eloquent models (Patient, Appointment, etc.)
+│   ├── Console/           # Artisan commands
+│   ├── Providers/         # Service providers
+│   └── Helpers/           # Helper functions and utilities
+├── database/
+│   ├── migrations/        # Database table schemas
+│   ├── seeders/           # Database seeding files
+│   └── factories/         # Model factories for testing
+├── resources/
+│   ├── views/             # Blade templates
+│   ├── css/               # Stylesheets
+│   └── js/                # JavaScript files
+├── routes/
+│   ├── web.php            # Web routes
+│   └── console.php        # Console commands
+├── config/                # Configuration files
+├── public/                # Publicly accessible files
+└── storage/               # Application storage (logs, files)
+```
+
+## Key Features Explained
+
+### Patient Management
+
+Access `/patients` to:
+- Register new patients with detailed information
+- Update patient contact and medical details
+- View complete patient history
+
+### Appointments
+
+Manage appointments through the dashboard:
+- Book new appointments for patients
+- Track upcoming and past appointments
+- Set reminders for scheduled visits
+
+### Medical Records
+
+Store comprehensive medical information:
+- Patient diagnoses and treatments
+- Lab results and clinical findings
+- Medical history documentation
+
+### Financial Management
+
+Track clinic finances:
+- Generate invoices for patient services
+- Monitor payment status
+- View financial reports
+
+## Development Guidelines
+
+### Creating New Features
+
+1. **Create a Model**: 
+   ```bash
+   php artisan make:model ModelName -m
+   ```
+
+2. **Create a Livewire Component**:
+   ```bash
+   php artisan make:livewire ComponentName
+   ```
+
+3. **Create a Migration** (if needed):
+   ```bash
+   php artisan make:migration create_table_name
+   ```
+
+### Running Tests
+
+```bash
+php artisan test
+```
+
+### Database Rollback and Reset
+
+Rollback one step:
+```bash
+php artisan migrate:rollback
+```
+
+Reset entire database:
+```bash
+php artisan migrate:reset
+```
+
+### Cache and Optimization
+
+Clear all caches:
+```bash
+php artisan cache:clear
+php artisan config:clear
+```
+
+Optimize for production:
+```bash
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+## Troubleshooting
+
+### Database Connection Error
+
+- Verify MySQL is running
+- Check `.env` database credentials
+- Ensure database exists: `CREATE DATABASE clinic_desk;`
+
+### Permission Denied Error
+
+Run the application with proper permissions:
+```bash
+chmod -R 775 storage bootstrap/cache
+```
+
+### Dependencies Error
+
+Clear composer cache and reinstall:
+```bash
+composer clear-cache
+composer install
+```
+
+### Asset Not Found
+
+Rebuild frontend assets:
+```bash
+npm run dev
+```
+
+## Team Collaboration
+
+When working with the team:
+
+1. **Pull latest changes**:
+   ```bash
+   git pull origin master
+   ```
+
+2. **Create a feature branch**:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+3. **Make your changes** and commit:
+   ```bash
+   git add .
+   git commit -m "Describe your changes"
+   ```
+
+4. **Push and create a pull request**:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+## Security Considerations
+
+- **Never commit `.env` file** with sensitive data
+- Use strong passwords for database and admin accounts
+- Keep Laravel and dependencies updated
+- Implement proper authentication and authorization checks
+- Validate all user inputs on backend
+
+## Support and Contribution
+
+For issues or questions:
+
+1. Check existing GitHub issues
+2. Create a detailed bug report with reproduction steps
+3. Follow code style and conventions
+4. Submit pull requests for review
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is proprietary software for Mutmainah Medical Center.
+
+---
+
+**Last Updated**: April 2026
+**Version**: 1.0.0
+**Maintainers**: Development Team
