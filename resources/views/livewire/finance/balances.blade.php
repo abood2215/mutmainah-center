@@ -66,7 +66,8 @@
                             {{ number_format($r->deposited, 3) }}
                         </td>
                         <td style="padding:0.75rem 1rem; text-align:center; font-family:'Inter',sans-serif; font-size:0.9rem; color:#9a3412; font-weight:700;">
-                            {{ $r->charged > 0 ? number_format($r->charged, 3) : '—' }}
+                            @php $totalCharged = ($r->charged_svc ?? 0) + ($r->charged_old ?? 0); @endphp
+                            {{ $totalCharged > 0 ? number_format($totalCharged, 3) : '—' }}
                         </td>
                         <td style="padding:0.75rem 1rem; text-align:center;">
                             <span style="background:#f0fdf4; color:#15803d; font-weight:900; font-size:1rem; font-family:'Inter',sans-serif; padding:4px 14px; border-radius:20px; border:1px solid #bbf7d0; white-space:nowrap;">
