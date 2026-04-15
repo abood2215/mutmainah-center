@@ -366,7 +366,7 @@ class Reports extends Component
             LEFT JOIN (
                 SELECT acc_id,
                     SUM(COALESCE(NULLIF(amount,0), NULLIF(price,0), 0)) AS deposited
-                FROM kpayments WHERE status = 1
+                FROM kpayments WHERE status = 1 AND type_id != 2
                 GROUP BY acc_id
             ) dep ON dep.acc_id = ac.id
             LEFT JOIN (
@@ -380,7 +380,7 @@ class Reports extends Component
             LEFT JOIN (
                 SELECT acc_id,
                     SUM(COALESCE(NULLIF(amount,0), NULLIF(price,0), 0)) AS debited
-                FROM kpayments WHERE status = 2 AND payment_method != 5
+                FROM kpayments WHERE (status = 2 AND payment_method != 5) OR (status = 1 AND type_id = 2)
                 GROUP BY acc_id
             ) deb ON deb.acc_id = ac.id
         ) AS pb'))
