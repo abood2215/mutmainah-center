@@ -124,17 +124,25 @@
             @foreach($activityLogs as $log)
             @php
                 $icon = match($log->action) {
-                    'created'  => $log->subject === 'patient' ? '👤' : '📋',
-                    'uploaded' => '📎',
-                    'updated'  => '✏️',
-                    'deleted'  => '🗑',
-                    default    => '•',
+                    'created'   => $log->subject === 'patient' ? '👤' : '📋',
+                    'uploaded'  => '📎',
+                    'updated'   => '✏️',
+                    'deleted'   => '🗑️',
+                    'receipt'   => '💰',
+                    'payment'   => '💸',
+                    'cancelled' => '❌',
+                    'booked'    => '📅',
+                    default     => '•',
                 };
                 $color = match($log->action) {
-                    'created'  => '#2e7d32',
-                    'uploaded' => '#1565c0',
-                    'deleted'  => '#dc2626',
-                    default    => '#546e7a',
+                    'created'   => '#2e7d32',
+                    'uploaded'  => '#1565c0',
+                    'deleted'   => '#dc2626',
+                    'receipt'   => '#166534',
+                    'payment'   => '#b45309',
+                    'cancelled' => '#dc2626',
+                    'booked'    => '#1d4ed8',
+                    default     => '#546e7a',
                 };
             @endphp
             <div style="padding:0.65rem 1.25rem; border-bottom:1px solid #f4f6f9; display:flex; align-items:flex-start; gap:0.75rem;"

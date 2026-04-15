@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Cache;
 
 class Users extends Component
 {
@@ -68,7 +69,8 @@ class Users extends Component
             'middle_initial'=> trim($this->newMiddleName),
             'third_name'    => '',
             'user_name'     => $userName,
-            'arway'         => md5($password),
+            'arway'         => md5($password), // legacy MD5 required by EmployeeUserProvider
+
             'state'         => 1,
             // أعمدة إجبارية بدون قيمة افتراضية
             'jop'           => 0,
@@ -91,10 +93,10 @@ class Users extends Component
         ];
 
         // أضف role فقط إذا كان العمود موجوداً
-        if (Schema::hasColumn('employees', 'role')) {
+        if (Cache::remember('emp_col_role', 86400, fn() => Schema::hasColumn('employees', 'role'))) {
             $data['role'] = in_array($this->newRole, ['admin', 'reception']) ? $this->newRole : 'reception';
         }
-        if (Schema::hasColumn('employees', 'branch_id')) {
+        if (Cache::remember('emp_col_branch', 86400, fn() => Schema::hasColumn('employees', 'branch_id'))) {
             $data['branch_id'] = in_array($this->newBranchId, [1, 2]) ? $this->newBranchId : 1;
         }
 
@@ -142,10 +144,10 @@ class Users extends Component
             'user_name'      => $userName,
         ];
 
-        if (Schema::hasColumn('employees', 'role')) {
+        if (Cache::remember('emp_col_role', 86400, fn() => Schema::hasColumn('employees', 'role'))) {
             $data['role'] = $this->editRole ?: null;
         }
-        if (Schema::hasColumn('employees', 'branch_id')) {
+        if (Cache::remember('emp_col_branch', 86400, fn() => Schema::hasColumn('employees', 'branch_id'))) {
             $data['branch_id'] = in_array($this->editBranchId, [1, 2]) ? $this->editBranchId : 1;
         }
 
@@ -173,8 +175,8 @@ class Users extends Component
     #[Title('إدارة المستخدمين')]
     public function render()
     {
-        $hasRole     = Schema::hasColumn('employees', 'role');
-        $hasBranchId = Schema::hasColumn('employees', 'branch_id');
+        $hasRole     = Cache::remember('emp_col_role',   86400, fn() => Schema::hasColumn('employees', 'role'));
+        $hasBranchId = Cache::remember('emp_col_branch', 86400, fn() => Schema::hasColumn('employees', 'branch_id'));
 
         $query = DB::table('employees');
 

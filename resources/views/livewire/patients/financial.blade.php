@@ -52,8 +52,17 @@
                 <!-- خدمات من الرصيد -->
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:0.55rem 0.75rem; background:#fff; border-radius:8px 8px 0 0; border:1px solid #e2e8f0;">
                     <span style="font-size:0.88rem; color:var(--text);">خدمات مدفوعة من الرصيد</span>
-                    <span style="font-weight:900; font-family:'Inter'; color:#c2410c; font-size:0.95rem;">{{ number_format($totalCharged + $totalDiscount, 3) }} د.ك</span>
+                    <span style="font-weight:900; font-family:'Inter'; color:#c2410c; font-size:0.95rem;">
+                        {{ number_format($totalCharged + $totalDiscount, 3) }} د.ك
+                    </span>
                 </div>
+                @if(isset($accountDebits) && $accountDebits->count() > 0)
+                <!-- قيود قديمة من الرصيد -->
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:0.45rem 0.75rem; background:#fffbeb; border:1px solid #e2e8f0; border-top:none;">
+                    <span style="font-size:0.82rem; color:#92400e;">↳ منها قيود نظام قديم</span>
+                    <span style="font-weight:800; font-family:'Inter'; color:#92400e; font-size:0.88rem;">{{ number_format($accountDebits->sum('debit_amount'), 3) }} د.ك</span>
+                </div>
+                @endif
                 @if($totalDiscount > 0)
                 <!-- الخصومات -->
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:0.55rem 0.75rem; background:#fdf4ff; border:1px solid #e2e8f0; border-top:none;">
@@ -108,6 +117,36 @@
                         <td style="padding:0.7rem 1rem; text-align:center; color:var(--text-dim); font-size:0.88rem; direction:ltr; unicode-bidi:isolate;">{{ fmt_date($dep->pdate) }}</td>
                         <td style="padding:0.7rem 1rem; color:var(--text);">{{ $dep->pdesc ?: '—' }}</td>
                         <td style="padding:0.7rem 1rem; text-align:center; font-weight:900; color:#166534; font-size:1rem; font-family:'Inter';">{{ number_format($dep->dep_amount, 3) }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        @endif
+
+        {{-- قيود المديونية من النظام القديم (إن وُجدت) --}}
+        @if(isset($accountDebits) && $accountDebits->count() > 0)
+        <div style="border:1px solid #fde68a; border-radius:12px; overflow:hidden; margin-bottom:1.25rem;">
+            <div style="padding:0.8rem 1.25rem; border-bottom:1px solid #fde68a; background:#fffbeb; display:flex; align-items:center; justify-content:space-between;">
+                <span style="font-weight:800; color:#92400e; font-size:0.95rem;">📤 قيود خصم من الرصيد</span>
+                <span style="font-size:0.78rem; color:#92400e; font-weight:700;">الإجمالي: <strong>{{ number_format($accountDebits->sum('debit_amount'), 3) }} د.ك</strong></span>
+            </div>
+            <table style="width:100%; border-collapse:collapse; font-family:'Tajawal',sans-serif;">
+                <thead>
+                    <tr style="background:#f8fafc; border-bottom:2px solid var(--border);">
+                        <th style="padding:0.7rem 1rem; text-align:center; font-size:0.82rem; font-weight:900; color:var(--text-dim);">سند #</th>
+                        <th style="padding:0.7rem 1rem; text-align:center; font-size:0.82rem; font-weight:900; color:var(--text-dim);">التاريخ</th>
+                        <th style="padding:0.7rem 1rem; text-align:right; font-size:0.82rem; font-weight:900; color:var(--text-dim);">البيان</th>
+                        <th style="padding:0.7rem 1rem; text-align:center; font-size:0.82rem; font-weight:900; color:var(--text-dim);">المبلغ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($accountDebits as $deb)
+                    <tr style="border-bottom:1px solid #fef9c3;" onmouseover="this.style.background='#fffbeb'" onmouseout="this.style.background='transparent'">
+                        <td style="padding:0.7rem 1rem; text-align:center;"><span style="padding:0.25rem 0.6rem; background:#fef3c7; color:#92400e; border-radius:6px; font-weight:900; font-size:0.82rem; border:1px solid #fde68a;">#{{ $deb->id }}</span></td>
+                        <td style="padding:0.7rem 1rem; text-align:center; color:var(--text-dim); font-size:0.88rem; direction:ltr; unicode-bidi:isolate;">{{ fmt_date($deb->pdate) }}</td>
+                        <td style="padding:0.7rem 1rem; color:var(--text);">{{ $deb->pdesc ?: '—' }}</td>
+                        <td style="padding:0.7rem 1rem; text-align:center; font-weight:900; color:#c2410c; font-size:1rem; font-family:'Inter';">{{ number_format($deb->debit_amount, 3) }}</td>
                     </tr>
                     @endforeach
                 </tbody>

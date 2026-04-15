@@ -5,6 +5,7 @@ namespace App\Livewire\Patients;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\ActivityLogger;
 
 class History extends Component
 {
@@ -91,6 +92,8 @@ class History extends Component
         }
 
         DB::table('kstu')->where('id', $this->patientId)->update($data);
+
+        ActivityLogger::log('updated', 'patient', $this->patientId, 'تحديث السجل الاستشاري');
 
         session()->flash('success', 'تم حفظ السجل الاستشاري بنجاح');
     }

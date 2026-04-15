@@ -102,8 +102,4 @@ class Index extends Component
         $this->resetPage();
     }
 
-    public function confirmDelete($id)
-    {
-        // TODO: implement delete logic
-    }
 }

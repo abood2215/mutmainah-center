@@ -50,24 +50,34 @@ class NewCheck extends Component
         $acckId = $acck?->id;
         $this->hasAccount = (bool) $acckId;
         if ($acckId) {
+            // إيداعات الحساب
             $totalDeposited = (float) DB::table('kpayments')
                 ->where('acc_id', $acckId)
                 ->where('status', 1)
                 ->selectRaw('COALESCE(SUM(COALESCE(NULLIF(amount,0), NULLIF(price,0), 0)),0) as total')
                 ->value('total');
 
+            // خدمات مدفوعة من الرصيد (النظام الجديد: payment_method=5)
             $recIds = DB::table('rec')->where('st_id', $id)->pluck('id');
-            $totalCharged = 0.0;
+            $charged_svc = 0.0;
             if ($recIds->isNotEmpty()) {
-                // نخصم فقط الخدمات المدفوعة من الرصيد (payment_method=5)
                 $svc = DB::table('kpayments')
                     ->whereIn('rec_id', $recIds)
                     ->where('payment_method', 5)
                     ->selectRaw('COALESCE(SUM(price),0) as tp, COALESCE(SUM(discount),0) as td')
                     ->first();
-                $totalCharged = max(0.0, (float)($svc->tp ?? 0) - (float)($svc->td ?? 0));
+                $charged_svc = max(0.0, (float)($svc->tp ?? 0) - (float)($svc->td ?? 0));
             }
-            $this->balance = round($totalDeposited - $totalCharged, 3);
+
+            // قيود مديونية صريحة (النظام القديم: acc_id=acckId, status=2, rec_id=0)
+            $charged_old = (float) DB::table('kpayments')
+                ->where('acc_id', $acckId)
+                ->where('status', 2)
+                ->where('rec_id', 0)
+                ->selectRaw('COALESCE(SUM(COALESCE(NULLIF(amount,0), NULLIF(price,0), 0)),0) as total')
+                ->value('total');
+
+            $this->balance = round($totalDeposited - $charged_svc - $charged_old, 3);
             // إذا كان في رصيد — اجعل طريقة الدفع "من الرصيد" تلقائياً
             if ($this->balance > 0) {
                 $this->paymentMethod = '5';

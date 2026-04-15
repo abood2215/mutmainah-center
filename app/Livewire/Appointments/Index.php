@@ -2,13 +2,11 @@
 
 namespace App\Livewire\Appointments;
 
-use App\Models\LegacyClinic;
-use App\Models\LegacyEmployee;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Title;
-
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class Index extends Component
 {
@@ -97,15 +95,17 @@ class Index extends Component
     {
         $today = now()->format('j-n-Y');
 
-        // تحديث تلقائي: كل موعد محجوز (confirm_id=0) قبل اليوم → منتهي (confirm_id=1)
-        $pastDates = collect();
-        for ($i = 1; $i <= 30; $i++) {
-            $pastDates->push(now()->subDays($i)->format('j-n-Y'));
-        }
-        DB::table('rec')
-            ->where('confirm_id', 0)
-            ->whereIn('rec_date', $pastDates)
-            ->update(['confirm_id' => 1]);
+        // تحديث تلقائي: مرة واحدة فقط في اليوم (بدل كل render)
+        Cache::remember('appt_past_close_' . now()->format('Y-m-d'), 3600 * 6, function () {
+            $pastDates = [];
+            for ($i = 1; $i <= 30; $i++) {
+                $pastDates[] = now()->subDays($i)->format('j-n-Y');
+            }
+            return DB::table('rec')
+                ->where('confirm_id', 0)
+                ->whereIn('rec_date', $pastDates)
+                ->update(['confirm_id' => 1]);
+        });
 
         $query = DB::table('rec as r')
             ->leftJoin('kstu as a', 'a.id', '=', 'r.st_id')

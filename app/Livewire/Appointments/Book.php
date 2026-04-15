@@ -5,6 +5,7 @@ namespace App\Livewire\Appointments;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\ActivityLogger;
 
 class Book extends Component
 {
@@ -145,6 +146,20 @@ class Book extends Component
 
         $dateFormatted = \Carbon\Carbon::parse($this->selectedDate)->format('j-n-Y');
 
+        // منع الحجز المزدوج: نفس العميل + نفس العيادة + نفس الوقت + نفس التاريخ
+        $duplicate = DB::table('rec')
+            ->where('st_id',    $this->patientId)
+            ->where('clinic_id',$this->selectedClinic)
+            ->where('rec_date', $dateFormatted)
+            ->where('rec_time', $this->selectedTime)
+            ->where('confirm_id', 0)
+            ->exists();
+
+        if ($duplicate) {
+            $this->addError('selectedTime', 'هذا العميل لديه موعد مسبق في نفس العيادة والوقت والتاريخ');
+            return;
+        }
+
         DB::table('rec')->insert([
             'rec_date'          => $dateFormatted,
             'rec_time'          => $this->selectedTime,
@@ -179,6 +194,15 @@ class Book extends Component
             'pulse'             => '',
             'diab'              => '',
         ]);
+
+        // تسجيل النشاط
+        $clinicName = collect($this->clinics)->where('id', (int)$this->selectedClinic)->first()?->name ?? 'غير محدد';
+        ActivityLogger::log(
+            'booked', 'appointment', $this->patientId,
+            'حجز موعد — العيادة: ' . $clinicName .
+            ' — التاريخ: ' . $dateFormatted .
+            ' — الوقت: ' . $this->selectedTime
+        );
 
         session()->flash('success', 'تم حجز الموعد بنجاح!');
         $this->redirect(route('appointments.index'), navigate: true);

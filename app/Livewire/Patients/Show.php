@@ -35,7 +35,7 @@ class Show extends Component
         $this->editBranch = (int) ($this->patient->branch_id ?? 0);
         $this->branches   = DB::table('branches')->where('is_active', 1)->get(['id', 'name'])->all();
 
-        // حساب رصيد العميل
+        // حساب رصيد العميل (يدعم النظامَين القديم والجديد)
         $acck   = DB::table('acck')->where('stu_id', $id)->first();
         $acckId = $acck?->id;
         $this->hasAccount = (bool) $acckId;
@@ -44,16 +44,27 @@ class Show extends Component
                 ->where('acc_id', $acckId)->where('status', 1)
                 ->selectRaw('COALESCE(SUM(COALESCE(NULLIF(amount,0), NULLIF(price,0), 0)),0) as total')
                 ->value('total');
+
+            // خدمات آجلة (النظام الجديد)
             $recIds = DB::table('rec')->where('st_id', $id)->pluck('id');
-            $totalCharged = 0.0;
+            $charged_svc = 0.0;
             if ($recIds->isNotEmpty()) {
                 $svc = DB::table('kpayments')
                     ->whereIn('rec_id', $recIds)->where('payment_method', 5)
                     ->selectRaw('COALESCE(SUM(price),0) as tp, COALESCE(SUM(discount),0) as td')
                     ->first();
-                $totalCharged = max(0.0, (float)($svc->tp ?? 0) - (float)($svc->td ?? 0));
+                $charged_svc = max(0.0, (float)($svc->tp ?? 0) - (float)($svc->td ?? 0));
             }
-            $this->balance = round($totalDeposited - $totalCharged, 3);
+
+            // قيود مديونية صريحة (النظام القديم: acc_id=acckId, status=2, rec_id=0)
+            $charged_old = (float) DB::table('kpayments')
+                ->where('acc_id', $acckId)
+                ->where('status', 2)
+                ->where('rec_id', 0)
+                ->selectRaw('COALESCE(SUM(COALESCE(NULLIF(amount,0), NULLIF(price,0), 0)),0) as total')
+                ->value('total');
+
+            $this->balance = round($totalDeposited - $charged_svc - $charged_old, 3);
         }
     }
 
@@ -78,9 +89,9 @@ class Show extends Component
         try {
             $activityLogs = DB::table('activity_logs')
                 ->where('subject_id', $this->patient->id)
-                ->whereIn('subject', ['patient', 'check', 'attachment', 'appointment'])
+                ->whereIn('subject', ['patient', 'check', 'attachment', 'appointment', 'payment'])
                 ->orderBy('id', 'desc')
-                ->limit(20)
+                ->limit(30)
                 ->get();
         } catch (\Throwable) {}
 

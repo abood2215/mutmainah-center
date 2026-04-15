@@ -19,10 +19,17 @@ class BranchReport extends Component
 
     private function buildDateRange(): array
     {
+        $from = \Carbon\Carbon::parse($this->fromDate);
+        $to   = \Carbon\Carbon::parse($this->toDate);
+
+        // تحديد بحد أقصى 90 يوماً لتجنب IN() ضخم يبطئ قاعدة البيانات
+        if ($from->diffInDays($to) > 90) {
+            $to = $from->copy()->addDays(90);
+        }
+
         $dates   = [];
-        $current = \Carbon\Carbon::parse($this->fromDate);
-        $end     = \Carbon\Carbon::parse($this->toDate);
-        while ($current->lte($end)) {
+        $current = $from->copy();
+        while ($current->lte($to)) {
             $dates[] = $current->format('j-n-Y');
             $current->addDay();
         }
@@ -34,77 +41,105 @@ class BranchReport extends Component
     {
         $branches  = DB::table('branches')->where('is_active', 1)->orderBy('id')->get();
         $dateRange = $this->buildDateRange();
+        $branchIds = $branches->pluck('id')->toArray();
 
-        $stats = $branches->map(function ($branch) use ($dateRange) {
+        if (empty($branchIds) || empty($dateRange)) {
+            $stats = collect();
+            return view('livewire.finance.branch-report', [
+                'stats'             => $stats,
+                'totalRevenue'      => 0,
+                'totalChecks'       => 0,
+                'totalAppointments' => 0,
+                'dateRange'         => $dateRange,
+            ])->layout('layouts.app');
+        }
 
-            // إجمالي العملاء
-            $patientsCount = DB::table('kstu')->where('branch_id', $branch->id)->count();
+        // ══ 1. عدد العملاء لكل فرع (استعلام واحد) ══
+        $patientCounts = DB::table('kstu')
+            ->whereIn('branch_id', $branchIds)
+            ->select('branch_id', DB::raw('COUNT(*) as cnt'))
+            ->groupBy('branch_id')
+            ->get()->pluck('cnt', 'branch_id');
 
-            // الكشوفات في الفترة
-            $checks = DB::table('rec as r')
-                ->join('kstu as k', 'k.id', '=', 'r.st_id')
-                ->where('k.branch_id', $branch->id)
-                ->where('r.confirm_id', 1)
-                ->whereIn('r.rec_date', $dateRange)
-                ->count();
+        // ══ 2. عدد الكشوفات لكل فرع في الفترة (استعلام واحد) ══
+        $checkCounts = DB::table('rec as r')
+            ->join('kstu as k', 'k.id', '=', 'r.st_id')
+            ->whereIn('k.branch_id', $branchIds)
+            ->where('r.confirm_id', 1)
+            ->whereIn('r.rec_date', $dateRange)
+            ->select('k.branch_id', DB::raw('COUNT(*) as cnt'))
+            ->groupBy('k.branch_id')
+            ->get()->pluck('cnt', 'branch_id');
 
-            // الإيرادات في الفترة
-            $revenue = DB::table('kpayments as p')
-                ->join('rec as r', 'r.id', '=', 'p.rec_id')
-                ->join('kstu as k', 'k.id', '=', 'r.st_id')
-                ->where('k.branch_id', $branch->id)
-                ->where('p.price', '>', 0)
-                ->whereIn('p.pdate', $dateRange)
-                ->sum('p.price');
+        // ══ 3. الإيرادات لكل فرع في الفترة (استعلام واحد) ══
+        $revenues = DB::table('kpayments as p')
+            ->join('rec as r', 'r.id', '=', 'p.rec_id')
+            ->join('kstu as k', 'k.id', '=', 'r.st_id')
+            ->whereIn('k.branch_id', $branchIds)
+            ->where('p.price', '>', 0)
+            ->whereIn('p.pdate', $dateRange)
+            ->select('k.branch_id', DB::raw('SUM(p.price) as total'))
+            ->groupBy('k.branch_id')
+            ->get()->pluck('total', 'branch_id');
 
-            // المواعيد في الفترة
-            $appointments = DB::table('rec as r')
-                ->join('kstu as k', 'k.id', '=', 'r.st_id')
-                ->where('k.branch_id', $branch->id)
-                ->where('r.confirm_id', 0)
-                ->whereIn('r.rec_date', $dateRange)
-                ->count();
+        // ══ 4. عدد المواعيد لكل فرع في الفترة (استعلام واحد) ══
+        $appointmentCounts = DB::table('rec as r')
+            ->join('kstu as k', 'k.id', '=', 'r.st_id')
+            ->whereIn('k.branch_id', $branchIds)
+            ->where('r.confirm_id', 0)
+            ->whereIn('r.rec_date', $dateRange)
+            ->select('k.branch_id', DB::raw('COUNT(*) as cnt'))
+            ->groupBy('k.branch_id')
+            ->get()->pluck('cnt', 'branch_id');
 
-            // أعلى 5 عيادات إيراداً
-            $topClinics = DB::table('kpayments as p')
-                ->join('rec as r', 'r.id', '=', 'p.rec_id')
-                ->join('kstu as k', 'k.id', '=', 'r.st_id')
-                ->join('clinic as c', 'c.id', '=', 'r.clinic_id')
-                ->where('k.branch_id', $branch->id)
-                ->where('p.price', '>', 0)
-                ->whereIn('p.pdate', $dateRange)
-                ->select('c.name', DB::raw('SUM(p.price) as total'), DB::raw('COUNT(DISTINCT r.id) as cnt'))
-                ->groupBy('r.clinic_id', 'c.name')
-                ->orderByDesc('total')
-                ->limit(5)
-                ->get();
+        // ══ 5. إيرادات العيادات لكل فرع (استعلام واحد، نأخذ أعلى 5 لاحقاً في PHP) ══
+        $clinicRevenues = DB::table('kpayments as p')
+            ->join('rec as r', 'r.id', '=', 'p.rec_id')
+            ->join('kstu as k', 'k.id', '=', 'r.st_id')
+            ->join('clinic as c', 'c.id', '=', 'r.clinic_id')
+            ->whereIn('k.branch_id', $branchIds)
+            ->where('p.price', '>', 0)
+            ->whereIn('p.pdate', $dateRange)
+            ->select(
+                'k.branch_id', 'r.clinic_id', 'c.name',
+                DB::raw('SUM(p.price) as total'),
+                DB::raw('COUNT(DISTINCT r.id) as cnt')
+            )
+            ->groupBy('k.branch_id', 'r.clinic_id', 'c.name')
+            ->orderByDesc('total')
+            ->get()->groupBy('branch_id');
 
-            // إيرادات يومية
-            $dailyMap = DB::table('kpayments as p')
-                ->join('rec as r', 'r.id', '=', 'p.rec_id')
-                ->join('kstu as k', 'k.id', '=', 'r.st_id')
-                ->where('k.branch_id', $branch->id)
-                ->where('p.price', '>', 0)
-                ->whereIn('p.pdate', $dateRange)
-                ->select('p.pdate', DB::raw('SUM(p.price) as total'))
-                ->groupBy('p.pdate')
-                ->get()->pluck('total', 'pdate');
+        // ══ 6. الإيرادات اليومية لكل فرع (استعلام واحد) ══
+        $dailyRevenues = DB::table('kpayments as p')
+            ->join('rec as r', 'r.id', '=', 'p.rec_id')
+            ->join('kstu as k', 'k.id', '=', 'r.st_id')
+            ->whereIn('k.branch_id', $branchIds)
+            ->where('p.price', '>', 0)
+            ->whereIn('p.pdate', $dateRange)
+            ->select('k.branch_id', 'p.pdate', DB::raw('SUM(p.price) as total'))
+            ->groupBy('k.branch_id', 'p.pdate')
+            ->get()->groupBy('branch_id');
 
-            $chartData = array_map(fn($d) => round($dailyMap[$d] ?? 0, 3), $dateRange);
+        // ══ تجميع النتائج لكل فرع (بدون أي استعلام إضافي) ══
+        $stats = $branches->map(function ($branch) use (
+            $patientCounts, $checkCounts, $revenues, $appointmentCounts,
+            $clinicRevenues, $dailyRevenues, $dateRange
+        ) {
+            $dailyMap  = ($dailyRevenues[$branch->id] ?? collect())->pluck('total', 'pdate');
+            $chartData = array_map(fn($d) => round((float)($dailyMap[$d] ?? 0), 3), $dateRange);
 
             return (object)[
                 'id'           => $branch->id,
                 'name'         => $branch->name,
-                'patients'     => $patientsCount,
-                'checks'       => $checks,
-                'revenue'      => $revenue,
-                'appointments' => $appointments,
-                'topClinics'   => $topClinics,
+                'patients'     => $patientCounts[$branch->id] ?? 0,
+                'checks'       => $checkCounts[$branch->id] ?? 0,
+                'revenue'      => $revenues[$branch->id] ?? 0,
+                'appointments' => $appointmentCounts[$branch->id] ?? 0,
+                'topClinics'   => ($clinicRevenues[$branch->id] ?? collect())->take(5),
                 'chartData'    => $chartData,
             ];
         });
 
-        // مقارنة الإجماليات
         $totalRevenue      = $stats->sum('revenue');
         $totalChecks       = $stats->sum('checks');
         $totalAppointments = $stats->sum('appointments');

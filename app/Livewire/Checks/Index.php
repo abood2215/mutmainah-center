@@ -27,8 +27,8 @@ class Index extends Component
     public function mount(): void
     {
         $this->branches = DB::table('branches')->where('is_active', 1)->get(['id', 'name'])->all();
-        // تعيين اليوم كـ filter افتراضي
-        $this->filterDate = now()->format('j-n-Y');
+        // تعيين اليوم كـ filter افتراضي (Y-m-d لتوافق input type="date")
+        $this->filterDate = now()->format('Y-m-d');
     }
 
     public function render()
@@ -164,7 +164,8 @@ class Index extends Component
         $this->resetPage();
     }
 
-    public function updatedSearch()       { $this->resetPage(); }
-    public function updatedFilterDate()   { $this->resetPage(); }
-    public function updatedFilterClinic() { $this->resetPage(); }
+    public function updatedSearch()        { $this->resetPage(); }
+    public function updatedFilterDate()    { $this->resetPage(); }
+    public function updatedFilterClinic()  { $this->resetPage(); }
+    public function updatedFilterBranch()  { $this->resetPage(); }
 }

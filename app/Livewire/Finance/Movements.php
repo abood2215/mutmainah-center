@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Helpers\ActivityLogger;
 
 class Movements extends Component
 {
@@ -78,10 +79,26 @@ class Movements extends Component
         $this->resetPage();
     }
 
-    /* ══ حذف حركة ══ */
+    /* ══ حذف حركة (admin فقط) ══ */
     public function deleteMovement(int $id): void
     {
+        if ((auth()->user()?->role ?? '') !== 'admin') return;
+
+        $mov = DB::table('kpayments as k')
+            ->join('acck as a', 'a.id', '=', 'k.acc_id')
+            ->leftJoin('kstu as s', 's.id', '=', 'a.stu_id')
+            ->where('k.id', $id)
+            ->select('k.id', 'k.pdate', 'k.status', DB::raw('COALESCE(NULLIF(k.amount,0),NULLIF(k.price,0),0) as mov_amount'), 's.id as patient_id', 's.full_name as patient_name')
+            ->first();
+
+        if (!$mov) return;
+
         DB::table('kpayments')->where('id', $id)->delete();
+
+        ActivityLogger::log('deleted', 'payment', $mov->patient_id ?? 0,
+            'حذف حركة مالية #' . $id . ' — المبلغ: ' . number_format($mov->mov_amount, 3) . ' د.ك — ' .
+            ($mov->status == 1 ? 'سند قبض' : 'سند صرف') . ' — ' . ($mov->patient_name ?? '—')
+        );
     }
 
     /* ══ بحث العميل في نموذج الإضافة ══ */
@@ -206,6 +223,18 @@ class Movements extends Component
 
         // تحديث vno = id
         DB::table('kpayments')->where('id', $newId)->update(['vno' => $newId]);
+
+        // تسجيل النشاط
+        ActivityLogger::log(
+            $isReceipt ? 'receipt' : 'payment',
+            'payment',
+            $this->newClientId,
+            ($isReceipt ? 'سند قبض' : 'سند صرف') .
+            ' — مبلغ: ' . number_format($amount, 3) . ' د.ك' .
+            ' — طريقة: ' . (self::PAYMENT_METHODS[$this->newPayMethod] ?? $this->newPayMethod) .
+            ($this->newDesc ? ' — ' . $this->newDesc : '') .
+            ' — رقم السند: #' . $newId
+        );
 
         $this->resetAddModal();
         $this->lastSavedId = $newId;

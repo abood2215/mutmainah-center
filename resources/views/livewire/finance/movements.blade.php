@@ -85,7 +85,7 @@
                     @if(!empty($newClientResults))
                     <div style="position:absolute; top:calc(100% + 3px); left:0; right:0; background:#fff; border:1px solid #e5e7eb; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.13); z-index:9999; overflow:hidden;">
                         @foreach($newClientResults as $res)
-                        <div wire:click="selectNewClient({{ $res->id }}, '{{ addslashes($res->full_name) }}')"
+                        <div wire:click="selectNewClient({{ $res->id }}, {{ \Illuminate\Support\Js::from($res->full_name) }})"
                             style="padding:0.55rem 0.9rem; cursor:pointer; border-bottom:1px solid #f3f4f6; display:flex; justify-content:space-between; align-items:center; transition:background 0.15s;"
                             onmouseover="this.style.background='#fef5f5'" onmouseout="this.style.background='#fff'">
                             <div>

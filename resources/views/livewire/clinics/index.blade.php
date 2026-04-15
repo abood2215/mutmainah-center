@@ -84,7 +84,7 @@
                 @else
                     <!-- وضع العرض -->
                     <span style="flex:1; font-size:0.95rem; font-weight:700; color:var(--navy);">{{ $clinic->name }}</span>
-                    <button wire:click="startEdit({{ $clinic->id }}, '{{ addslashes($clinic->name) }}')"
+                    <button wire:click="startEdit({{ $clinic->id }}, {{ \Illuminate\Support\Js::from($clinic->name) }})"
                         style="background:#f0f7ff; color:#1565c0; border:1px solid #bbdefb; border-radius:8px; padding:0.45rem 1rem; font-weight:700; font-size:0.82rem; cursor:pointer; font-family:'Tajawal',sans-serif; transition:all 0.15s; white-space:nowrap;"
                         onmouseover="this.style.background='#1565c0'; this.style.color='#fff'"
                         onmouseout="this.style.background='#f0f7ff'; this.style.color='#1565c0'">

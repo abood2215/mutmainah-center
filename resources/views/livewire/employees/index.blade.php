@@ -68,7 +68,7 @@
                         @endif
                     </td>
                     <td style="padding:0.55rem 0.75rem; text-align:center; border-left:1px solid #eee;">
-                        <button wire:click="openClinics({{ $emp->id }}, '{{ addslashes($fullName) }}')"
+                        <button wire:click="openClinics({{ $emp->id }}, {{ \Illuminate\Support\Js::from($fullName) }})"
                             style="padding:0.3rem 0.7rem; background:{{ $selectedEmpId === $emp->id ? '#8b1c2b' : '#e8f4fd' }}; border:1.5px solid {{ $selectedEmpId === $emp->id ? '#8b1c2b' : '#0099aa' }}; border-radius:5px; color:{{ $selectedEmpId === $emp->id ? '#fff' : '#0099aa' }}; cursor:pointer; font-size:0.82rem; font-weight:800; font-family:'Tajawal',sans-serif; white-space:nowrap;"
                             title="عرض عيادات الموظف">
                             🏥 العيادات
@@ -82,7 +82,7 @@
                         </button>
                     </td>
                     <td style="padding:0.55rem 0.75rem; text-align:center;">
-                        <button wire:click="confirmDelete({{ $emp->id }}, '{{ addslashes($fullName) }}')" title="حذف"
+                        <button wire:click="confirmDelete({{ $emp->id }}, {{ \Illuminate\Support\Js::from($fullName) }})" title="حذف"
                             style="width:30px; height:30px; background:#fff0f0; border:1px solid #e88; border-radius:4px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; font-weight:900; color:#cc0000; font-size:0.85rem;"
                             onmouseover="this.style.background='#ffd5d5'" onmouseout="this.style.background='#fff0f0'">✕</button>
                     </td>
