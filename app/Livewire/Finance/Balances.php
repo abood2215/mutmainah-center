@@ -40,7 +40,7 @@ class Balances extends Component
             ) chg ON chg.st_id = s.id
             LEFT JOIN (
                 SELECT acc_id, SUM(COALESCE(NULLIF(amount,0), NULLIF(price,0), 0)) AS debited
-                FROM kpayments WHERE status = 2 AND rec_id = 0
+                FROM kpayments WHERE status = 2 AND payment_method != 5
                 GROUP BY acc_id
             ) deb ON deb.acc_id = ac.id
         ";

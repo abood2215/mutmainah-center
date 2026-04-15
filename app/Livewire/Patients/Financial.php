@@ -42,13 +42,13 @@ class Financial extends Component
         $totalDeposited = $deposits->sum('dep_amount');
 
         // ══ قيود المديونية الصريحة (النظام القديم) ══
-        // النظام القديم يُسجّل الخصم من الرصيد كقيد acc_id=acckId, status=2, rec_id=0
-        // بدلاً من استخدام payment_method=5 على سجل الخدمة
+        // النظام القديم يُسجّل الخصم من الرصيد كقيد acc_id=acckId, status=2
+        // سواء كان rec_id=0 أو rec_id=service_id — نستثني payment_method=5 لأنه يُحسب في deferredServices
         $accountDebits = $acckId
             ? DB::table('kpayments')
                 ->where('acc_id', $acckId)
                 ->where('status', 2)
-                ->where('rec_id', 0)
+                ->where('payment_method', '!=', 5)
                 ->select(
                     'id', 'pdate', 'pdesc',
                     DB::raw('COALESCE(NULLIF(amount,0), NULLIF(price,0), 0) as debit_amount')
@@ -91,7 +91,7 @@ class Financial extends Component
         $totalCharged_svc = max(0, $deferredServices->sum('effective_price') - $totalDiscount);
 
         // ══ إجمالي المحسوم من الرصيد = طريقة النظام الجديد + طريقة النظام القديم ══
-        // لا يوجد تكرار: القديم يستخدم rec_id=0, الجديد rec_id>0
+        // لا يوجد تكرار: الجديد payment_method=5 على rec, القديم status=2 على acc_id (مستثنى payment_method=5)
         $totalCharged = $totalCharged_svc + $totalAccountDebits;
 
         // الرصيد المتبقي
