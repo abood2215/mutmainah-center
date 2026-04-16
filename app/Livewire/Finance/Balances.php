@@ -33,7 +33,7 @@ class Balances extends Component
                 GROUP BY acc_id
             ) dep ON dep.acc_id = ac.id
             LEFT JOIN (
-                SELECT r.st_id, SUM(GREATEST(COALESCE(NULLIF(p.amount,0), NULLIF(p.price,0), NULLIF(sv.price,0), (SELECT sv2.price FROM service sv2 WHERE sv2.clinic_id = p.clinic_id AND sv2.name = TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(p.pdesc, '&nbsp;*&nbsp;', 2), '&nbsp;*&nbsp;', -1)) LIMIT 1), 0) - COALESCE(p.discount,0), 0)) AS charged
+                SELECT r.st_id, SUM(GREATEST(COALESCE(NULLIF(p.amount,0), NULLIF(p.price,0), NULLIF(sv.price,0), (SELECT sv2.price FROM service sv2 WHERE sv2.clinic_id = p.clinic_id AND sv2.name = TRIM(REPLACE(REPLACE(SUBSTRING_INDEX(SUBSTRING_INDEX(p.pdesc,'*',2),'*',-1),'&nbsp;',''),CHAR(160),'')) LIMIT 1), 0) - COALESCE(p.discount,0), 0)) AS charged
                 FROM kpayments p INNER JOIN rec r ON r.id = p.rec_id LEFT JOIN service sv ON sv.id = r.service_id
                 WHERE p.payment_method = 5
                 GROUP BY r.st_id

@@ -73,7 +73,7 @@ class Financial extends Component
                 'k.id', 'k.pdate', 'k.pdesc', 'k.price', 'k.amount', 'k.net',
                 'k.discount', 'k.payment_method', 'k.rec_id', 'k.clinic_id',
                 'sv.price as svc_price',
-                DB::raw("(SELECT sv2.price FROM service sv2 WHERE sv2.clinic_id = k.clinic_id AND sv2.name = TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(k.pdesc, '&nbsp;*&nbsp;', 2), '&nbsp;*&nbsp;', -1)) LIMIT 1) as pdesc_svc_price"),
+                DB::raw("(SELECT sv2.price FROM service sv2 WHERE sv2.clinic_id = k.clinic_id AND sv2.name = TRIM(REPLACE(REPLACE(SUBSTRING_INDEX(SUBSTRING_INDEX(k.pdesc,'*',2),'*',-1),'&nbsp;',''),CHAR(160),'')) LIMIT 1) as pdesc_svc_price"),
             ])
             ->orderByRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') DESC")
             ->orderBy('k.id', 'desc')

@@ -351,7 +351,7 @@ class Reports extends Component
     ══════════════════════════════════════════════ */
     private function getPbData()
     {
-        $query = DB::table(DB::raw('(
+        $query = DB::table(DB::raw("(
             SELECT s.id, s.file_id, s.full_name, s.phone,
                 COALESCE(dep.deposited, 0) AS deposited,
                 COALESCE(chg.charged,   0) AS charged_svc,
@@ -371,7 +371,7 @@ class Reports extends Component
             ) dep ON dep.acc_id = ac.id
             LEFT JOIN (
                 SELECT r.st_id,
-                    SUM(GREATEST(COALESCE(NULLIF(p.amount,0), NULLIF(p.price,0), NULLIF(sv.price,0), (SELECT sv2.price FROM service sv2 WHERE sv2.clinic_id = p.clinic_id AND sv2.name = TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(p.pdesc, '&nbsp;*&nbsp;', 2), '&nbsp;*&nbsp;', -1)) LIMIT 1), 0) - COALESCE(p.discount,0), 0)) AS charged
+                    SUM(GREATEST(COALESCE(NULLIF(p.amount,0), NULLIF(p.price,0), NULLIF(sv.price,0), (SELECT sv2.price FROM service sv2 WHERE sv2.clinic_id = p.clinic_id AND sv2.name = TRIM(REPLACE(REPLACE(SUBSTRING_INDEX(SUBSTRING_INDEX(p.pdesc,'*',2),'*',-1),'&nbsp;',''),CHAR(160),'')) LIMIT 1), 0) - COALESCE(p.discount,0), 0)) AS charged
                 FROM kpayments p
                 INNER JOIN rec r ON r.id = p.rec_id
                 LEFT JOIN service sv ON sv.id = r.service_id
@@ -384,7 +384,7 @@ class Reports extends Component
                 FROM kpayments WHERE (status = 2 AND payment_method != 5) OR (status = 1 AND type_id = 2)
                 GROUP BY acc_id
             ) deb ON deb.acc_id = ac.id
-        ) AS pb'))
+        ) AS pb"))
             ->where('balance', '>', 0)
             ->orderBy('balance', 'desc');
 
