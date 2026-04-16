@@ -71,7 +71,7 @@ class Financial extends Component
             ->where('r.st_id', $this->patientId)
             ->select(
                 'k.id', 'k.pdate', 'k.pdesc', 'k.price', 'k.amount', 'k.net',
-                'k.discount', 'k.payment_method', 'k.rec_id',
+                'k.discount', 'k.payment_method', 'k.rec_id', 'k.clinic_id',
                 'sv.price as svc_price'
             )
             ->orderByRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') DESC")
@@ -91,6 +91,28 @@ class Financial extends Component
                 $svc->effective_price = $effective;
                 return $svc;
             });
+
+        // قاموس أسعار الخدمات من pdesc + clinic_id (لتجنب N+1 queries)
+        $svcPriceCache = [];
+        $services = $services->map(function ($svc) use (&$svcPriceCache) {
+            if ((float)$svc->effective_price == 0 && $svc->payment_method == 5 && !empty($svc->pdesc) && $svc->clinic_id) {
+                $pdescClean = strip_tags(html_entity_decode(str_replace("\xc2\xa0", ' ', $svc->pdesc), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+                if (preg_match('/\*\s*(.+?)\s*\*/', $pdescClean, $m)) {
+                    $svcName  = trim($m[1]);
+                    $cacheKey = $svc->clinic_id . ':' . $svcName;
+                    if (!array_key_exists($cacheKey, $svcPriceCache)) {
+                        $svcPriceCache[$cacheKey] = (float)(DB::table('service')
+                            ->where('clinic_id', $svc->clinic_id)
+                            ->where('name', $svcName)
+                            ->value('price') ?? 0);
+                    }
+                    if ($svcPriceCache[$cacheKey] > 0) {
+                        $svc->effective_price = $svcPriceCache[$cacheKey];
+                    }
+                }
+            }
+            return $svc;
+        });
 
         $totalServices = $services->sum('effective_price');
 

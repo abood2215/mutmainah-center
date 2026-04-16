@@ -53,7 +53,7 @@ class Show extends Component
                     ->join('rec as r', 'r.id', '=', 'p.rec_id')
                     ->leftJoin('service as sv', 'sv.id', '=', 'r.service_id')
                     ->whereIn('p.rec_id', $recIds)->where('p.payment_method', 5)
-                    ->selectRaw('COALESCE(SUM(GREATEST(COALESCE(NULLIF(p.amount,0),NULLIF(p.price,0),NULLIF(sv.price,0),0)-COALESCE(p.discount,0),0)),0) as tp')
+                    ->selectRaw('COALESCE(SUM(GREATEST(COALESCE(NULLIF(p.amount,0),NULLIF(p.price,0),NULLIF(sv.price,0),(SELECT sv2.price FROM service sv2 WHERE sv2.clinic_id=p.clinic_id AND sv2.name=TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(p.pdesc,\'&nbsp;*&nbsp;\',2),\'&nbsp;*&nbsp;\',-1)) LIMIT 1),0)-COALESCE(p.discount,0),0)),0) as tp')
                     ->first();
                 $charged_svc = (float)($svc->tp ?? 0);
             }
