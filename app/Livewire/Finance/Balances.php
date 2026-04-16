@@ -33,7 +33,7 @@ class Balances extends Component
                 GROUP BY acc_id
             ) dep ON dep.acc_id = ac.id
             LEFT JOIN (
-                SELECT r.st_id, SUM(GREATEST(COALESCE(p.price,0) - COALESCE(p.discount,0), 0)) AS charged
+                SELECT r.st_id, SUM(GREATEST(COALESCE(NULLIF(p.amount,0), NULLIF(p.price,0), 0) - COALESCE(p.discount,0), 0)) AS charged
                 FROM kpayments p INNER JOIN rec r ON r.id = p.rec_id
                 WHERE p.payment_method = 5
                 GROUP BY r.st_id
