@@ -69,11 +69,13 @@ class NewCheck extends Component
                 $charged_svc = max(0.0, (float)($svc->tp ?? 0) - (float)($svc->td ?? 0));
             }
 
-            // قيود مديونية (النظام القديم: acc_id=acckId, status=2, payment_method!=5)
+            // قيود الخصم (status=2 payment!=5) أو استرداد (status=1 type_id=2)
             $charged_old = (float) DB::table('kpayments')
                 ->where('acc_id', $acckId)
-                ->where('status', 2)
-                ->where('payment_method', '!=', 5)
+                ->where(function($q) {
+                    $q->where(fn($q2) => $q2->where('status', 2)->where('payment_method', '!=', 5))
+                      ->orWhere(fn($q2) => $q2->where('status', 1)->where('type_id', 2));
+                })
                 ->selectRaw('COALESCE(SUM(COALESCE(NULLIF(amount,0), NULLIF(price,0), 0)),0) as total')
                 ->value('total');
 

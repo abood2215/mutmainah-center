@@ -25,11 +25,13 @@ class Financial extends Component
         $acck   = DB::table('acck')->where('stu_id', $this->patientId)->first();
         $acckId = $acck?->id;
 
-        // ══ الإيداعات (status=1, acc_id=acckId) ══
+        // ══ الإيداعات (status=1, type_id!=2, acc_id=acckId) ══
+        // type_id=2 يعني استرداد/سحب من الحساب — يُعامَل كخصم لا كإيداع
         $deposits = $acckId
             ? DB::table('kpayments')
                 ->where('acc_id', $acckId)
                 ->where('status', 1)
+                ->where('type_id', '!=', 2)
                 ->select(
                     'id', 'pdate', 'pdesc', 'payment_method',
                     DB::raw('COALESCE(NULLIF(amount,0), NULLIF(price,0), 0) as dep_amount')
@@ -41,14 +43,16 @@ class Financial extends Component
 
         $totalDeposited = $deposits->sum('dep_amount');
 
-        // ══ قيود المديونية الصريحة (النظام القديم) ══
-        // النظام القديم يُسجّل الخصم من الرصيد كقيد acc_id=acckId, status=2
-        // سواء كان rec_id=0 أو rec_id=service_id — نستثني payment_method=5 لأنه يُحسب في deferredServices
+        // ══ قيود الخصم من الرصيد (النظام القديم) ══
+        // حالتان: status=2 (مديونية صريحة) أو status=1+type_id=2 (استرداد/سحب)
+        // نستثني payment_method=5 من status=2 لأنه يُحسب في deferredServices
         $accountDebits = $acckId
             ? DB::table('kpayments')
                 ->where('acc_id', $acckId)
-                ->where('status', 2)
-                ->where('payment_method', '!=', 5)
+                ->where(function($q) {
+                    $q->where(fn($q2) => $q2->where('status', 2)->where('payment_method', '!=', 5))
+                      ->orWhere(fn($q2) => $q2->where('status', 1)->where('type_id', 2));
+                })
                 ->select(
                     'id', 'pdate', 'pdesc',
                     DB::raw('COALESCE(NULLIF(amount,0), NULLIF(price,0), 0) as debit_amount')
