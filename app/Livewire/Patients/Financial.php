@@ -67,16 +67,21 @@ class Financial extends Component
         // ══ الخدمات (مرتبطة بكشوف العميل عبر rec) ══
         $services = DB::table('kpayments as k')
             ->join('rec as r', 'r.id', '=', 'k.rec_id')
+            ->leftJoin('service as sv', 'sv.id', '=', 'r.service_id')
             ->where('r.st_id', $this->patientId)
             ->select(
-                'k.id', 'k.pdate', 'k.pdesc', 'k.price', 'k.net',
-                'k.discount', 'k.payment_method', 'k.rec_id'
+                'k.id', 'k.pdate', 'k.pdesc', 'k.price', 'k.amount', 'k.net',
+                'k.discount', 'k.payment_method', 'k.rec_id',
+                'sv.price as svc_price'
             )
             ->orderByRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') DESC")
             ->orderBy('k.id', 'desc')
             ->get()
             ->map(function ($svc) {
+                // أولوية: price → amount → سعر الخدمة من جدول service → تحليل الوصف
                 $effective = (float) $svc->price;
+                if ($effective == 0) $effective = (float)($svc->amount ?? 0);
+                if ($effective == 0) $effective = (float)($svc->svc_price ?? 0);
                 if ($effective == 0 && !empty($svc->pdesc)) {
                     $desc = strip_tags(html_entity_decode(str_replace("\xc2\xa0", ' ', $svc->pdesc ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
                     if (preg_match_all('/([\d.]+)\s*(?:د\.ك|KD|D\.K)/ui', $desc, $m)) {

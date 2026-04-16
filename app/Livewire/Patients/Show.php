@@ -45,15 +45,17 @@ class Show extends Component
                 ->selectRaw('COALESCE(SUM(COALESCE(NULLIF(amount,0), NULLIF(price,0), 0)),0) as total')
                 ->value('total');
 
-            // خدمات آجلة (النظام الجديد)
-            $recIds = DB::table('rec')->where('st_id', $id)->pluck('id');
+            // خدمات مدفوعة من الرصيد (pm=5) — يستخدم سعر الخدمة كـ fallback
             $charged_svc = 0.0;
+            $recIds = DB::table('rec')->where('st_id', $id)->pluck('id');
             if ($recIds->isNotEmpty()) {
-                $svc = DB::table('kpayments')
-                    ->whereIn('rec_id', $recIds)->where('payment_method', 5)
-                    ->selectRaw('COALESCE(SUM(price),0) as tp, COALESCE(SUM(discount),0) as td')
+                $svc = DB::table('kpayments as p')
+                    ->join('rec as r', 'r.id', '=', 'p.rec_id')
+                    ->leftJoin('service as sv', 'sv.id', '=', 'r.service_id')
+                    ->whereIn('p.rec_id', $recIds)->where('p.payment_method', 5)
+                    ->selectRaw('COALESCE(SUM(GREATEST(COALESCE(NULLIF(p.amount,0),NULLIF(p.price,0),NULLIF(sv.price,0),0)-COALESCE(p.discount,0),0)),0) as tp')
                     ->first();
-                $charged_svc = max(0.0, (float)($svc->tp ?? 0) - (float)($svc->td ?? 0));
+                $charged_svc = (float)($svc->tp ?? 0);
             }
 
             // قيود الخصم (status=2 payment!=5) أو استرداد (status=1 type_id=2)
