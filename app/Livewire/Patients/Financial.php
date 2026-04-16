@@ -69,19 +69,21 @@ class Financial extends Component
             ->join('rec as r', 'r.id', '=', 'k.rec_id')
             ->leftJoin('service as sv', 'sv.id', '=', 'r.service_id')
             ->where('r.st_id', $this->patientId)
-            ->select(
+            ->select([
                 'k.id', 'k.pdate', 'k.pdesc', 'k.price', 'k.amount', 'k.net',
                 'k.discount', 'k.payment_method', 'k.rec_id', 'k.clinic_id',
-                'sv.price as svc_price'
-            )
+                'sv.price as svc_price',
+                DB::raw("(SELECT sv2.price FROM service sv2 WHERE sv2.clinic_id = k.clinic_id AND sv2.name = TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(k.pdesc, '&nbsp;*&nbsp;', 2), '&nbsp;*&nbsp;', -1)) LIMIT 1) as pdesc_svc_price"),
+            ])
             ->orderByRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') DESC")
             ->orderBy('k.id', 'desc')
             ->get()
             ->map(function ($svc) {
-                // أولوية: price → amount → سعر الخدمة من جدول service → تحليل الوصف
+                // أولوية: price → amount → سعر من service عبر service_id → سعر من service عبر pdesc+clinic → تحليل الوصف
                 $effective = (float) $svc->price;
                 if ($effective == 0) $effective = (float)($svc->amount ?? 0);
                 if ($effective == 0) $effective = (float)($svc->svc_price ?? 0);
+                if ($effective == 0) $effective = (float)($svc->pdesc_svc_price ?? 0);
                 if ($effective == 0 && !empty($svc->pdesc)) {
                     $desc = strip_tags(html_entity_decode(str_replace("\xc2\xa0", ' ', $svc->pdesc ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
                     if (preg_match_all('/([\d.]+)\s*(?:د\.ك|KD|D\.K)/ui', $desc, $m)) {
@@ -91,28 +93,6 @@ class Financial extends Component
                 $svc->effective_price = $effective;
                 return $svc;
             });
-
-        // قاموس أسعار الخدمات من pdesc + clinic_id (لتجنب N+1 queries)
-        $svcPriceCache = [];
-        $services = $services->map(function ($svc) use (&$svcPriceCache) {
-            if ((float)$svc->effective_price == 0 && $svc->payment_method == 5 && !empty($svc->pdesc) && $svc->clinic_id) {
-                $pdescClean = strip_tags(html_entity_decode(str_replace("\xc2\xa0", ' ', $svc->pdesc), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
-                if (preg_match('/\*\s*(.+?)\s*\*/', $pdescClean, $m)) {
-                    $svcName  = trim($m[1]);
-                    $cacheKey = $svc->clinic_id . ':' . $svcName;
-                    if (!array_key_exists($cacheKey, $svcPriceCache)) {
-                        $svcPriceCache[$cacheKey] = (float)(DB::table('service')
-                            ->where('clinic_id', $svc->clinic_id)
-                            ->where('name', $svcName)
-                            ->value('price') ?? 0);
-                    }
-                    if ($svcPriceCache[$cacheKey] > 0) {
-                        $svc->effective_price = $svcPriceCache[$cacheKey];
-                    }
-                }
-            }
-            return $svc;
-        });
 
         $totalServices = $services->sum('effective_price');
 
