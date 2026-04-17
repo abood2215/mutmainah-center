@@ -380,10 +380,22 @@ class NewCheck extends Component
                 ->increment('used_count');
         }
 
-        $clinicName = $this->items[0]['clinic_name'] ?? '—';
-        ActivityLogger::log('created', 'check', $recId,
-            'كشف جديد للعميل: ' . $this->patient->full_name . ' — ' . $clinicName . ' — المبلغ: ' . $this->getTotal() . ' د.ك'
-        );
+        $clinicName  = $this->items[0]['clinic_name'] ?? '—';
+        $checkDesc   = 'كشف جديد — ' . $clinicName . ' — المبلغ: ' . number_format($this->getTotal(), 3) . ' د.ك';
+        if ($this->codeApplied && !empty($this->appliedCode)) {
+            $checkDesc .= ' — خصم: ' . number_format((float)$this->totalDiscount, 3) . ' د.ك';
+        }
+        ActivityLogger::log('created', 'check', $this->patientId, $checkDesc);
+
+        // تسجيل تطبيق كود الخصم بشكل منفصل
+        if ($this->codeApplied && !empty($this->appliedCode)) {
+            $codeType = $this->appliedCode['type'] === 'percent'
+                ? ($this->appliedCode['value'] + 0) . '%'
+                : number_format($this->appliedCode['value'], 3) . ' د.ك';
+            ActivityLogger::log('discount', 'check', $this->patientId,
+                'تطبيق كود خصم: ' . $this->appliedCode['code'] . ' — ' . $codeType . ' — وفّر: ' . number_format((float)$this->totalDiscount, 3) . ' د.ك'
+            );
+        }
 
         session()->flash('check_success', [
             'rec_id'     => $recId,

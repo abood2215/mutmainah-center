@@ -132,6 +132,7 @@
                     'payment'   => '💸',
                     'cancelled' => '❌',
                     'booked'    => '📅',
+                    'discount'  => '🏷️',
                     default     => '•',
                 };
                 $color = match($log->action) {
@@ -142,6 +143,7 @@
                     'payment'   => '#b45309',
                     'cancelled' => '#dc2626',
                     'booked'    => '#1d4ed8',
+                    'discount'  => '#7c3aed',
                     default     => '#546e7a',
                 };
             @endphp
