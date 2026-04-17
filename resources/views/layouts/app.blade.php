@@ -794,6 +794,7 @@
                 <a href="{{ route('clinics.index') }}" class="more-link">🏥 العيادات</a>
                 <a href="{{ route('employees.index') }}" class="more-link">👨‍⚕️ الموظفين</a>
                 <a href="{{ route('system.users') }}" class="more-link">👤 المستخدمين</a>
+                <a href="{{ route('system.discount-codes') }}" class="more-link">🏷️ كودات الخصم</a>
                 <a href="{{ route('system.backup') }}" class="more-link">💾 باك اب</a>
                 @endif
             </div>
