@@ -33,10 +33,10 @@ class NewCheck extends Component
     public string $notes         = '';
 
     // كود الخصم
-    public string  $discountCode    = '';
-    public string  $codeMsg         = '';
-    public bool    $codeApplied     = false;
-    public ?object $appliedCodeRow  = null;
+    public string $discountCode   = '';
+    public string $codeMsg        = '';
+    public bool   $codeApplied    = false;
+    public array  $appliedCode    = []; // [id, code, type, value]
 
     #[Title('كشف جديد')]
     public function mount($id): void
@@ -246,19 +246,19 @@ class NewCheck extends Component
             ? round($total * $row->value / 100, 3)
             : min((float)$row->value, $total);
 
-        $this->totalDiscount  = (string)$discVal;
-        $this->appliedCodeRow = $row;
-        $this->codeApplied    = true;
-        $this->codeMsg        = 'تم تطبيق الكود';
+        $this->totalDiscount = (string)$discVal;
+        $this->appliedCode   = ['id' => $row->id, 'code' => $row->code, 'type' => $row->type, 'value' => (float)$row->value];
+        $this->codeApplied   = true;
+        $this->codeMsg       = 'تم تطبيق الكود';
     }
 
     public function removeCode(): void
     {
-        $this->discountCode   = '';
-        $this->codeMsg        = '';
-        $this->codeApplied    = false;
-        $this->appliedCodeRow = null;
-        $this->totalDiscount  = '0';
+        $this->discountCode  = '';
+        $this->codeMsg       = '';
+        $this->codeApplied   = false;
+        $this->appliedCode   = [];
+        $this->totalDiscount = '0';
     }
 
     public function save(): void
@@ -374,9 +374,9 @@ class NewCheck extends Component
         }
 
         // تسجيل استخدام كود الخصم
-        if ($this->codeApplied && $this->appliedCodeRow) {
+        if ($this->codeApplied && !empty($this->appliedCode['id'])) {
             DB::table('discount_codes')
-                ->where('id', $this->appliedCodeRow->id)
+                ->where('id', $this->appliedCode['id'])
                 ->increment('used_count');
         }
 

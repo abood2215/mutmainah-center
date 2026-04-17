@@ -628,11 +628,11 @@
                 {{-- كود الخصم --}}
                 <div class="nc-frow">
                     <label>كود الخصم</label>
-                    @if($codeApplied && $appliedCodeRow)
+                    @if($codeApplied && !empty($appliedCode))
                     <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
-                        <span style="background:#fef3c7; color:#92400e; border:1.5px solid #fcd34d; border-radius:8px; padding:0.3rem 0.9rem; font-family:monospace; font-weight:900; font-size:0.95rem; letter-spacing:1px;">{{ $appliedCodeRow->code }}</span>
+                        <span style="background:#fef3c7; color:#92400e; border:1.5px solid #fcd34d; border-radius:8px; padding:0.3rem 0.9rem; font-family:monospace; font-weight:900; font-size:0.95rem; letter-spacing:1px;">{{ $appliedCode['code'] }}</span>
                         <span style="background:#dcfce7; color:#166534; border-radius:6px; padding:0.25rem 0.6rem; font-size:0.8rem; font-weight:800;">
-                            -{{ $appliedCodeRow->type === 'percent' ? ($appliedCodeRow->value + 0).'%' : number_format($appliedCodeRow->value,0).' د.ك' }}
+                            -{{ $appliedCode['type'] === 'percent' ? ($appliedCode['value'] + 0).'%' : number_format($appliedCode['value'],0).' د.ك' }}
                         </span>
                         <button type="button" wire:click="removeCode"
                             style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:0.8rem; font-weight:700; padding:0 0.3rem;">✕ إزالة</button>
