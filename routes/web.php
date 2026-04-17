@@ -196,8 +196,9 @@ Route::middleware(['auth.employee'])->group(function () {
     Route::middleware('require.admin')->group(function () {
         Route::get('/finance/reports',      \App\Livewire\Finance\Reports::class)->name('finance.reports');
         Route::get('/finance/branch-report',\App\Livewire\Finance\BranchReport::class)->name('finance.branch-report');
-        Route::get('/system/users',         \App\Livewire\System\Users::class)->name('system.users');
-        Route::get('/system/settings',      \App\Livewire\System\Settings::class)->name('system.settings');
+        Route::get('/system/users',           \App\Livewire\System\Users::class)->name('system.users');
+        Route::get('/system/settings',        \App\Livewire\System\Settings::class)->name('system.settings');
+        Route::get('/system/discount-codes',  \App\Livewire\System\DiscountCodes::class)->name('system.discount-codes');
         Route::get('/clinics',              \App\Livewire\Clinics\Index::class)->name('clinics.index');
         Route::get('/employees',            \App\Livewire\Employees\Index::class)->name('employees.index');
     });

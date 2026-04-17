@@ -625,12 +625,40 @@
         <div class="nc-pay-section">
             <div class="ps-head ps-head-left">إعدادات الفاتورة</div>
             <div class="ps-body">
+                {{-- كود الخصم --}}
+                <div class="nc-frow">
+                    <label>كود الخصم</label>
+                    @if($codeApplied && $appliedCodeRow)
+                    <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                        <span style="background:#fef3c7; color:#92400e; border:1.5px solid #fcd34d; border-radius:8px; padding:0.3rem 0.9rem; font-family:monospace; font-weight:900; font-size:0.95rem; letter-spacing:1px;">{{ $appliedCodeRow->code }}</span>
+                        <span style="background:#dcfce7; color:#166534; border-radius:6px; padding:0.25rem 0.6rem; font-size:0.8rem; font-weight:800;">
+                            -{{ $appliedCodeRow->type === 'percent' ? ($appliedCodeRow->value + 0).'%' : number_format($appliedCodeRow->value,0).' د.ك' }}
+                        </span>
+                        <button type="button" wire:click="removeCode"
+                            style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:0.8rem; font-weight:700; padding:0 0.3rem;">✕ إزالة</button>
+                    </div>
+                    @else
+                    <div style="display:flex; gap:0.5rem; align-items:center;">
+                        <input type="text" wire:model="discountCode" placeholder="أدخل الكود..."
+                               style="flex:1; padding:0.5rem 0.75rem; border:1.5px solid var(--border); border-radius:8px; font-family:monospace; font-size:0.9rem; letter-spacing:1px; text-transform:uppercase; outline:none;"
+                               wire:keydown.enter="applyCode">
+                        <button type="button" wire:click="applyCode"
+                            style="padding:0.5rem 1rem; background:var(--navy); color:#fff; border:none; border-radius:8px; font-size:0.82rem; font-weight:800; cursor:pointer; white-space:nowrap; font-family:'Tajawal',sans-serif;">تطبيق</button>
+                    </div>
+                    @if($codeMsg)
+                    <div style="font-size:0.78rem; margin-top:4px; color:{{ $codeApplied ? '#166534' : 'var(--danger)' }}; font-weight:700;">
+                        {{ $codeApplied ? '✅' : '⚠️' }} {{ $codeMsg }}
+                    </div>
+                    @endif
+                    @endif
+                </div>
+
                 <div class="nc-frow">
                     <label>خصم إجمالي الفاتورة (د.ك)</label>
                     <input type="number" wire:model.blur="totalDiscount" step="0.001" min="0"
-                           @if($isFree) readonly @endif
+                           @if($isFree || $codeApplied) readonly @endif
                            class="nc-full"
-                           style="{{ $isFree ? 'background:#f5f5f5;color:#aaa;' : '' }}">
+                           style="{{ ($isFree || $codeApplied) ? 'background:#f5f5f5;color:#aaa;' : '' }}">
                 </div>
 
                 <div class="nc-frow">

@@ -703,6 +703,7 @@
                     <li><a href="{{ route('clinics.index') }}"><span>🏥</span> العيادات</a></li>
                     <li><a href="{{ route('employees.index') }}"><span>👨‍⚕️</span> الموظفين</a></li>
                     <li><a href="{{ route('system.users') }}"><span>👤</span> المستخدمين</a></li>
+                    <li><a href="{{ route('system.discount-codes') }}"><span>🏷️</span> كودات الخصم</a></li>
                     <li><a href="{{ route('system.backup') }}"><span>💾</span> باك اب</a></li>
                 </ul>
             </li>

@@ -32,6 +32,12 @@ class NewCheck extends Component
     public string $paymentMethod = '1';
     public string $notes         = '';
 
+    // كود الخصم
+    public string  $discountCode    = '';
+    public string  $codeMsg         = '';
+    public bool    $codeApplied     = false;
+    public ?object $appliedCodeRow  = null;
+
     #[Title('كشف جديد')]
     public function mount($id): void
     {
@@ -202,6 +208,59 @@ class NewCheck extends Component
         return max(0, round($this->getTotal() - $disc - $this->getInsuranceTotal(), 3));
     }
 
+    public function applyCode(): void
+    {
+        $this->codeMsg     = '';
+        $this->codeApplied = false;
+        $this->appliedCodeRow = null;
+
+        $code = strtoupper(trim($this->discountCode));
+        if (!$code) { $this->codeMsg = 'أدخل كود الخصم أولاً'; return; }
+
+        $row = DB::table('discount_codes')->where('code', $code)->first();
+
+        if (!$row)               { $this->codeMsg = 'الكود غير صحيح'; return; }
+        if (!$row->is_active)    { $this->codeMsg = 'الكود معطّل'; return; }
+        if ($row->expires_at && $row->expires_at < now()->toDateString()) {
+            $this->codeMsg = 'انتهت صلاحية الكود'; return;
+        }
+        if ($row->max_uses > 0 && $row->used_count >= $row->max_uses) {
+            $this->codeMsg = 'الكود استُنفد'; return;
+        }
+
+        $total = $this->getTotal();
+
+        if ($row->min_amount > 0 && $total < $row->min_amount) {
+            $this->codeMsg = 'الحد الأدنى للفاتورة ' . number_format($row->min_amount, 3) . ' د.ك'; return;
+        }
+        if ($row->clinic_id > 0) {
+            $clinicIds = array_column($this->items, 'clinic_id');
+            if (!in_array($row->clinic_id, $clinicIds)) {
+                $clinic = DB::table('clinic')->find($row->clinic_id);
+                $this->codeMsg = 'الكود خاص بعيادة: ' . ($clinic?->name ?? ''); return;
+            }
+        }
+
+        // حساب قيمة الخصم
+        $discVal = $row->type === 'percent'
+            ? round($total * $row->value / 100, 3)
+            : min((float)$row->value, $total);
+
+        $this->totalDiscount  = (string)$discVal;
+        $this->appliedCodeRow = $row;
+        $this->codeApplied    = true;
+        $this->codeMsg        = 'تم تطبيق الكود';
+    }
+
+    public function removeCode(): void
+    {
+        $this->discountCode   = '';
+        $this->codeMsg        = '';
+        $this->codeApplied    = false;
+        $this->appliedCodeRow = null;
+        $this->totalDiscount  = '0';
+    }
+
     public function save(): void
     {
         if (empty($this->items)) return;
@@ -312,6 +371,13 @@ class NewCheck extends Component
                 'ns'              => 0,
                 'clinic_type_id'  => 0,
             ]);
+        }
+
+        // تسجيل استخدام كود الخصم
+        if ($this->codeApplied && $this->appliedCodeRow) {
+            DB::table('discount_codes')
+                ->where('id', $this->appliedCodeRow->id)
+                ->increment('used_count');
         }
 
         $clinicName = $this->items[0]['clinic_name'] ?? '—';
