@@ -208,8 +208,34 @@ Route::middleware(['auth.employee'])->group(function () {
         if (!in_array($authId, [107, 189])) abort(403);
 
         $dbName = config('database.connections.mysql.database');
-        $tables = DB::select('SHOW TABLES');
         $now    = now()->format('Y-m-d_H-i');
+
+        // الجداول المهمة فقط — بدون الجداول الثقيلة من النظام القديم
+        $keepTables = [
+            // بيانات العملاء والكشوف
+            'kstu', 'rec', 'kpayments', 'kpayments_cancel', 'kpayments_cancel2',
+            // الخدمات والعيادات
+            'service', 'clinic', 'stop_clinic',
+            // الحسابات
+            'acck',
+            // الإعدادات
+            'branches', 'branchk', 'class', 'kcom', 'kcom_discount',
+            'discount', 'jops', 'qualifications', 'instit', 'f_setting',
+            'words', 'perax', 'expens', 'p_amount',
+            // الموظفين
+            'employees',
+            // المرفقات والمواعيد
+            'uploadedfiles', 'appoint_cancel',
+            // جداول Laravel
+            'activity_logs', 'migrations', 'sessions', 'cache', 'cache_locks',
+            'failed_jobs', 'jobs', 'job_batches', 'password_reset_tokens',
+            'users', 'appointments', 'invoices', 'medical_records',
+        ];
+
+        // تصفية الجداول الموجودة فعلاً في قاعدة البيانات
+        $existing = array_map(fn($r) => array_values((array)$r)[0], DB::select('SHOW TABLES'));
+        $tableNames = array_filter($keepTables, fn($t) => in_array($t, $existing));
+        $tables = array_map(fn($t) => (object)[array_keys((array)DB::select('SHOW TABLES')[0])[0] => $t], $tableNames);
 
         $callback = function () use ($dbName, $tables) {
             set_time_limit(0);

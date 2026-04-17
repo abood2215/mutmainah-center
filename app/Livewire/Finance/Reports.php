@@ -23,7 +23,7 @@ class Reports extends Component
     #[Title('التقارير')]
 
     public function updatingReportType()  { $this->resetPage(); $this->searched = false; }
-    public function updatingSearch()      { $this->resetPage(); }
+    public function updatingSearch($value) { if ($value !== '') $this->searched = true; $this->resetPage(); }
 
     public function runSearch(): void
     {
