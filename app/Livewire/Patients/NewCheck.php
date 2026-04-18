@@ -278,6 +278,7 @@ class NewCheck extends Component
         }
 
         $today         = now()->format('j-n-Y');
+        $currentUserId = auth()->id() ?? 0;
         $firstClinicId = $this->items[0]['clinic_id'] ?? 0;
         $firstServiceId= $this->items[0]['service_id'] ?? 0;
 
@@ -298,7 +299,7 @@ class NewCheck extends Component
             'per_id'          => 0,
             'order_id'        => 0,
             'pharm_id'        => 0,
-            'user_id'         => 0,
+            'user_id'         => $currentUserId,
             'transfer_doc_id' => 0,
             'new_service_id'  => 0,
             'rev_id'          => 0,
@@ -341,7 +342,7 @@ class NewCheck extends Component
                 'serial_no'       => 0,
                 'credit'          => $item['price'],
                 'net'             => $item['price'] - ($i === 0 ? $totalDisc : 0),
-                'user_id'         => 0,
+                'user_id'         => $currentUserId,
                 'type_id'         => 0,
                 'client_id'       => 0,
                 'res_amount'      => 0,
