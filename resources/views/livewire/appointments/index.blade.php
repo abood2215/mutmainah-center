@@ -282,8 +282,9 @@
 </style>
 @endif
 
+@script
 <script>
-function sendWhatsAppFinalV4(phone, name, date, time, clinic) {
+window.sendWhatsAppFinalV4 = function(phone, name, date, time, clinic) {
     var firstName = name.trim().split(/\s+/)[0] || name;
     var clinicShort = clinic.trim().split(/\s+/).slice(0, 2).join(' ') || clinic;
     var e = encodeURIComponent;
@@ -306,7 +307,8 @@ function sendWhatsAppFinalV4(phone, name, date, time, clinic) {
              + e('\u0634\u0643\u0631\u0627\u064B \u0644\u0643\u0645 ') + heart;
 
     window.open('https://api.whatsapp.com/send?phone=' + phone + '&text=' + text, '_blank');
-}
+};
 </script>
+@endscript
 
 </div>{{-- end root --}}
