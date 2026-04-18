@@ -164,7 +164,7 @@ class Index extends Component
         $this->resetPage();
     }
 
-    public function updatedSearch()        { $this->resetPage(); }
+    public function updatedSearch()        { $this->filterDate = ''; $this->resetPage(); }
     public function updatedFilterDate()    { $this->resetPage(); }
     public function updatedFilterClinic()  { $this->resetPage(); }
     public function updatedFilterBranch()  { $this->resetPage(); }
