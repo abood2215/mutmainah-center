@@ -70,7 +70,8 @@ Route::middleware(['auth.employee'])->group(function () {
 
         // صف header لجلب ptime و user_id (بدون فلتر السعر لدعم الخدمات المجانية)
         $invoiceHeader = DB::table('kpayments')->where('rec_id', $recId)->first();
-        $recNotes = strip_tags(html_entity_decode(str_replace("\xc2\xa0", ' ', $invoiceHeader->notes ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        $rawNotes = $rec->notes ?: ($invoiceHeader->notes ?? '');
+        $recNotes = strip_tags(html_entity_decode(str_replace("\xc2\xa0", ' ', $rawNotes), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
 
         $items = DB::table('kpayments')
             ->where('rec_id', $recId)
