@@ -173,7 +173,19 @@ Route::middleware(['auth.employee'])->group(function () {
             $attachPath = $file->store('void-invoices', 'public');
         }
 
+        // حذف خدمات الكشف
         DB::table('kpayments')->where('rec_id', $recId)->delete();
+
+        // حذف أي سند قبض مرتبط بنفس العميل في نفس تاريخ الفاتورة
+        $acck = DB::table('acck')->where('stu_id', $patientId)->first();
+        if ($acck) {
+            DB::table('kpayments')
+                ->where('acc_id', $acck->id)
+                ->where('status', 1)
+                ->where('pdate', $rec->pdate ?: $rec->rec_date)
+                ->delete();
+        }
+
         DB::table('rec')->where('id', $recId)->delete();
 
         $desc = 'إلغاء فاتورة #' . $recId;
