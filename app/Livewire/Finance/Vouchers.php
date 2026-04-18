@@ -38,25 +38,40 @@ class Vouchers extends Component
         $from = "{$this->fromYear}-{$this->fromMonth}-{$this->fromDay}";
         $to   = "{$this->toYear}-{$this->toMonth}-{$this->toDay}";
 
-        $query = DB::table('vouchers as v')
-            ->leftJoin('kstu as s', 's.id', '=', 'v.stu_id')
-            ->whereRaw("STR_TO_DATE(v.pdate, '%e-%c-%Y') >= ?", [$from])
-            ->whereRaw("STR_TO_DATE(v.pdate, '%e-%c-%Y') <= ?", [$to])
-            ->select('v.id', 'v.pdate', 'v.credit', 'v.debit', 'v.pdesc', 'v.ptype', 'v.notes', 'v.serial_no', 's.full_name as client_name', 's.file_id');
+        $query = DB::table('kpayments as k')
+            ->join('acck as a', 'a.id', '=', 'k.acc_id')
+            ->leftJoin('kstu as s', 's.id', '=', 'a.stu_id')
+            ->where('k.acc_id', '>', 0)
+            ->whereIn('k.status', [1, 2])
+            ->whereRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') >= ?", [$from])
+            ->whereRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') <= ?", [$to])
+            ->selectRaw("
+                k.id,
+                k.pdate,
+                CASE WHEN k.status = 1 THEN COALESCE(NULLIF(k.amount,0), NULLIF(k.price,0), 0) ELSE 0 END as credit,
+                CASE WHEN k.status = 2 THEN COALESCE(NULLIF(k.amount,0), NULLIF(k.price,0), 0) ELSE 0 END as debit,
+                k.pdesc,
+                k.status as ptype,
+                k.notes,
+                k.vno as serial_no,
+                s.full_name as client_name,
+                s.file_id,
+                s.id as stu_id
+            ");
 
         if ($this->voucherType === 'receipt') {
-            $query->where('v.credit', '>', 0);
+            $query->where('k.status', 1);
         } elseif ($this->voucherType === 'payment') {
-            $query->where('v.debit', '>', 0);
+            $query->where('k.status', 2);
         }
 
-        $query->orderByRaw("STR_TO_DATE(v.pdate, '%e-%c-%Y') DESC, v.id DESC");
+        $query->orderByRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') DESC, k.id DESC");
 
-        $results          = $query->get();
-        $this->rows       = $results;
+        $results           = $query->get();
+        $this->rows        = $results;
         $this->totalCredit = $results->sum('credit');
         $this->totalDebit  = $results->sum('debit');
-        $this->searched   = true;
+        $this->searched    = true;
     }
 
     public function resetForm(): void

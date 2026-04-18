@@ -124,7 +124,7 @@ $years  = range(2000, now()->year + 1);
                     <td style="padding:0.55rem 0.75rem; text-align:center; color:var(--text-muted);">{{ $i+1 }}</td>
                     <td style="padding:0.55rem 0.75rem; font-weight:800; color:var(--navy);">{{ $r->client_name ?: '—' }}</td>
                     <td style="padding:0.55rem 0.75rem; color:#1565c0; font-weight:700; direction:ltr; unicode-bidi:isolate;">{{ fmt_date($r->pdate) }}</td>
-                    <td style="padding:0.55rem 0.75rem; color:var(--text-dim);">{{ $r->ptype ?: '—' }}</td>
+                    <td style="padding:0.55rem 0.75rem; color:var(--text-dim);">{{ $r->ptype == 1 ? 'سند قبض' : ($r->ptype == 2 ? 'سند صرف' : '—') }}</td>
                     <td style="padding:0.55rem 0.75rem; color:var(--text-dim); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ $r->pdesc ?: '—' }}</td>
                     <td style="padding:0.55rem 0.75rem; text-align:center; font-weight:800; color:#16a34a;">{{ $r->credit > 0 ? number_format($r->credit, 3) : '—' }}</td>
                     <td style="padding:0.55rem 0.75rem; text-align:center; font-weight:800; color:#dc2626;">{{ $r->debit > 0 ? number_format($r->debit, 3) : '—' }}</td>
