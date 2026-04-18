@@ -136,13 +136,15 @@
                                     } elseif (!str_starts_with($phone, '965')) {
                                         $phone = '965' . $phone;
                                     }
-                                    $time = $app->rec_time ? preg_replace('/^(\d+):(\d)$/', '$1:0$2', $app->rec_time) : '';
-                                    $date = $app->rec_date ?? '';
-                                    $name = $app->patient_name ?? '';
-                                    $clinic = $app->clinic_name ?? '';
+                                    $wtime = $app->rec_time ? preg_replace('/^(\d+):(\d)$/', '$1:0$2', $app->rec_time) : '';
                                 @endphp
                                 <button
-                                    onclick='sendWhatsAppFinalV4({{ \Illuminate\Support\Js::from($phone) }}, {{ \Illuminate\Support\Js::from($name) }}, {{ \Illuminate\Support\Js::from($date) }}, {{ \Illuminate\Support\Js::from($time) }}, {{ \Illuminate\Support\Js::from($clinic) }})'
+                                    data-wp="{{ $phone }}"
+                                    data-wn="{{ $app->patient_name ?? '' }}"
+                                    data-wd="{{ $app->rec_date ?? '' }}"
+                                    data-wt="{{ $wtime }}"
+                                    data-wc="{{ $app->clinic_name ?? '' }}"
+                                    onclick="sendWhatsAppFinalV4(this.dataset.wp,this.dataset.wn,this.dataset.wd,this.dataset.wt,this.dataset.wc)"
                                     style="display:inline-flex; align-items:center; gap:0.35rem; background:#25d366; color:#fff; padding:0.4rem 0.9rem; border-radius:8px; font-size:0.78rem; font-weight:800; text-decoration:none; transition:all 0.2s; border:none; cursor:pointer; white-space:nowrap; font-family:'Tajawal',sans-serif;"
                                     onmouseover="this.style.background='#1da851'; this.style.transform='scale(1.05)'"
                                     onmouseout="this.style.background='#25d366'; this.style.transform='scale(1)'">
@@ -285,8 +287,10 @@
 @script
 <script>
 window.sendWhatsAppFinalV4 = function(phone, name, date, time, clinic) {
-    var firstName = name.trim().split(/\s+/)[0] || name;
-    var clinicShort = clinic.trim().split(/\s+/).slice(0, 2).join(' ') || clinic;
+    phone = String(phone || '').trim();
+    name  = String(name  || '').trim();
+    var firstName = name.split(/\s+/)[0] || name;
+    var clinicShort = String(clinic || '').trim().split(/\s+/).slice(0, 2).join(' ') || clinic;
     var e = encodeURIComponent;
 
     // أكواد ثابتة لا تتأثر بترميز الملف نهائياً
