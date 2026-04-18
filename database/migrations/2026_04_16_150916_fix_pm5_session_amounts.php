@@ -17,6 +17,15 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // تخطَّ المايجريشن إذا لا يوجد صفوف تحتاج تحديث (بعد استيراد DB جاهز)
+        $needsUpdate = DB::table('kpayments')
+            ->where('payment_method', 5)
+            ->where(fn($q) => $q->whereNull('amount')->orWhere('amount', 0))
+            ->where(fn($q) => $q->whereNull('price')->orWhere('price', 0))
+            ->exists();
+
+        if (!$needsUpdate) return;
+
         // خطوة 1: تحديث amount عبر clinic_id + اسم الخدمة من pdesc
         DB::statement("
             UPDATE kpayments k
