@@ -156,6 +156,25 @@ Route::middleware(['auth.employee'])->group(function () {
         ));
     })->name('finance.invoice-print');
 
+    Route::post('/finance/invoice/{recId}/void', function ($recId) {
+        if ((auth()->user()?->user_name ?? '') !== '228') abort(403);
+
+        $rec = DB::table('rec')->where('id', $recId)->first();
+        abort_if(!$rec, 404);
+
+        $patientId = $rec->st_id ?? 0;
+
+        DB::table('kpayments')->where('rec_id', $recId)->delete();
+        DB::table('rec')->where('id', $recId)->delete();
+
+        \App\Helpers\ActivityLogger::log('deleted', 'check', $patientId,
+            'إلغاء فاتورة رقم #' . $recId
+        );
+
+        return redirect()->route('checks.index')
+            ->with('success', 'تم إلغاء الفاتورة #' . $recId . ' بنجاح');
+    })->name('finance.invoice-void');
+
     Route::get('/finance/movement/{id}/print', function ($id) {
         $mov = DB::table('kpayments as k')
             ->join('acck as a', 'a.id', '=', 'k.acc_id')

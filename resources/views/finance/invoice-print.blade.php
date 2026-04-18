@@ -225,6 +225,17 @@ body {
     cursor: pointer;
     font-family: 'Tajawal', sans-serif;
 }
+.btn-void {
+    padding: 10px 22px;
+    background: #fff;
+    color: #8b1c2b;
+    border: 2px solid #8b1c2b;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+}
 
 /* ─── طباعة ─── */
 @media print {
@@ -395,7 +406,37 @@ body {
 <div class="btns">
     <button class="btn-p" onclick="window.print()">🖨️ طباعة</button>
     <button class="btn-c" onclick="window.close()">✕ إغلاق</button>
+    @if((auth()->user()?->user_name ?? '') === '228')
+    <button class="btn-void" onclick="document.getElementById('void-modal').style.display='flex'">🚫 إلغاء الفاتورة</button>
+    @endif
 </div>
+
+{{-- Modal تأكيد الإلغاء --}}
+@if((auth()->user()?->user_name ?? '') === '228')
+<div id="void-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:999; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:14px; padding:2rem 2.5rem; max-width:400px; width:90%; text-align:center; font-family:'Tajawal',sans-serif; box-shadow:0 20px 60px rgba(0,0,0,.3);">
+        <div style="font-size:2.5rem; margin-bottom:0.5rem;">🚫</div>
+        <h3 style="font-size:1.15rem; font-weight:900; color:#8b1c2b; margin-bottom:0.5rem;">إلغاء الفاتورة</h3>
+        <p style="color:#64748b; font-size:0.88rem; margin-bottom:1.25rem;">
+            سيتم إلغاء الفاتورة رقم <strong>{{ $rec->id }}</strong> وحذف جميع بيانات الكشف والدفع نهائياً.<br>
+            <strong style="color:#8b1c2b;">هذا الإجراء لا يمكن التراجع عنه.</strong>
+        </p>
+        <div style="display:flex; gap:0.75rem; justify-content:center;">
+            <button onclick="document.getElementById('void-modal').style.display='none'"
+                style="padding:0.6rem 1.5rem; background:#607d8b; color:#fff; border:none; border-radius:8px; font-size:0.9rem; font-weight:700; cursor:pointer; font-family:'Tajawal',sans-serif;">
+                إلغاء
+            </button>
+            <form method="POST" action="{{ route('finance.invoice-void', $rec->id) }}" style="margin:0;">
+                @csrf
+                <button type="submit"
+                    style="padding:0.6rem 1.5rem; background:#8b1c2b; color:#fff; border:none; border-radius:8px; font-size:0.9rem; font-weight:800; cursor:pointer; font-family:'Tajawal',sans-serif;">
+                    نعم، إلغاء الفاتورة
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
 
 </body>
 </html>
