@@ -875,5 +875,72 @@
             }
         });
     </script>
+
+    {{-- ═══ مؤقت انتهاء الجلسة (4 دقائق خمول) ═══ --}}
+    <div id="session-warning" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:9999; align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:16px; padding:2rem 2.5rem; max-width:400px; width:90%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,.3); font-family:'Tajawal',sans-serif;">
+            <div style="font-size:2.5rem; margin-bottom:0.75rem;">⏱️</div>
+            <h3 style="font-size:1.2rem; font-weight:900; color:#1a1a2e; margin:0 0 0.5rem;">جلستك على وشك الانتهاء</h3>
+            <p style="color:#64748b; font-size:0.9rem; margin:0 0 1.25rem;">سيتم تسجيل خروجك خلال <strong id="countdown-num" style="color:#8b1c2b; font-size:1.1rem;">30</strong> ثانية</p>
+            <button onclick="resetSessionTimer()" style="background:#8b1c2b; color:#fff; border:none; border-radius:10px; padding:0.75rem 2rem; font-size:0.95rem; font-weight:800; cursor:pointer; font-family:'Tajawal',sans-serif;">
+                أنا هنا — استمر
+            </button>
+        </div>
+    </div>
+
+    <form id="auto-logout-form" method="POST" action="{{ route('logout') }}" style="display:none;">
+        @csrf
+    </form>
+
+    <script>
+    (function() {
+        const IDLE_LIMIT    = 240; // 4 دقائق بالثواني
+        const WARN_BEFORE   = 30;  // تحذير قبل 30 ثانية
+        let idleSeconds     = 0;
+        let warningShown    = false;
+        let countdownTimer  = null;
+
+        function resetSessionTimer() {
+            idleSeconds  = 0;
+            warningShown = false;
+            clearInterval(countdownTimer);
+            document.getElementById('session-warning').style.display = 'none';
+        }
+
+        function showWarning(remaining) {
+            const el = document.getElementById('session-warning');
+            el.style.display = 'flex';
+            document.getElementById('countdown-num').textContent = remaining;
+        }
+
+        function doLogout() {
+            document.getElementById('auto-logout-form').submit();
+        }
+
+        // تتبع نشاط المستخدم
+        ['mousemove','keydown','mousedown','touchstart','scroll','click'].forEach(function(evt) {
+            document.addEventListener(evt, resetSessionTimer, { passive: true });
+        });
+
+        // العداد الرئيسي
+        setInterval(function() {
+            idleSeconds++;
+            const remaining = IDLE_LIMIT - idleSeconds;
+
+            if (remaining <= 0) {
+                doLogout();
+                return;
+            }
+
+            if (remaining <= WARN_BEFORE) {
+                showWarning(remaining);
+                warningShown = true;
+            }
+        }, 1000);
+
+        // اجعل الزر يعمل
+        window.resetSessionTimer = resetSessionTimer;
+    })();
+    </script>
 </body>
 </html>

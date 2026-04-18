@@ -1,4 +1,11 @@
 <div>
+    @if(session('timeout'))
+    <div class="error-box" role="alert" style="background:#fffbeb; border-color:#fbbf24; color:#92400e;">
+        <div class="error-icon">⏱</div>
+        <span>{{ session('timeout') }}</span>
+    </div>
+    @endif
+
     @if($failed)
     <div class="error-box" role="alert">
         <div class="error-icon">✕</div>
