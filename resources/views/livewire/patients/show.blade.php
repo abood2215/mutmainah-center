@@ -133,6 +133,7 @@
                     'cancelled' => '❌',
                     'booked'    => '📅',
                     'discount'  => '🏷️',
+                    'voided'    => '🚫',
                     default     => '•',
                 };
                 $color = match($log->action) {
@@ -144,6 +145,7 @@
                     'cancelled' => '#dc2626',
                     'booked'    => '#1d4ed8',
                     'discount'  => '#7c3aed',
+                    'voided'    => '#dc2626',
                     default     => '#546e7a',
                 };
             @endphp

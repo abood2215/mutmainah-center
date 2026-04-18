@@ -162,14 +162,25 @@ Route::middleware(['auth.employee'])->group(function () {
         $rec = DB::table('rec')->where('id', $recId)->first();
         abort_if(!$rec, 404);
 
+        $reason    = trim(request('reason', ''));
         $patientId = $rec->st_id ?? 0;
+
+        // رفع الصورة إن وُجدت
+        $attachPath = null;
+        if (request()->hasFile('attachment') && request()->file('attachment')->isValid()) {
+            $file = request()->file('attachment');
+            abort_if($file->getSize() > 5 * 1024 * 1024, 422, 'حجم الملف يتجاوز 5MB');
+            $attachPath = $file->store('void-invoices', 'public');
+        }
 
         DB::table('kpayments')->where('rec_id', $recId)->delete();
         DB::table('rec')->where('id', $recId)->delete();
 
-        \App\Helpers\ActivityLogger::log('deleted', 'check', $patientId,
-            'إلغاء فاتورة رقم #' . $recId
-        );
+        $desc = 'إلغاء فاتورة #' . $recId;
+        if ($reason)     $desc .= ' — السبب: ' . $reason;
+        if ($attachPath) $desc .= ' — مرفق: ' . $attachPath;
+
+        \App\Helpers\ActivityLogger::log('voided', 'check', $patientId, $desc);
 
         return redirect()->route('checks.index')
             ->with('success', 'تم إلغاء الفاتورة #' . $recId . ' بنجاح');
