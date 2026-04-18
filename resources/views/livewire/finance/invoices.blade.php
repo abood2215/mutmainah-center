@@ -119,11 +119,11 @@ $years  = range(2000, now()->year + 1);
     <div style="margin-top:0.75rem; display:flex; gap:1.25rem; justify-content:center; padding-top:0.5rem; border-top:1px solid rgba(255,255,255,0.1);">
         <a href="{{ route('dashboard') }}" wire:navigate style="color:rgba(255,255,255,0.6); font-size:0.82rem; font-weight:700; text-decoration:none;" onmouseover="this.style.color='#fbbf24'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">الرئيسية</a>
         <span style="color:rgba(255,255,255,0.2);">|</span>
-        <a href="#" style="color:rgba(255,255,255,0.6); font-size:0.82rem; font-weight:700; text-decoration:none;" onmouseover="this.style.color='#fbbf24'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">الفواتير الملغاة</a>
+        <a href="{{ route('finance.voided-invoices') }}" wire:navigate style="color:rgba(255,255,255,0.6); font-size:0.82rem; font-weight:700; text-decoration:none;" onmouseover="this.style.color='#fbbf24'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">الفواتير الملغاة</a>
         <span style="color:rgba(255,255,255,0.2);">|</span>
-        <a href="#" style="color:rgba(255,255,255,0.6); font-size:0.82rem; font-weight:700; text-decoration:none;" onmouseover="this.style.color='#fbbf24'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">السندات الملغاة</a>
+        <a href="{{ route('finance.voided-vouchers') }}" wire:navigate style="color:rgba(255,255,255,0.6); font-size:0.82rem; font-weight:700; text-decoration:none;" onmouseover="this.style.color='#fbbf24'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">السندات الملغاة</a>
         <span style="color:rgba(255,255,255,0.2);">|</span>
-        <a href="#" style="color:rgba(255,255,255,0.6); font-size:0.82rem; font-weight:700; text-decoration:none;" onmouseover="this.style.color='#fbbf24'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">تفصيلي</a>
+        <a href="{{ route('finance.detailed-report') }}" wire:navigate style="color:rgba(255,255,255,0.6); font-size:0.82rem; font-weight:700; text-decoration:none;" onmouseover="this.style.color='#fbbf24'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">تفصيلي</a>
     </div>
 </div>
 
