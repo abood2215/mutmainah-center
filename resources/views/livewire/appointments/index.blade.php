@@ -142,7 +142,7 @@
                                     $clinic = $app->clinic_name ?? '';
                                 @endphp
                                 <button
-                                    onclick="sendWhatsAppFinalV4({{ \Illuminate\Support\Js::from($phone) }}, {{ \Illuminate\Support\Js::from($name) }}, {{ \Illuminate\Support\Js::from($date) }}, {{ \Illuminate\Support\Js::from($time) }}, {{ \Illuminate\Support\Js::from($clinic) }})"
+                                    onclick='sendWhatsAppFinalV4({{ \Illuminate\Support\Js::from($phone) }}, {{ \Illuminate\Support\Js::from($name) }}, {{ \Illuminate\Support\Js::from($date) }}, {{ \Illuminate\Support\Js::from($time) }}, {{ \Illuminate\Support\Js::from($clinic) }})'
                                     style="display:inline-flex; align-items:center; gap:0.35rem; background:#25d366; color:#fff; padding:0.4rem 0.9rem; border-radius:8px; font-size:0.78rem; font-weight:800; text-decoration:none; transition:all 0.2s; border:none; cursor:pointer; white-space:nowrap; font-family:'Tajawal',sans-serif;"
                                     onmouseover="this.style.background='#1da851'; this.style.transform='scale(1.05)'"
                                     onmouseout="this.style.background='#25d366'; this.style.transform='scale(1)'">
