@@ -21,6 +21,17 @@ class Financial extends Component
 
     public function render()
     {
+        try {
+            return $this->buildView();
+        } catch (\Throwable $e) {
+            return view('livewire.patients.financial-error', [
+                'error' => $e->getMessage(),
+            ])->layout('layouts.app');
+        }
+    }
+
+    private function buildView()
+    {
         // حساب المريض في acck (مرتبط بـ stu_id)
         $acck   = DB::table('acck')->where('stu_id', $this->patientId)->first();
         $acckId = $acck?->id;
@@ -73,19 +84,16 @@ class Financial extends Component
                 'k.id', 'k.pdate', 'k.pdesc', 'k.price', 'k.amount', 'k.net',
                 'k.discount', 'k.payment_method', 'k.rec_id', 'k.clinic_id',
                 'sv.price as svc_price',
-                DB::raw("(SELECT sv2.price FROM service sv2 WHERE sv2.clinic_id = k.clinic_id AND sv2.name = TRIM(REPLACE(REPLACE(SUBSTRING_INDEX(SUBSTRING_INDEX(k.pdesc,'*',2),'*',-1),'&nbsp;',''),CHAR(160),'')) LIMIT 1) as pdesc_svc_price"),
             ])
             ->orderByRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') DESC")
             ->orderBy('k.id', 'desc')
             ->get()
             ->map(function ($svc) {
-                // أولوية: price → amount → سعر من service عبر service_id → سعر من service عبر pdesc+clinic → تحليل الوصف
                 $effective = (float) $svc->price;
                 if ($effective == 0) $effective = (float)($svc->amount ?? 0);
                 if ($effective == 0) $effective = (float)($svc->svc_price ?? 0);
-                if ($effective == 0) $effective = (float)($svc->pdesc_svc_price ?? 0);
                 if ($effective == 0 && !empty($svc->pdesc)) {
-                    $desc = strip_tags(html_entity_decode(str_replace("\xc2\xa0", ' ', $svc->pdesc ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+                    $desc = strip_tags(html_entity_decode(str_replace("\xc2\xa0", ' ', $svc->pdesc), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
                     if (preg_match_all('/([\d.]+)\s*(?:د\.ك|KD|D\.K)/ui', $desc, $m)) {
                         $effective = array_sum(array_map('floatval', $m[1]));
                     }
@@ -161,6 +169,7 @@ class Financial extends Component
         });
 
         return view('livewire.patients.financial', [
+
             'deposits'        => $deposits,
             'services'        => $services,
             'accountDebits'   => $accountDebits,
@@ -171,5 +180,5 @@ class Financial extends Component
             'totalServices'   => $totalServices,
             'balance'         => $balance,
         ])->layout('layouts.app');
-    }
+    } // end buildView
 }

@@ -906,13 +906,16 @@
             idleSeconds  = 0;
             warningShown = false;
             clearInterval(countdownTimer);
-            document.getElementById('session-warning').style.display = 'none';
+            const sw = document.getElementById('session-warning');
+            if (sw) sw.style.display = 'none';
         }
 
         function showWarning(remaining) {
             const el = document.getElementById('session-warning');
+            if (!el) return;
             el.style.display = 'flex';
-            document.getElementById('countdown-num').textContent = remaining;
+            const cn = document.getElementById('countdown-num');
+            if (cn) cn.textContent = remaining;
         }
 
         function doLogout() {
