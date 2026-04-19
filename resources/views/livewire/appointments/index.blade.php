@@ -89,7 +89,7 @@
                         <th style="padding:0.75rem 1rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px;">العيادة</th>
                         <th style="padding:0.75rem 1rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px;">الحجز بواسطة</th>
                         <th style="padding:0.75rem 1rem; text-align:center; font-size:0.78rem; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px;">الحالة</th>
-                        <th style="padding:0.75rem 1rem; text-align:center; font-size:0.78rem; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px;">تذكير واتساب</th>
+                        <th style="padding:0.75rem 1rem; text-align:center; font-size:0.78rem; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px;">إجراءات</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -128,32 +128,43 @@
                             @endif
                         </td>
                         <td style="padding:0.85rem 1rem; text-align:center;">
-                            @if($app->patient_phone)
+                            <div style="display:inline-flex; align-items:center; gap:0.4rem; flex-wrap:wrap; justify-content:center;">
+                                {{-- تذكير واتساب --}}
+                                @if($app->patient_phone)
                                 @php
                                     $phone = preg_replace('/[^0-9]/', '', $app->patient_phone);
-                                    if (str_starts_with($phone, '0')) {
-                                        $phone = '965' . substr($phone, 1);
-                                    } elseif (!str_starts_with($phone, '965')) {
-                                        $phone = '965' . $phone;
-                                    }
+                                    if (str_starts_with($phone, '0')) { $phone = '965' . substr($phone, 1); }
+                                    elseif (!str_starts_with($phone, '965')) { $phone = '965' . $phone; }
                                     $wtime = $app->rec_time ? preg_replace('/^(\d+):(\d)$/', '$1:0$2', $app->rec_time) : '';
                                 @endphp
                                 <button
-                                    data-wp="{{ $phone }}"
-                                    data-wn="{{ $app->patient_name ?? '' }}"
-                                    data-wd="{{ $app->rec_date ?? '' }}"
-                                    data-wt="{{ $wtime }}"
+                                    data-wp="{{ $phone }}" data-wn="{{ $app->patient_name ?? '' }}"
+                                    data-wd="{{ $app->rec_date ?? '' }}" data-wt="{{ $wtime }}"
                                     data-wc="{{ $app->clinic_name ?? '' }}"
                                     onclick="sendWhatsAppFinalV4(this.dataset.wp,this.dataset.wn,this.dataset.wd,this.dataset.wt,this.dataset.wc)"
-                                    style="display:inline-flex; align-items:center; gap:0.35rem; background:#25d366; color:#fff; padding:0.4rem 0.9rem; border-radius:8px; font-size:0.78rem; font-weight:800; text-decoration:none; transition:all 0.2s; border:none; cursor:pointer; white-space:nowrap; font-family:'Tajawal',sans-serif;"
-                                    onmouseover="this.style.background='#1da851'; this.style.transform='scale(1.05)'"
-                                    onmouseout="this.style.background='#25d366'; this.style.transform='scale(1)'">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white" style="flex-shrink:0;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                                    title="إرسال تذكير واتساب"
+                                    style="display:inline-flex; align-items:center; gap:0.3rem; background:#25d366; color:#fff; padding:0.35rem 0.7rem; border-radius:7px; font-size:0.75rem; font-weight:800; border:none; cursor:pointer; font-family:'Tajawal',sans-serif;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                                     تذكير
                                 </button>
-                            @else
-                                <span style="color:var(--text-muted); font-size:0.75rem; opacity:0.5;">—</span>
-                            @endif
+                                @endif
+
+                                {{-- تعديل --}}
+                                <button wire:click="openEdit({{ $app->id }})" title="تعديل الموعد"
+                                    style="display:inline-flex; align-items:center; gap:0.3rem; background:#eff6ff; color:#1565c0; padding:0.35rem 0.65rem; border-radius:7px; font-size:0.75rem; font-weight:800; border:1px solid #bfdbfe; cursor:pointer; font-family:'Tajawal',sans-serif;"
+                                    onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#eff6ff'">
+                                    ✏️ تعديل
+                                </button>
+
+                                {{-- حذف --}}
+                                <button wire:click="deleteAppointment({{ $app->id }})"
+                                    wire:confirm="هل أنت متأكد من حذف هذا الموعد؟"
+                                    title="حذف الموعد"
+                                    style="display:inline-flex; align-items:center; gap:0.3rem; background:#fef2f2; color:#dc2626; padding:0.35rem 0.65rem; border-radius:7px; font-size:0.75rem; font-weight:800; border:1px solid #fecaca; cursor:pointer; font-family:'Tajawal',sans-serif;"
+                                    onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fef2f2'">
+                                    🗑️ حذف
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     @empty
@@ -177,6 +188,69 @@
 
 </div>
 </div>
+
+{{-- flash --}}
+@if(session()->has('appt_saved'))
+<div style="position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%); z-index:9999; background:#166534; color:#fff; padding:0.65rem 1.5rem; border-radius:10px; font-weight:800; font-size:0.88rem; font-family:'Tajawal',sans-serif; box-shadow:0 4px 16px rgba(0,0,0,0.2);">
+    ✅ {{ session('appt_saved') }}
+</div>
+@endif
+
+{{-- modal تعديل الموعد --}}
+@if($showEditModal)
+<div wire:click.self="$set('showEditModal', false)"
+    style="position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center; padding:1rem; animation:fadeIn 0.2s ease;">
+    <div style="background:#fff; border-radius:16px; width:100%; max-width:480px; box-shadow:0 20px 60px rgba(0,0,0,0.3); overflow:hidden; animation:slideUp 0.25s cubic-bezier(0.16,1,0.3,1);">
+
+        <div style="background:var(--navy); padding:1rem 1.5rem; display:flex; align-items:center; justify-content:space-between; border-bottom:3px solid #1565c0;">
+            <div style="display:flex; align-items:center; gap:0.65rem;">
+                <span style="font-size:1.2rem;">✏️</span>
+                <div>
+                    <div style="color:#fff; font-weight:900; font-size:0.95rem;">تعديل الموعد</div>
+                    <div style="color:rgba(255,255,255,0.55); font-size:0.75rem;">{{ $editPatientName }}</div>
+                </div>
+            </div>
+            <button wire:click="$set('showEditModal', false)"
+                style="width:30px; height:30px; border-radius:7px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15); color:rgba(255,255,255,0.7); font-size:1rem; cursor:pointer;">✕</button>
+        </div>
+
+        <div style="padding:1.5rem; display:flex; flex-direction:column; gap:1rem;">
+            {{-- التاريخ --}}
+            <div>
+                <label style="font-size:0.8rem; font-weight:800; color:var(--text-dim); display:block; margin-bottom:0.35rem;">التاريخ</label>
+                <input type="date" wire:model="editDate" class="form-input" style="width:100%;">
+            </div>
+            {{-- الوقت --}}
+            <div>
+                <label style="font-size:0.8rem; font-weight:800; color:var(--text-dim); display:block; margin-bottom:0.35rem;">الوقت</label>
+                <input type="time" wire:model="editTime" class="form-input" style="width:100%;">
+            </div>
+            {{-- العيادة --}}
+            <div>
+                <label style="font-size:0.8rem; font-weight:800; color:var(--text-dim); display:block; margin-bottom:0.35rem;">العيادة</label>
+                <select wire:model="editClinic" class="form-input" style="width:100%;">
+                    <option value="">— اختر —</option>
+                    @foreach($clinics as $cl)
+                    <option value="{{ $cl->id }}">{{ $cl->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <div style="padding:1rem 1.5rem; border-top:1px solid #f1f5f9; display:flex; gap:0.75rem; justify-content:flex-end;">
+            <button wire:click="$set('showEditModal', false)"
+                style="padding:0.55rem 1.25rem; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:8px; font-weight:800; font-size:0.85rem; cursor:pointer; font-family:'Tajawal',sans-serif;">
+                إلغاء
+            </button>
+            <button wire:click="saveEdit"
+                style="padding:0.55rem 1.5rem; background:#1565c0; color:#fff; border:none; border-radius:8px; font-weight:900; font-size:0.85rem; cursor:pointer; font-family:'Tajawal',sans-serif;">
+                💾 حفظ التعديل
+            </button>
+        </div>
+
+    </div>
+</div>
+@endif
 
 @if($showTodayModal)
 <div wire:click.self="closeTodayModal"

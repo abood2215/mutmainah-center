@@ -19,6 +19,15 @@ class Index extends Component
     public bool  $showTodayModal = false;
     public array $todayList      = [];
 
+    // تعديل الموعد
+    public bool   $showEditModal = false;
+    public int    $editId        = 0;
+    public int    $editPatientId = 0;
+    public string $editPatientName = '';
+    public string $editDate      = '';
+    public string $editTime      = '';
+    public string $editClinic    = '';
+
     public function updatingSearch(): void       { $this->resetPage(); }
     public function updatingFilterDate(): void   { $this->resetPage(); }
     public function updatingSelectedClinic(): void { $this->resetPage(); }
@@ -59,6 +68,90 @@ class Index extends Component
     public function markChecked(int $recId): void
     {
         DB::table('rec')->where('id', $recId)->where('confirm_id', 0)->update(['confirm_id' => 1]);
+    }
+
+    public function openEdit(int $recId): void
+    {
+        $rec = DB::table('rec as r')
+            ->leftJoin('kstu as k', 'k.id', '=', 'r.st_id')
+            ->where('r.id', $recId)
+            ->select('r.*', 'k.full_name')
+            ->first();
+        if (!$rec) return;
+
+        $this->editId          = $recId;
+        $this->editPatientId   = $rec->st_id;
+        $this->editPatientName = $rec->full_name ?? '';
+        $this->editDate        = $rec->rec_date
+            ? \Carbon\Carbon::createFromFormat('j-n-Y', $rec->rec_date)->format('Y-m-d')
+            : '';
+        $this->editTime        = $rec->rec_time ?? '';
+        $this->editClinic      = $rec->clinic_id ?? '';
+        $this->showEditModal   = true;
+    }
+
+    public function saveEdit(): void
+    {
+        $this->validate([
+            'editDate'   => 'required',
+            'editTime'   => 'required',
+            'editClinic' => 'required',
+        ]);
+
+        $oldRec = DB::table('rec')->where('id', $this->editId)->first();
+        if (!$oldRec) { $this->showEditModal = false; return; }
+
+        $newDate = \Carbon\Carbon::parse($this->editDate)->format('j-n-Y');
+
+        DB::table('rec')->where('id', $this->editId)->update([
+            'rec_date'  => $newDate,
+            'rec_time'  => $this->editTime,
+            'clinic_id' => $this->editClinic,
+        ]);
+
+        $user    = auth()->user();
+        $byName  = $user ? ($user->getName() ?? $user->user_name ?? 'غير معروف') : 'غير معروف';
+        $clinic  = DB::table('clinic')->where('id', $this->editClinic)->value('name') ?? '';
+
+        try {
+            DB::table('activity_logs')->insert([
+                'action'      => 'updated',
+                'subject'     => 'appointment',
+                'subject_id'  => $this->editPatientId,
+                'description' => 'تعديل موعد: ' . ($oldRec->rec_date ?? '') . ' → ' . $newDate
+                               . ' | ' . ($oldRec->rec_time ?? '') . ' → ' . $this->editTime
+                               . ' | عيادة: ' . $clinic,
+                'user_id'     => $user?->id ?? 0,
+                'user_name'   => $byName,
+                'created_at'  => now(),
+            ]);
+        } catch (\Throwable) {}
+
+        $this->showEditModal = false;
+        session()->flash('appt_saved', 'تم تعديل الموعد بنجاح');
+    }
+
+    public function deleteAppointment(int $recId): void
+    {
+        $rec = DB::table('rec')->where('id', $recId)->where('confirm_id', 0)->first();
+        if (!$rec) return;
+
+        $user    = auth()->user();
+        $byName  = $user ? ($user->getName() ?? $user->user_name ?? 'غير معروف') : 'غير معروف';
+
+        DB::table('rec')->where('id', $recId)->delete();
+
+        try {
+            DB::table('activity_logs')->insert([
+                'action'      => 'cancelled',
+                'subject'     => 'appointment',
+                'subject_id'  => $rec->st_id,
+                'description' => 'حذف موعد بتاريخ ' . $rec->rec_date . ' الساعة ' . ($rec->rec_time ?: '--') . ' — بواسطة: ' . $byName,
+                'user_id'     => $user?->id ?? 0,
+                'user_name'   => $byName,
+                'created_at'  => now(),
+            ]);
+        } catch (\Throwable) {}
     }
 
     public function cancelAppointment(int $recId): void
