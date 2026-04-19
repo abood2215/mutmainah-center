@@ -150,7 +150,7 @@
                                 @endif
 
                                 {{-- تنبيه الأخصائي --}}
-                                @if($app->spec_phone)
+                                @if($app->clinic_id)
                                 <button
                                     wire:click="sendSpecialistNotif({{ $app->clinic_id }}, '{{ $app->rec_date }}')"
                                     title="إرسال جدول اليوم للأخصائي"
