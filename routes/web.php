@@ -245,6 +245,7 @@ Route::middleware(['auth.employee'])->group(function () {
         Route::get('/system/users',           \App\Livewire\System\Users::class)->name('system.users');
         Route::get('/system/settings',        \App\Livewire\System\Settings::class)->name('system.settings');
         Route::get('/system/discount-codes',  \App\Livewire\System\DiscountCodes::class)->name('system.discount-codes');
+        Route::get('/system/services',        \App\Livewire\System\Services::class)->name('system.services');
         Route::get('/clinics',              \App\Livewire\Clinics\Index::class)->name('clinics.index');
         Route::get('/employees',            \App\Livewire\Employees\Index::class)->name('employees.index');
     });
