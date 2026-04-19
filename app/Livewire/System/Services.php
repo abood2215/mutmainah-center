@@ -81,6 +81,10 @@ class Services extends Component
                 'state_id' => 0,
                 'ccode'    => '',
                 'add_id'   => auth()->id() ?? 0,
+                'class_id' => 0,
+                'face_id'  => 0,
+                'sc_id'    => 0,
+                'cs_id'    => 0,
             ]));
             ActivityLogger::log('created', 'service', $newId,
                 'إضافة خدمة جديدة: ' . $data['name'] . ' — السعر: ' . $data['price']);
