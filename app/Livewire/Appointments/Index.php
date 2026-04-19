@@ -183,6 +183,47 @@ class Index extends Component
         $this->openTodayModal();
     }
 
+    public function sendSpecialistNotif(int $clinicId, string $recDate): void
+    {
+        $spec = DB::table('clinic as c')
+            ->leftJoin('employees as e', 'e.id', '=', 'c.doc_id1')
+            ->where('c.id', $clinicId)
+            ->select('c.name as clinic_name', 'e.phone as spec_phone',
+                     DB::raw("TRIM(CONCAT(COALESCE(e.first_name,''), ' ', COALESCE(e.middle_initial,''))) as spec_name"))
+            ->first();
+
+        if (!$spec || !trim($spec->spec_phone ?? '')) {
+            $this->dispatch('spec-notif-error', msg: 'لا يوجد رقم هاتف للأخصائي المرتبط بهذه العيادة');
+            return;
+        }
+
+        $appts = DB::table('rec as r')
+            ->leftJoin('kstu as k', 'k.id', '=', 'r.st_id')
+            ->where('r.clinic_id', $clinicId)
+            ->where('r.rec_date', $recDate)
+            ->where('r.confirm_id', 0)
+            ->orderBy('r.rec_time')
+            ->get(['r.rec_time', 'k.full_name']);
+
+        $phone = preg_replace('/[^0-9]/', '', $spec->spec_phone);
+        if (str_starts_with($phone, '0')) {
+            $phone = '965' . substr($phone, 1);
+        } elseif (!str_starts_with($phone, '965')) {
+            $phone = '965' . $phone;
+        }
+
+        $this->dispatch('open-specialist-wa', [
+            'phone'      => $phone,
+            'specName'   => trim($spec->spec_name),
+            'clinicName' => $spec->clinic_name,
+            'date'       => $recDate,
+            'appts'      => $appts->map(fn($a) => [
+                'time' => $a->rec_time ?: '--:--',
+                'name' => $a->full_name ?: '—',
+            ])->toArray(),
+        ]);
+    }
+
     #[Title('جدول المواعيد : Appointments')]
     public function render()
     {
@@ -204,16 +245,20 @@ class Index extends Component
             ->leftJoin('kstu as a', 'a.id', '=', 'r.st_id')
             ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
             ->leftJoin('employees as e', 'e.id', '=', 'r.user_id')
+            ->leftJoin('employees as spec', 'spec.id', '=', 'c.doc_id1')
             ->where('r.confirm_id', 0)
             ->select(
                 'r.id',
                 'r.rec_date',
                 'r.rec_time',
+                'r.clinic_id',
                 'r.state_id as status',
                 'r.st_id',
                 'a.full_name as patient_name',
                 'a.phone as patient_phone',
                 'c.name as clinic_name',
+                'spec.phone as spec_phone',
+                DB::raw("TRIM(CONCAT(COALESCE(spec.first_name,''), ' ', COALESCE(spec.middle_initial,''))) as spec_name"),
                 DB::raw("TRIM(CONCAT(COALESCE(e.first_name,''), ' ', COALESCE(e.middle_initial,''))) as booked_by")
             );
 

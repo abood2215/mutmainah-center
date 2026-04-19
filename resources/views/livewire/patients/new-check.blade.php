@@ -655,7 +655,7 @@
 
                 <div class="nc-frow">
                     <label>خصم إجمالي الفاتورة (د.ك)</label>
-                    <input type="number" wire:model.blur="totalDiscount" step="0.001" min="0"
+                    <input type="number" wire:model.live.debounce.400ms="totalDiscount" step="0.001" min="0"
                            @if($isFree || $codeApplied) readonly @endif
                            class="nc-full"
                            style="{{ ($isFree || $codeApplied) ? 'background:#f5f5f5;color:#aaa;' : '' }}">
