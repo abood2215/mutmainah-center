@@ -131,7 +131,6 @@
 </div>
 
 </div>
-</div>
 
 {{-- modal إضافة/تعديل --}}
 @if($showModal)
