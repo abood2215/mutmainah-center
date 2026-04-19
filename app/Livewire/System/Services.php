@@ -80,6 +80,7 @@ class Services extends Component
             $newId = DB::table('service')->insertGetId(array_merge($data, [
                 'state_id' => 0,
                 'ccode'    => '',
+                'add_id'   => auth()->id() ?? 0,
             ]));
             ActivityLogger::log('created', 'service', $newId,
                 'إضافة خدمة جديدة: ' . $data['name'] . ' — السعر: ' . $data['price']);
