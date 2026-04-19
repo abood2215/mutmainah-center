@@ -1,4 +1,11 @@
 <div>
+    @if(session('error'))
+    <div class="error-box" role="alert" style="background:#fee2e2; border-color:#f87171; color:#7f1d1d;">
+        <div class="error-icon">⛔</div>
+        <span>{{ session('error') }}</span>
+    </div>
+    @endif
+
     @if(session('timeout'))
     <div class="error-box" role="alert" style="background:#fffbeb; border-color:#fbbf24; color:#92400e;">
         <div class="error-icon">⏱</div>
