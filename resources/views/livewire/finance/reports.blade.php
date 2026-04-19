@@ -152,16 +152,16 @@
                         <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">رقم الملف</th>
                         <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">العميل</th>
                         <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">الجوال</th>
-                        <th style="padding:0.7rem 1rem; text-align:center; font-weight:800; color:var(--text-dim);">الزيارات</th>
-                        <th style="padding:0.7rem 1rem; text-align:center; font-weight:800; color:var(--primary);">إجمالي المدفوع</th>
+                        <th style="padding:0.7rem 1rem; text-align:center; font-weight:800; color:var(--text-dim);">إجمالي المودَع</th>
+                        <th style="padding:0.7rem 1rem; text-align:center; font-weight:800; color:var(--primary);">الرصيد</th>
                     </tr></thead>
                     <tbody>@forelse($rows as $r)
                         <tr style="border-bottom:1px solid #f0f2f5;" onmouseover="this.style.background='#fafbfc'" onmouseout="this.style.background=''">
                             <td style="padding:0.65rem 1rem; color:#1565c0; font-weight:700;">#{{ $r->file_id }}</td>
                             <td style="padding:0.65rem 1rem; font-weight:800; color:var(--navy);">{{ $r->full_name }}</td>
                             <td style="padding:0.65rem 1rem; color:var(--text-dim);">{{ $r->phone ?: '—' }}</td>
-                            <td style="padding:0.65rem 1rem; text-align:center; color:var(--text-dim);">{{ $r->visits }}</td>
-                            <td style="padding:0.65rem 1rem; text-align:center; font-weight:900; color:var(--primary);">{{ number_format($r->total_paid, 0) }}</td>
+                            <td style="padding:0.65rem 1rem; text-align:center; color:var(--text-dim);">{{ number_format($r->deposited, 0) }}</td>
+                            <td style="padding:0.65rem 1rem; text-align:center; font-weight:900; color:var(--primary);">{{ number_format($r->balance, 3) }}</td>
                         </tr>
                     @empty<tr><td colspan="5" style="padding:3rem; text-align:center; color:var(--text-muted);">لا توجد بيانات</td></tr>@endforelse</tbody>
 
