@@ -20,6 +20,7 @@ class Reprint extends Component
         11 => 'MyFatoorah',   12 => 'STC Pay',
         14 => 'Quick Pay',    20 => 'Deema',
         21 => 'Zakaa',        22 => 'Balance Transfer',
+        23 => 'Free - from Balance',
     ];
 
     public function search(): void

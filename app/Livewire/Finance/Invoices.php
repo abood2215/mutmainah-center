@@ -26,16 +26,17 @@ class Invoices extends Component
     public string $toYear  = '';
 
     const PAYMENT_LABELS = [
-        1  => ['ar' => 'نقد',        'en' => 'Cash'],
-        2  => ['ar' => 'شيك',        'en' => 'Cheque'],
-        3  => ['ar' => 'شبكة',       'en' => 'Net'],
-        4  => ['ar' => 'تحويل بنكي', 'en' => 'Bank'],
-        5  => ['ar' => 'سند',        'en' => 'Voucher'],
-        6  => ['ar' => 'فيزا',       'en' => 'Visa'],
-        7  => ['ar' => 'مجاني',      'en' => 'Free'],
-        11 => ['ar' => 'myfatoorah', 'en' => 'myfatoorah'],
-        12 => ['ar' => 'stcpay',     'en' => 'stcpay'],
-        14 => ['ar' => 'Quick Pay',  'en' => 'Quick Pay'],
+        1  => ['ar' => 'نقد',              'en' => 'Cash'],
+        2  => ['ar' => 'شيك',              'en' => 'Cheque'],
+        3  => ['ar' => 'شبكة',             'en' => 'Net'],
+        4  => ['ar' => 'تحويل بنكي',       'en' => 'Bank'],
+        5  => ['ar' => 'سند',              'en' => 'Voucher'],
+        6  => ['ar' => 'فيزا',             'en' => 'Visa'],
+        7  => ['ar' => 'مجاني',            'en' => 'Free'],
+        11 => ['ar' => 'myfatoorah',       'en' => 'myfatoorah'],
+        12 => ['ar' => 'stcpay',           'en' => 'stcpay'],
+        14 => ['ar' => 'Quick Pay',        'en' => 'Quick Pay'],
+        23 => ['ar' => 'مجاني - من الرصيد', 'en' => 'Free - from Balance'],
     ];
 
     #[Title('تقارير الفواتير')]

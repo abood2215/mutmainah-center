@@ -720,6 +720,7 @@
                         <option value="5">من الرصيد ({{ number_format($balance, 3) }} د.ك)</option>
                         @endif
                         <option value="7">مجاني — Free</option>
+                        <option value="23">مجاني - من الرصيد — Free - from Balance</option>
                     </select>
                 </div>
 

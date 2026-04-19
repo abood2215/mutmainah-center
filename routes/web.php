@@ -132,7 +132,7 @@ Route::middleware(['auth.employee'])->group(function () {
 
         $paymentLabels = [
             1=>'نقدا', 3=>'شبكة', 4=>'تحويل بنكي', 5=>'سند',
-            6=>'فيزا', 11=>'Myfatoorah', 12=>'stcpay', 14=>'دفع سريع',
+            6=>'فيزا', 11=>'Myfatoorah', 12=>'stcpay', 14=>'دفع سريع', 23=>'مجاني - من الرصيد',
         ];
         $paymentLabel = $paymentLabels[$invoice?->payment_method ?? 1] ?? 'نقدا';
 
@@ -223,6 +223,7 @@ Route::middleware(['auth.employee'])->group(function () {
         $payMethods = [
             1=>'نقدا', 3=>'شبكة', 6=>'فيزا', 4=>'تحويل بنكي',
             11=>'MyFatoorah', 12=>'STC Pay', 14=>'دفع سريع', 20=>'Deema', 21=>'زكاء', 22=>'نقل رصيد',
+            23=>'مجاني - من الرصيد',
         ];
 
         $desc = $mov->pdesc ?? '';

@@ -201,8 +201,8 @@ $years  = range(2000, now()->year + 1);
 
     {{-- جدول الحركات --}}
     @php
-        $methods = [1=>'نقد',2=>'شيك',3=>'شبكة',4=>'تحويل',5=>'سند',6=>'فيزا',7=>'مجاني',11=>'Myfatoorah',12=>'STC',14=>'Quick Pay'];
-        $methodColors = [1=>'#16a34a',2=>'#0891b2',3=>'#1d4ed8',4=>'#7c3aed',5=>'#d97706',6=>'#7c3aed',7=>'#6b7280',11=>'#0891b2',12=>'#16a34a',14=>'#16a34a'];
+        $methods = [1=>'نقد',2=>'شيك',3=>'شبكة',4=>'تحويل',5=>'سند',6=>'فيزا',7=>'مجاني',11=>'Myfatoorah',12=>'STC',14=>'Quick Pay',23=>'مجاني - من الرصيد'];
+        $methodColors = [1=>'#16a34a',2=>'#0891b2',3=>'#1d4ed8',4=>'#7c3aed',5=>'#d97706',6=>'#7c3aed',7=>'#6b7280',11=>'#0891b2',12=>'#16a34a',14=>'#16a34a',23=>'#6b7280'];
     @endphp
     <div style="overflow-x:auto;">
         <table style="width:100%; border-collapse:collapse; font-family:'Tajawal',sans-serif; font-size:0.84rem;">

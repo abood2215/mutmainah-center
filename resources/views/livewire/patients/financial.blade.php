@@ -182,6 +182,7 @@
                                 4=>'تحويل بنكي', 5=>'سند', 6=>'فيزا',
                                 11=>'Myfatoorah', 12=>'STC Pay',
                                 14=>'دفع سريع', 20=>'Deema',
+                                23=>'مجاني - من الرصيد',
                             ];
                             $isDeferred = $svc->payment_method == 5;
                             $isFree = $svc->effective_price == 0;
