@@ -188,12 +188,18 @@ class Index extends Component
         $spec = DB::table('clinic as c')
             ->leftJoin('employees as e', 'e.id', '=', 'c.doc_id1')
             ->where('c.id', $clinicId)
-            ->select('c.name as clinic_name', 'e.phone as spec_phone',
+            ->select('c.name as clinic_name', 'e.id as spec_id', 'e.phone as spec_phone',
                      DB::raw("TRIM(CONCAT(COALESCE(e.first_name,''), ' ', COALESCE(e.middle_initial,''))) as spec_name"))
             ->first();
 
-        if (!$spec || !trim($spec->spec_phone ?? '')) {
-            $this->dispatch('spec-notif-error', msg: 'لا يوجد رقم هاتف للأخصائي المرتبط بهذه العيادة');
+        if (!$spec) {
+            $this->dispatch('spec-notif-error', msg: 'لا يوجد أخصائي مرتبط بهذه العيادة');
+            return;
+        }
+
+        if (!trim($spec->spec_phone ?? '')) {
+            $this->dispatch('spec-notif-error', 
+                msg: 'لا يوجد رقم هاتف مسجل للأخصائي: ' . trim($spec->spec_name));
             return;
         }
 
@@ -212,9 +218,24 @@ class Index extends Component
             $phone = '965' . $phone;
         }
 
+        // تسجيل إرسال التنبيه
+        try {
+            DB::table('activity_logs')->insert([
+                'action'      => 'sent',
+                'subject'     => 'specialist_notification',
+                'subject_id'  => $spec->spec_id,
+                'description' => 'إرسال تنبيه جدول مواعيد إلى ' . trim($spec->spec_name) 
+                               . ' (' . $phone . ') بتاريخ: ' . $recDate,
+                'user_id'     => auth()->user()?->id ?? 0,
+                'user_name'   => auth()->user()?->getName() ?? auth()->user()?->user_name ?? 'نظام',
+                'created_at'  => now(),
+            ]);
+        } catch (\Throwable) {}
+
         $this->dispatch('open-specialist-wa', [
             'phone'      => $phone,
             'specName'   => trim($spec->spec_name),
+            'specPhone'  => $phone,
             'clinicName' => $spec->clinic_name,
             'date'       => $recDate,
             'appts'      => $appts->map(fn($a) => [

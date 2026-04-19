@@ -415,12 +415,26 @@ $wire.on('open-specialist-wa', (payload) => {
         msg += nl + 'الإجمالي: ' + appts.length + ' موعد';
     }
     msg += nl + 'مركز مطمئنة 💚';
+    
+    // إظهار رسالة تأكيد
+    var confirmMsg = 'جاري إرسال التنبيه إلى:\n' + (d.specName || 'الأخصائي') + '\nالرقم: ' + (d.specPhone || 'غير متوفر');
+    console.log('✓ ' + confirmMsg);
+    
+    // فتح WhatsApp
     window.open('https://api.whatsapp.com/send?phone=' + d.phone + '&text=' + encodeURIComponent(msg), '_blank');
+    
+    // رسالة نجاح بسيطة
+    if (window.Toastr || window.toast) {
+        // استخدام مكتبة Toastr إذا كانت موجودة
+        if (window.Toastr) window.Toastr.success('تم إرسال التنبيه بنجاح ✓', '');
+    }
 });
 
 $wire.on('spec-notif-error', (payload) => {
     var d = Array.isArray(payload) ? payload[0] : payload;
-    alert(d.msg || 'لا يوجد رقم هاتف للأخصائي');
+    var errorMsg = d.msg || 'لا يوجد رقم هاتف للأخصائي';
+    alert('❌ خطأ: ' + errorMsg);
+    console.error('Specialist notification error:', errorMsg);
 });
 </script>
 @endscript
