@@ -724,7 +724,10 @@
                     </select>
                 </div>
 
-                @php $afDanger = $hasAccount && !$isFree && $patientAmount > 0 && $balance < $patientAmount; @endphp
+                @php 
+                    $isFreeOrFromBalance = $isFree || $paymentMethod == 23;
+                    $afDanger = $hasAccount && !$isFreeOrFromBalance && $patientAmount > 0 && $balance < $patientAmount; 
+                @endphp
                 <div class="nc-amount-final {{ $afDanger ? 'af-danger' : '' }}">
                     <div class="af-lbl">{{ $afDanger ? '⛔ الرصيد غير كافٍ' : 'المبلغ على العميل' }}</div>
                     <div class="af-val">{{ number_format($patientAmount, 3) }} <span class="af-cur">د.ك</span></div>
@@ -742,7 +745,8 @@
 
     {{-- ── الشريط السفلي ── --}}
     @php
-        $balanceInsufficient = $hasAccount && !$isFree && $patientAmount > 0 && $balance < $patientAmount;
+        $isFreeOrFromBalance = $isFree || $paymentMethod == 23;
+        $balanceInsufficient = $hasAccount && !$isFreeOrFromBalance && $patientAmount > 0 && $balance < $patientAmount;
     @endphp
 
     <div class="nc-footer">
