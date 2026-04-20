@@ -107,6 +107,7 @@ class ImportOpeningBalances extends Command
                 $acckId = DB::table('acck')->insertGetId([
                     'name'   => $patient->full_name ?? '',
                     'stu_id' => $patient->id,
+                    'pdesc'  => '',
                 ]);
             }
 
