@@ -65,6 +65,8 @@ class ImportOpeningBalances extends Command
             $fileId     = (int)   $row['file_id'];
             $xlsCredit  = (float) $row['credit']; // له  (يملك)
             $xlsDebit   = (float) $row['debit'];  // عليه (يدين)
+            // 6350 = قيمة افتراضية خاطئة من النظام القديم → نتعامل كـ 0
+            if ($xlsDebit == 6350 && $xlsCredit == 0) $xlsDebit = 0;
             $xlsBalance = $xlsCredit - $xlsDebit; // الرصيد الصافي المستهدف
 
             if ($fileId === 0) { $skipped++; $bar->advance(); continue; }
