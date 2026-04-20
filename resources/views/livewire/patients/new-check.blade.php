@@ -719,13 +719,14 @@
                         @if($balance > 0)
                         <option value="5">من الرصيد ({{ number_format($balance, 3) }} د.ك)</option>
                         @endif
+                        <option value="8">آجل — Deferred</option>
                         <option value="7">مجاني — Free</option>
                         <option value="23">مجاني - من الرصيد — Free - from Balance</option>
                     </select>
                 </div>
 
                 @php 
-                    $isFreeOrFromBalance = $isFree || $paymentMethod == 23;
+                    $isFreeOrFromBalance = $isFree || in_array($paymentMethod, [8, 23]);
                     $afDanger = $hasAccount && !$isFreeOrFromBalance && $patientAmount > 0 && $balance < $patientAmount; 
                 @endphp
                 <div class="nc-amount-final {{ $afDanger ? 'af-danger' : '' }}">
@@ -745,7 +746,7 @@
 
     {{-- ── الشريط السفلي ── --}}
     @php
-        $isFreeOrFromBalance = $isFree || $paymentMethod == 23;
+        $isFreeOrFromBalance = $isFree || in_array($paymentMethod, [8, 23]);
         $balanceInsufficient = $hasAccount && !$isFreeOrFromBalance && $patientAmount > 0 && $balance < $patientAmount;
     @endphp
 

@@ -267,7 +267,7 @@ class NewCheck extends Component
 
         // منع الحجز إذا كان الرصيد غير كافٍ
         // لكن السماح إذا كان مجاني (isFree=1) أو مجاني من الرصيد (paymentMethod=23)
-        if ($this->hasAccount && !$this->isFree && $this->paymentMethod != 23) {
+        if ($this->hasAccount && !$this->isFree && !in_array($this->paymentMethod, [8, 23])) {
             $due = $this->getPatientAmount();
             if ($due > 0 && $this->balance < $due) {
                 session()->flash('balance_error',

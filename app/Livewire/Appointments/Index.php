@@ -250,16 +250,37 @@ class Index extends Component
     {
         $today = now()->format('j-n-Y');
 
-        // تحديث تلقائي: مرة واحدة فقط في اليوم (بدل كل render)
+        // حذف المواعيد المنتهية تلقائياً (مرة واحدة في اليوم)
         Cache::remember('appt_past_close_' . now()->format('Y-m-d'), 3600 * 6, function () {
             $pastDates = [];
             for ($i = 1; $i <= 30; $i++) {
                 $pastDates[] = now()->subDays($i)->format('j-n-Y');
             }
-            return DB::table('rec')
+
+            $toDelete = DB::table('rec')
                 ->where('confirm_id', 0)
                 ->whereIn('rec_date', $pastDates)
-                ->update(['confirm_id' => 1]);
+                ->get(['id', 'st_id', 'rec_date', 'rec_time']);
+
+            if ($toDelete->isNotEmpty()) {
+                $logs = $toDelete->map(fn($r) => [
+                    'action'      => 'deleted',
+                    'subject'     => 'appointment',
+                    'subject_id'  => $r->st_id,
+                    'description' => 'حذف تلقائي لموعد منتهٍ بتاريخ ' . $r->rec_date . ($r->rec_time ? ' الساعة ' . $r->rec_time : ''),
+                    'user_id'     => 0,
+                    'user_name'   => 'النظام',
+                    'created_at'  => now(),
+                ])->toArray();
+
+                DB::table('activity_logs')->insert($logs);
+
+                DB::table('rec')
+                    ->whereIn('id', $toDelete->pluck('id'))
+                    ->delete();
+            }
+
+            return $toDelete->count();
         });
 
         $query = DB::table('rec as r')
