@@ -124,6 +124,11 @@ class ImportOpeningBalances extends Command
                 ]);
             } else {
                 $acckId = $acck->id;
+                // حذف كل الإيداعات والخصومات القديمة لهذا الحساب (البيانات المنقولة بالغلط)
+                DB::table('kpayments')
+                    ->where('acc_id', $acckId)
+                    ->whereIn('status', [1, 2])
+                    ->delete();
             }
 
             // ── رصيد دائن (له) → إيداع ──
