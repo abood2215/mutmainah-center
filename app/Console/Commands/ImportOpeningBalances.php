@@ -43,12 +43,16 @@ class ImportOpeningBalances extends Command
 
         $this->info('الصفوف: ' . count($rows));
 
-        // حذف أي تسويات سابقة أدرجها هذا الأمر
+        // حذف أي تسويات/أرصدة افتتاحية سابقة أدرجها هذا الأمر
         if (!$dryRun) {
-            $deleted = DB::table('kpayments')->where('pdesc', self::DESC)->delete();
-            // حذف أي "رصيد افتتاحي" قديم أضفناه بالخطأ
-            DB::table('kpayments')->where('pdesc', 'رصيد افتتاحي 17-4-2026')->delete();
-            if ($deleted > 0) $this->warn("تم حذف {$deleted} تسوية سابقة");
+            // نحذف بالـ pdate + status بدل الاعتماد على النص العربي (تجنب مشاكل الترميز)
+            $deleted = DB::table('kpayments')
+                ->where('pdate', self::PDATE)
+                ->whereIn('status', [1, 2])
+                ->where('rec_id', 0)
+                ->where('clinic_id', 0)
+                ->delete();
+            if ($deleted > 0) $this->warn("تم حذف {$deleted} سجل تسوية سابق");
         }
 
         $processed = $skipped = $notFound = $noChange = 0;
