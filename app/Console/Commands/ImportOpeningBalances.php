@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class ImportOpeningBalances extends Command
 {
-    protected $signature   = 'balances:import {--dry-run : عرض فقط بدون حفظ} {--file-id= : تجربة على ملف واحد فقط}';
+    protected $signature   = 'balances:import {--dry-run : عرض فقط بدون حفظ} {--file-id= : تجربة على ملف واحد فقط} {--path= : مسار الملف إذا كان في مكان آخر}';
     protected $description = 'استيراد الأرصدة الافتتاحية من ملف ارصده العملاء2.xls';
 
     private const PDATE = '17-4-2026';
@@ -16,7 +16,7 @@ class ImportOpeningBalances extends Command
 
     public function handle(): int
     {
-        $path = base_path(self::FILE);
+        $path = $this->option('path') ?: base_path(self::FILE);
         if (!file_exists($path)) {
             $this->error("الملف غير موجود: {$path}");
             return 1;
