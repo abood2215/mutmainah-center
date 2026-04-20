@@ -127,36 +127,12 @@ class ImportOpeningBalances extends Command
             }
 
             // ── رصيد دائن (له) → إيداع ──
-            $base = [
-                'acc_id'         => $acckId,
-                'pdate'          => self::PDATE,
-                'price'          => 0,
-                'net'            => 0,
-                'payment_method' => 0,
-                'pdesc'          => self::DESC,
-                'rec_id'         => 0,
-                'clinic_id'      => 0,
-                'serial_no'      => 0,
-                'user_id'        => 0,
-                'client_id'      => 0,
-                'discount'       => 0,
-                'credit'         => 0,
-            ];
-
             if ($credit > 0) {
-                DB::table('kpayments')->insert($base + [
-                    'amount'  => $credit,
-                    'status'  => 1,
-                    'type_id' => 1,
-                ]);
+                DB::table('kpayments')->insert($this->buildRow($acckId, $credit, 1, 1));
             }
 
             if ($debit > 0) {
-                DB::table('kpayments')->insert($base + [
-                    'amount'  => $debit,
-                    'status'  => 2,
-                    'type_id' => 0,
-                ]);
+                DB::table('kpayments')->insert($this->buildRow($acckId, $debit, 2, 0));
             }
 
             $inserted++;
@@ -181,6 +157,41 @@ class ImportOpeningBalances extends Command
         }
 
         return 0;
+    }
+
+    private ?array $kpaymentsColumns = null;
+
+    private function buildRow(int $acckId, float $amount, int $status, int $typeId): array
+    {
+        if ($this->kpaymentsColumns === null) {
+            $this->kpaymentsColumns = DB::getSchemaBuilder()->getColumnListing('kpayments');
+        }
+
+        $all = [
+            'acc_id'         => $acckId,
+            'pdate'          => self::PDATE,
+            'amount'         => $amount,
+            'price'          => 0,
+            'net'            => 0,
+            'status'         => $status,
+            'type_id'        => $typeId,
+            'payment_method' => 0,
+            'pdesc'          => self::DESC,
+            'rec_id'         => 0,
+            'clinic_id'      => 0,
+            'serial_no'      => 0,
+            'user_id'        => 0,
+            'client_id'      => 0,
+            'discount'       => 0,
+            'credit'         => 0,
+            'res_amount'     => 0,
+            'ptime'          => '',
+            'notes'          => '',
+            'insur_amount'   => 0,
+        ];
+
+        // أدرج فقط الأعمدة الموجودة فعلاً (تجنب الأخطاء مع اختلاف إصدارات السكيما)
+        return array_intersect_key($all, array_flip($this->kpaymentsColumns));
     }
 
     private function parseJson(string $path): array
