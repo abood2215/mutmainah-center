@@ -15,6 +15,9 @@ class Dashboard extends Component
     public array  $monthModalClinics = [];
     public bool   $showMonthModal    = false;
 
+    public bool  $showTodayRevenueModal = false;
+    public array $todayRevenueDetails   = [];
+
     public function loadMonthClinics(int $year, int $month, string $label): void
     {
         $clinics = DB::table('rec as r')
@@ -35,6 +38,54 @@ class Dashboard extends Component
     public function closeMonthModal(): void
     {
         $this->showMonthModal = false;
+    }
+
+    public function loadTodayRevenue(): void
+    {
+        $today = now()->format('j-n-Y');
+
+        $rows = DB::table('kpayments as p')
+            ->leftJoin('rec as r', 'r.id', '=', 'p.rec_id')
+            ->leftJoin('kstu as k', 'k.id', '=', 'r.st_id')
+            ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
+            ->where('p.price', '>', 0)
+            ->where('p.pdate', $today)
+            ->select(
+                'k.full_name',
+                'k.file_id',
+                'c.name as clinic_name',
+                'p.pdesc',
+                'p.price',
+                'p.discount',
+                'p.payment_method',
+                'p.ptime'
+            )
+            ->orderBy('p.id', 'desc')
+            ->get();
+
+        $methods = [
+            1 => 'نقدي', 2 => 'شيك', 3 => 'K-Net', 4 => 'تحويل بنكي',
+            5 => 'من الرصيد', 6 => 'فيزا', 7 => 'مجاني', 8 => 'آجل',
+            11 => 'MyFatoorah', 23 => 'مجاني من الرصيد',
+        ];
+
+        $this->todayRevenueDetails = $rows->map(fn($r) => [
+            'name'    => $r->full_name ?: '—',
+            'file_id' => $r->file_id,
+            'clinic'  => $r->clinic_name ?: '—',
+            'desc'    => $r->pdesc ?: '—',
+            'price'   => (float) $r->price,
+            'discount'=> (float) ($r->discount ?? 0),
+            'method'  => $methods[$r->payment_method] ?? ('pm='.$r->payment_method),
+            'time'    => $r->ptime ?: '',
+        ])->toArray();
+
+        $this->showTodayRevenueModal = true;
+    }
+
+    public function closeTodayRevenueModal(): void
+    {
+        $this->showTodayRevenueModal = false;
     }
 
     public function render()

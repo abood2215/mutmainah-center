@@ -128,12 +128,12 @@
             </div>
 
             @if($isAdmin)
-            <div class="card" style="padding:1.25rem; display:flex; align-items:center; gap:1rem; border-right:4px solid var(--success);">
+            <div class="card" wire:click="loadTodayRevenue" style="padding:1.25rem; display:flex; align-items:center; gap:1rem; border-right:4px solid var(--success); cursor:pointer; transition:box-shadow .2s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(46,125,50,.18)'" onmouseout="this.style.boxShadow=''">
                 <div style="width:52px; height:52px; background:rgba(46,125,50,0.08); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.6rem; flex-shrink:0;">💵</div>
                 <div>
                     <div style="font-size:0.78rem; font-weight:700; color:var(--text-muted); margin-bottom:0.2rem;">إيرادات اليوم</div>
                     <div style="font-size:1.7rem; font-weight:900; color:var(--success); line-height:1;">{{ number_format($todayRevenue, 0) }}</div>
-                    <div style="font-size:0.72rem; color:var(--text-muted);">د.ك</div>
+                    <div style="font-size:0.72rem; color:var(--text-muted);">د.ك &nbsp;🔍</div>
                 </div>
             </div>
 
@@ -451,4 +451,68 @@
     document.addEventListener('livewire:navigated', initCharts);
 })();
 </script>
+@endif
+
+{{-- ── Modal إيرادات اليوم ── --}}
+@if($showTodayRevenueModal)
+<div style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;" wire:click.self="closeTodayRevenueModal">
+    <div style="background:#fff;border-radius:14px;width:100%;max-width:820px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;">
+
+        {{-- رأس --}}
+        <div style="background:linear-gradient(135deg,#1b5e20,#2e7d32);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;">
+            <div style="color:#fff;font-size:1rem;font-weight:900;">💵 تفاصيل إيرادات اليوم — {{ now()->locale('ar')->isoFormat('D MMMM YYYY') }}</div>
+            <button wire:click="closeTodayRevenueModal" style="background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:1rem;">✕</button>
+        </div>
+
+        {{-- جدول --}}
+        <div style="overflow-y:auto;flex:1;">
+            @if(empty($todayRevenueDetails))
+                <div style="text-align:center;padding:40px;color:#aaa;font-size:.9rem;">لا توجد إيرادات اليوم</div>
+            @else
+            <table style="width:100%;border-collapse:collapse;font-family:'Tajawal',sans-serif;font-size:.83rem;">
+                <thead>
+                    <tr style="background:#f7f8fa;position:sticky;top:0;">
+                        <th style="padding:10px 12px;text-align:right;color:#555;font-weight:800;border-bottom:2px solid #e8e8e8;">العميل</th>
+                        <th style="padding:10px 12px;text-align:right;color:#555;font-weight:800;border-bottom:2px solid #e8e8e8;">العيادة</th>
+                        <th style="padding:10px 12px;text-align:right;color:#555;font-weight:800;border-bottom:2px solid #e8e8e8;">الخدمة</th>
+                        <th style="padding:10px 12px;text-align:center;color:#555;font-weight:800;border-bottom:2px solid #e8e8e8;">المبلغ</th>
+                        <th style="padding:10px 12px;text-align:center;color:#555;font-weight:800;border-bottom:2px solid #e8e8e8;">الطريقة</th>
+                        <th style="padding:10px 12px;text-align:center;color:#555;font-weight:800;border-bottom:2px solid #e8e8e8;">الوقت</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($todayRevenueDetails as $row)
+                    <tr style="border-bottom:1px solid #f0f0f0;">
+                        <td style="padding:9px 12px;font-weight:700;color:#1a1a2e;">
+                            {{ $row['name'] }}
+                            @if($row['file_id'])<span style="color:#aaa;font-size:.75rem;"> #{{ $row['file_id'] }}</span>@endif
+                        </td>
+                        <td style="padding:9px 12px;color:#555;">{{ $row['clinic'] }}</td>
+                        <td style="padding:9px 12px;color:#555;">{{ $row['desc'] }}</td>
+                        <td style="padding:9px 12px;text-align:center;font-weight:800;color:#1b5e20;font-family:'Inter',sans-serif;">
+                            {{ number_format($row['price'], 3) }}
+                            @if($row['discount'] > 0)<br><span style="color:#e65100;font-size:.75rem;">-{{ number_format($row['discount'],3) }}</span>@endif
+                        </td>
+                        <td style="padding:9px 12px;text-align:center;">
+                            <span style="background:#e8f5e9;color:#2e7d32;padding:2px 10px;border-radius:20px;font-size:.76rem;font-weight:800;">{{ $row['method'] }}</span>
+                        </td>
+                        <td style="padding:9px 12px;text-align:center;color:#888;font-size:.78rem;">{{ $row['time'] }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            @endif
+        </div>
+
+        {{-- مجموع --}}
+        @if(!empty($todayRevenueDetails))
+        <div style="background:#f7f8fa;border-top:2px solid #e8e8e8;padding:12px 20px;display:flex;justify-content:flex-end;align-items:center;gap:8px;">
+            <span style="font-size:.82rem;font-weight:700;color:#555;">الإجمالي:</span>
+            <span style="font-size:1.2rem;font-weight:900;color:#1b5e20;font-family:'Inter',sans-serif;">
+                {{ number_format(array_sum(array_column($todayRevenueDetails,'price')), 3) }} د.ك
+            </span>
+        </div>
+        @endif
+    </div>
+</div>
 @endif
