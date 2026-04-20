@@ -127,44 +127,35 @@ class ImportOpeningBalances extends Command
             }
 
             // ── رصيد دائن (له) → إيداع ──
+            $base = [
+                'acc_id'         => $acckId,
+                'pdate'          => self::PDATE,
+                'price'          => 0,
+                'net'            => 0,
+                'payment_method' => 0,
+                'pdesc'          => self::DESC,
+                'rec_id'         => 0,
+                'clinic_id'      => 0,
+                'serial_no'      => 0,
+                'user_id'        => 0,
+                'client_id'      => 0,
+                'discount'       => 0,
+                'credit'         => 0,
+            ];
+
             if ($credit > 0) {
-                DB::table('kpayments')->insert([
-                    'acc_id'         => $acckId,
-                    'pdate'          => self::PDATE,
-                    'amount'         => $credit,
-                    'price'          => 0,
-                    'net'            => 0,
-                    'status'         => 1,
-                    'type_id'        => 1,
-                    'payment_method' => 0,
-                    'pdesc'          => self::DESC,
-                    'rec_id'         => 0,
-                    'clinic_id'      => 0,
-                    'serial_no'      => 0,
-                    'user_id'        => 0,
-                    'discount'       => 0,
-                    'credit'         => 0,
+                DB::table('kpayments')->insert($base + [
+                    'amount'  => $credit,
+                    'status'  => 1,
+                    'type_id' => 1,
                 ]);
             }
 
-            // ── مديونية (عليه) → خصم من الرصيد ──
             if ($debit > 0) {
-                DB::table('kpayments')->insert([
-                    'acc_id'         => $acckId,
-                    'pdate'          => self::PDATE,
-                    'amount'         => $debit,
-                    'price'          => 0,
-                    'net'            => 0,
-                    'status'         => 2,
-                    'type_id'        => 0,
-                    'payment_method' => 0,
-                    'pdesc'          => self::DESC,
-                    'rec_id'         => 0,
-                    'clinic_id'      => 0,
-                    'serial_no'      => 0,
-                    'user_id'        => 0,
-                    'discount'       => 0,
-                    'credit'         => 0,
+                DB::table('kpayments')->insert($base + [
+                    'amount'  => $debit,
+                    'status'  => 2,
+                    'type_id' => 0,
                 ]);
             }
 
