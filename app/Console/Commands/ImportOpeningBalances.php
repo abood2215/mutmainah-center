@@ -13,18 +13,25 @@ class ImportOpeningBalances extends Command
     private const PDATE = '17-4-2026';
     private const DESC  = 'رصيد افتتاحي 17-4-2026';
     private const FILE  = 'ارصده العملاء2.xls';
+    private const JSON  = 'balances_data.json';
 
     public function handle(): int
     {
-        $path = $this->option('path') ?: base_path(self::FILE);
-        if (!file_exists($path)) {
-            $this->error("الملف غير موجود: {$path}");
+        $dryRun   = $this->option('dry-run');
+        $singleId = $this->option('file-id') ? (int) $this->option('file-id') : null;
+
+        // يحاول JSON أولاً ثم XLS
+        $jsonPath = base_path(self::JSON);
+        $xlsPath  = $this->option('path') ?: base_path(self::FILE);
+
+        if (file_exists($jsonPath)) {
+            $rows = $this->parseJson($jsonPath);
+        } elseif (file_exists($xlsPath)) {
+            $rows = $this->parseFile($xlsPath);
+        } else {
+            $this->error("لا يوجد ملف بيانات: " . self::JSON . " أو " . self::FILE);
             return 1;
         }
-
-        $dryRun    = $this->option('dry-run');
-        $singleId  = $this->option('file-id') ? (int) $this->option('file-id') : null;
-        $rows      = $this->parseFile($path);
 
         if (empty($rows)) {
             $this->error('لم يتم قراءة أي صفوف من الملف');
@@ -183,6 +190,17 @@ class ImportOpeningBalances extends Command
         }
 
         return 0;
+    }
+
+    private function parseJson(string $path): array
+    {
+        $data = json_decode(file_get_contents($path), true) ?? [];
+        return array_map(fn($r) => [
+            'name'    => $r['n'] ?? '',
+            'file_id' => (string) ($r['f'] ?? '0'),
+            'debit'   => (string) ($r['d'] ?? '0'),
+            'credit'  => (string) ($r['c'] ?? '0'),
+        ], $data);
     }
 
     private function parseFile(string $path): array
