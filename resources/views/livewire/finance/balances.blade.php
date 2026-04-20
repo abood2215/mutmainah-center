@@ -8,7 +8,7 @@
                 <div style="width:42px; height:42px; background:#f0fdf4; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.4rem;">💰</div>
                 <div>
                     <h1 style="font-size:1.3rem; font-weight:900; color:#166534; margin:0;">أرصدة العملاء</h1>
-                    <div style="font-size:0.78rem; color:var(--text-muted); font-weight:600; margin-top:0.1rem;">العملاء الذين لديهم رصيد متبقٍ في حساباتهم</div>
+                    <div style="font-size:0.78rem; color:var(--text-muted); font-weight:600; margin-top:0.1rem;">الأرصدة الدائنة والمديونيات</div>
                 </div>
             </div>
             <!-- إجمالي الأرصدة -->
@@ -70,9 +70,15 @@
                             {{ $totalCharged > 0 ? number_format($totalCharged, 3) : '—' }}
                         </td>
                         <td style="padding:0.75rem 1rem; text-align:center;">
+                            @if($r->balance > 0)
                             <span style="background:#f0fdf4; color:#15803d; font-weight:900; font-size:1rem; font-family:'Inter',sans-serif; padding:4px 14px; border-radius:20px; border:1px solid #bbf7d0; white-space:nowrap;">
                                 {{ number_format($r->balance, 3) }} <span style="font-size:0.65rem; opacity:0.8;">د.ك</span>
                             </span>
+                            @else
+                            <span style="background:#fef2f2; color:#b91c1c; font-weight:900; font-size:1rem; font-family:'Inter',sans-serif; padding:4px 14px; border-radius:20px; border:1px solid #fecaca; white-space:nowrap;">
+                                {{ number_format($r->balance, 3) }} <span style="font-size:0.65rem; opacity:0.8;">د.ك</span>
+                            </span>
+                            @endif
                         </td>
                         <td style="padding:0.75rem 1rem; text-align:center;">
                             <a href="{{ route('patients.financial-statement', $r->id) }}" wire:navigate

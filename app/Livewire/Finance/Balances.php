@@ -46,8 +46,9 @@ class Balances extends Component
         ";
 
         $query = DB::table(DB::raw("({$sql}) AS pb"))
-            ->where('balance', '>', 0)
-            ->orderBy('balance', 'desc');
+            ->where('balance', '!=', 0)
+            ->orderByRaw('balance > 0 DESC')
+            ->orderByRaw('ABS(balance) DESC');
 
         if ($this->search) {
             $t = '%' . $this->search . '%';
