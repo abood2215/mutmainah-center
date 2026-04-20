@@ -159,15 +159,22 @@ class ImportOpeningBalances extends Command
         return 0;
     }
 
-    private ?array $kpaymentsColumns = null;
+    private ?array $rowTemplate = null;
 
     private function buildRow(int $acckId, float $amount, int $status, int $typeId): array
     {
-        if ($this->kpaymentsColumns === null) {
-            $this->kpaymentsColumns = DB::getSchemaBuilder()->getColumnListing('kpayments');
+        if ($this->rowTemplate === null) {
+            // نأخذ أي صف موجود كـ template ونصفّر كل قيمه
+            $sample = DB::table('kpayments')->first();
+            if ($sample) {
+                $this->rowTemplate = array_map(fn($v) => is_numeric($v) ? 0 : '', (array) $sample);
+                unset($this->rowTemplate['id']);
+            } else {
+                $this->rowTemplate = [];
+            }
         }
 
-        $all = [
+        return array_merge($this->rowTemplate, [
             'acc_id'         => $acckId,
             'pdate'          => self::PDATE,
             'amount'         => $amount,
@@ -179,19 +186,7 @@ class ImportOpeningBalances extends Command
             'pdesc'          => self::DESC,
             'rec_id'         => 0,
             'clinic_id'      => 0,
-            'serial_no'      => 0,
-            'user_id'        => 0,
-            'client_id'      => 0,
-            'discount'       => 0,
-            'credit'         => 0,
-            'res_amount'     => 0,
-            'ptime'          => '',
-            'notes'          => '',
-            'insur_amount'   => 0,
-        ];
-
-        // أدرج فقط الأعمدة الموجودة فعلاً (تجنب الأخطاء مع اختلاف إصدارات السكيما)
-        return array_intersect_key($all, array_flip($this->kpaymentsColumns));
+        ]);
     }
 
     private function parseJson(string $path): array
