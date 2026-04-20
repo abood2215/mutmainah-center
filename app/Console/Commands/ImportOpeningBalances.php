@@ -104,11 +104,15 @@ class ImportOpeningBalances extends Command
 
             // إنشاء acck إذا لم يكن موجوداً
             if (!$acckId) {
-                $acckId = DB::table('acck')->insertGetId([
-                    'name'   => $patient->full_name ?? '',
-                    'stu_id' => $patient->id,
-                    'pdesc'  => '',
-                ]);
+                $acckTemplate = DB::table('acck')->first();
+                $acckRow = $acckTemplate
+                    ? array_merge(
+                        array_map(fn($v) => is_numeric($v) ? 0 : '', (array) $acckTemplate),
+                        ['name' => $patient->full_name ?? '', 'stu_id' => $patient->id]
+                      )
+                    : ['name' => $patient->full_name ?? '', 'stu_id' => $patient->id, 'pdesc' => ''];
+                unset($acckRow['id']);
+                $acckId = DB::table('acck')->insertGetId($acckRow);
             }
 
             if ($correction > 0) {
