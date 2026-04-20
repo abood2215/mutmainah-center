@@ -242,6 +242,7 @@ class Dashboard extends Component
         // إيرادات اليوم (لا cache — تتغير لحظياً)
         $todayRevenue = DB::table('kpayments')
             ->where('price', '>', 0)
+            ->where('acc_id', 0)
             ->where('pdate', $today)
             ->sum('price');
 
