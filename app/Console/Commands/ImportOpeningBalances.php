@@ -7,20 +7,20 @@ use Illuminate\Support\Facades\DB;
 
 class ImportOpeningBalances extends Command
 {
-    protected $signature   = 'balances:import {--dry-run : عرض فقط بدون حفظ} {--file-id= : تجربة على ملف واحد فقط} {--path= : مسار الملف إذا كان في مكان آخر}';
-    protected $description = 'استيراد الأرصدة الافتتاحية من ملف ارصده العملاء2.xls';
+    protected $signature   = 'balances:import {--dry-run : عرض فقط بدون حفظ} {--file-id= : تجربة على ملف واحد فقط} {--path= : مسار الملف}';
+    protected $description = 'تسوية أرصدة العملاء بناءً على تقرير النظام القديم';
 
-    private const PDATE = '17-4-2026';
-    private const DESC  = 'رصيد افتتاحي 17-4-2026';
-    private const FILE  = 'ارصده العملاء2.xls';
-    private const JSON  = 'balances_data.json';
+    private const CUTOFF = '2026-04-18'; // ما قبل هذا التاريخ = النظام القديم
+    private const PDATE  = '17-4-2026';
+    private const DESC   = 'تسوية رصيد 17-4-2026';
+    private const JSON   = 'balances_data.json';
+    private const FILE   = 'ارصده العملاء2.xls';
 
     public function handle(): int
     {
         $dryRun   = $this->option('dry-run');
         $singleId = $this->option('file-id') ? (int) $this->option('file-id') : null;
 
-        // يحاول JSON أولاً ثم XLS
         $jsonPath = base_path(self::JSON);
         $xlsPath  = $this->option('path') ?: base_path(self::FILE);
 
@@ -29,139 +29,144 @@ class ImportOpeningBalances extends Command
         } elseif (file_exists($xlsPath)) {
             $rows = $this->parseFile($xlsPath);
         } else {
-            $this->error("لا يوجد ملف بيانات: " . self::JSON . " أو " . self::FILE);
+            $this->error("لا يوجد ملف بيانات");
             return 1;
         }
 
-        if (empty($rows)) {
-            $this->error('لم يتم قراءة أي صفوف من الملف');
-            return 1;
-        }
-
-        // تصفية على ملف واحد إذا طُلب
         if ($singleId !== null) {
-            $rows = array_filter($rows, fn($r) => (int)$r['file_id'] === $singleId);
-            $rows = array_values($rows);
+            $rows = array_values(array_filter($rows, fn($r) => (int)$r['file_id'] === $singleId));
             if (empty($rows)) {
                 $this->error("رقم الملف {$singleId} غير موجود في الملف");
                 return 1;
             }
         }
 
-        $this->info('الصفوف المراد معالجتها: ' . count($rows));
+        $this->info('الصفوف: ' . count($rows));
 
-        $inserted = 0;
-        $skipped  = 0;
-        $notFound = 0;
-        $errors   = [];
-
+        // حذف أي تسويات سابقة أدرجها هذا الأمر
         if (!$dryRun) {
-            if ($singleId !== null) {
-                // عند التجربة على ملف واحد: احذف سجلاته الافتتاحية فقط
-                $patient = DB::table('kstu')->where('file_id', $singleId)->first();
-                if ($patient) {
-                    $acck = DB::table('acck')->where('stu_id', $patient->id)->first();
-                    if ($acck) {
-                        $deleted = DB::table('kpayments')
-                            ->where('acc_id', $acck->id)
-                            ->where('pdesc', self::DESC)
-                            ->delete();
-                        if ($deleted > 0) $this->warn("تم حذف {$deleted} سجل افتتاحي سابق لهذا العميل");
-                    }
-                }
-            } else {
-                // حذف كل الأرصدة الافتتاحية السابقة
-                $deleted = DB::table('kpayments')->where('pdesc', self::DESC)->delete();
-                if ($deleted > 0) $this->warn("تم حذف {$deleted} سجل افتتاحي سابق");
-            }
+            $deleted = DB::table('kpayments')->where('pdesc', self::DESC)->delete();
+            // حذف أي "رصيد افتتاحي" قديم أضفناه بالخطأ
+            DB::table('kpayments')->where('pdesc', 'رصيد افتتاحي 17-4-2026')->delete();
+            if ($deleted > 0) $this->warn("تم حذف {$deleted} تسوية سابقة");
         }
+
+        $processed = $skipped = $notFound = $noChange = 0;
+        $errors = [];
 
         $bar = $this->output->createProgressBar(count($rows));
         $bar->start();
 
         foreach ($rows as $row) {
-            $fileId = (int) $row['file_id'];
-            $credit = (float) $row['credit']; // له
-            $debit  = (float) $row['debit'];  // عليه
+            $fileId     = (int)   $row['file_id'];
+            $xlsCredit  = (float) $row['credit']; // له  (يملك)
+            $xlsDebit   = (float) $row['debit'];  // عليه (يدين)
+            $xlsBalance = $xlsCredit - $xlsDebit; // الرصيد الصافي المستهدف
 
-            // تجاهل من لا رقم ملف له
-            if ($fileId === 0) {
-                $skipped++;
-                $bar->advance();
-                continue;
-            }
+            if ($fileId === 0) { $skipped++; $bar->advance(); continue; }
 
-            // تجاهل من لا رصيد له
-            if ($credit == 0 && $debit == 0) {
-                $skipped++;
-                $bar->advance();
-                continue;
-            }
-
-            // البحث عن العميل في kstu
             $patient = DB::table('kstu')->where('file_id', $fileId)->first();
             if (!$patient) {
                 $notFound++;
-                $errors[] = "لم يوجد ملف رقم: {$fileId} | {$row['name']}";
+                $errors[] = "ملف {$fileId}: {$row['name']}";
+                $bar->advance();
+                continue;
+            }
+
+            $acck   = DB::table('acck')->where('stu_id', $patient->id)->first();
+            $acckId = $acck?->id;
+
+            // ── حساب رصيد النظام حتى 17 أبريل ──
+            $systemBalance = $this->calcSystemBalance($patient->id, $acckId);
+
+            $correction = round($xlsBalance - $systemBalance, 3);
+
+            if (abs($correction) < 0.001) {
+                $noChange++;
                 $bar->advance();
                 continue;
             }
 
             if ($dryRun) {
                 $this->newLine();
-                $this->line("[معاينة] {$row['name']} | ملف:{$fileId} | له:{$credit} | عليه:{$debit}");
-                $inserted++;
+                $label = $correction > 0 ? "إيداع تسوية" : "خصم تسوية";
+                $this->line("[معاينة] {$row['name']} | ملف:{$fileId} | رصيد النظام:{$systemBalance} | XLS:{$xlsBalance} | تسوية:{$correction} ({$label})");
+                $processed++;
                 $bar->advance();
                 continue;
             }
 
-            // إيجاد أو إنشاء سجل acck للعميل
-            $acck = DB::table('acck')->where('stu_id', $patient->id)->first();
-            if (!$acck) {
+            // إنشاء acck إذا لم يكن موجوداً
+            if (!$acckId) {
                 $acckId = DB::table('acck')->insertGetId([
                     'name'   => $patient->full_name ?? '',
                     'stu_id' => $patient->id,
                 ]);
+            }
+
+            if ($correction > 0) {
+                // رصيد النظام أقل من المطلوب → أضف إيداع
+                DB::table('kpayments')->insert($this->buildRow($acckId, $correction, 1, 1));
             } else {
-                $acckId = $acck->id;
-                // حذف كل الإيداعات والخصومات القديمة لهذا الحساب (البيانات المنقولة بالغلط)
-                DB::table('kpayments')
-                    ->where('acc_id', $acckId)
-                    ->whereIn('status', [1, 2])
-                    ->delete();
+                // رصيد النظام أكثر من المطلوب → أضف خصم
+                DB::table('kpayments')->insert($this->buildRow($acckId, abs($correction), 2, 0));
             }
 
-            // ── رصيد دائن (له) → إيداع ──
-            if ($credit > 0) {
-                DB::table('kpayments')->insert($this->buildRow($acckId, $credit, 1, 1));
-            }
-
-            if ($debit > 0) {
-                DB::table('kpayments')->insert($this->buildRow($acckId, $debit, 2, 0));
-            }
-
-            $inserted++;
+            $processed++;
             $bar->advance();
         }
 
         $bar->finish();
         $this->newLine(2);
-
-        $this->info("تم المعالجة: {$inserted}");
-        $this->warn("تم التجاهل (بدون ملف أو بدون رصيد): {$skipped}");
+        $this->info("تسويات أُدرجت: {$processed}");
+        $this->line("لا تسوية لازمة (رصيد صحيح): {$noChange}");
+        $this->warn("تجاهل (بدون ملف/رصيد): {$skipped}");
         if ($notFound > 0) {
-            $this->error("لم يوجد في قاعدة البيانات: {$notFound}");
-            foreach (array_slice($errors, 0, 20) as $e) {
-                $this->line("  - {$e}");
-            }
+            $this->error("لم يوجد في DB: {$notFound}");
+            foreach (array_slice($errors, 0, 20) as $e) $this->line("  - {$e}");
         }
-
-        if ($dryRun) {
-            $this->newLine();
-            $this->warn('وضع المعاينة — لم يُحفظ شيء. شغّل بدون --dry-run للحفظ الفعلي.');
-        }
+        if ($dryRun) $this->warn("\nوضع المعاينة — لم يُحفظ شيء.");
 
         return 0;
+    }
+
+    // يحسب الرصيد كما يراه النظام حتى 17 أبريل فقط
+    private function calcSystemBalance(int $patientId, ?int $acckId): float
+    {
+        $cutoff = self::CUTOFF;
+
+        // إيداعات
+        $deposits = $acckId
+            ? (float) DB::table('kpayments')
+                ->where('acc_id', $acckId)
+                ->where('status', 1)
+                ->where('type_id', '!=', 2)
+                ->whereRaw("STR_TO_DATE(pdate, '%e-%c-%Y') < ?", [$cutoff])
+                ->whereNotIn('pdesc', [self::DESC, 'رصيد افتتاحي 17-4-2026'])
+                ->sum(DB::raw('COALESCE(NULLIF(amount,0), NULLIF(price,0), 0)'))
+            : 0.0;
+
+        // خصومات حساب (status=2 أو type_id=2)
+        $debits = $acckId
+            ? (float) DB::table('kpayments')
+                ->where('acc_id', $acckId)
+                ->where(function($q) {
+                    $q->where(fn($q2) => $q2->where('status', 2)->where('payment_method', '!=', 5))
+                      ->orWhere(fn($q2) => $q2->where('status', 1)->where('type_id', 2));
+                })
+                ->whereRaw("STR_TO_DATE(pdate, '%e-%c-%Y') < ?", [$cutoff])
+                ->sum(DB::raw('COALESCE(NULLIF(amount,0), NULLIF(price,0), 0)'))
+            : 0.0;
+
+        // خدمات من الرصيد (payment_method=5) مرتبطة بالعميل
+        $services = (float) DB::table('kpayments as k')
+            ->join('rec as r', 'r.id', '=', 'k.rec_id')
+            ->where('r.st_id', $patientId)
+            ->where('k.payment_method', 5)
+            ->whereRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') < ?", [$cutoff])
+            ->sum(DB::raw('GREATEST(0, k.price - COALESCE(k.discount,0))'));
+
+        return round($deposits - $debits - $services, 3);
     }
 
     private ?array $rowTemplate = null;
@@ -169,7 +174,6 @@ class ImportOpeningBalances extends Command
     private function buildRow(int $acckId, float $amount, int $status, int $typeId): array
     {
         if ($this->rowTemplate === null) {
-            // نأخذ أي صف موجود كـ template ونصفّر كل قيمه
             $sample = DB::table('kpayments')->first();
             if ($sample) {
                 $this->rowTemplate = array_map(fn($v) => is_numeric($v) ? 0 : '', (array) $sample);
@@ -209,34 +213,23 @@ class ImportOpeningBalances extends Command
     {
         $content = file_get_contents($path);
         $rows    = [];
-
         preg_match_all('/<tr[^>]*>(.*?)<\/tr>/is', $content, $matches);
-
         foreach ($matches[1] as $i => $rowHtml) {
-            // تجاهل أول 3 صفوف (عنوان + رأس عربي + رأس إنجليزي)
             if ($i < 3) continue;
-
             preg_match_all('/<t[dh][^>]*>(.*?)<\/t[dh]>/is', $rowHtml, $cells);
             $cols = array_map(
                 fn($c) => trim(strip_tags(html_entity_decode($c, ENT_QUOTES | ENT_HTML5, 'UTF-8'))),
                 $cells[1]
             );
-
             if (count($cols) < 8) continue;
-
-            // تجاهل صف الإجمالي
             if (str_contains($cols[0] ?? '', 'Total')) continue;
-
             $rows[] = [
                 'name'    => $cols[1] ?? '',
                 'file_id' => $cols[2] ?? '0',
-                'ssn'     => $cols[3] ?? '',
-                'phone'   => $cols[5] ?? '',
-                'debit'   => $cols[6] ?? '0',  // عليه
-                'credit'  => $cols[7] ?? '0',  // له
+                'debit'   => $cols[6] ?? '0',
+                'credit'  => $cols[7] ?? '0',
             ];
         }
-
         return $rows;
     }
 }
