@@ -299,20 +299,20 @@
                 @if(empty($todayRevenueDetails))
                     <div style="text-align:center;padding:40px;color:#aaa;font-size:.9rem;">لا توجد إيرادات اليوم</div>
                 @else
-                <table style="width:100%;border-collapse:collapse;font-family:'Tajawal',sans-serif;font-size:.83rem;">
+                <table style="width:100%;border-collapse:collapse;font-family:'Tajawal',sans-serif;font-size:.83rem;border:none;">
                     <thead>
-                        <tr style="background:#f7f8fa;position:sticky;top:0;">
-                            <th style="padding:10px 12px;text-align:right;color:#555;font-weight:800;border-bottom:2px solid #e8e8e8;">العميل</th>
-                            <th style="padding:10px 12px;text-align:right;color:#555;font-weight:800;border-bottom:2px solid #e8e8e8;">العيادة</th>
-                            <th style="padding:10px 12px;text-align:right;color:#555;font-weight:800;border-bottom:2px solid #e8e8e8;">الخدمة</th>
-                            <th style="padding:10px 12px;text-align:center;color:#555;font-weight:800;border-bottom:2px solid #e8e8e8;">المبلغ</th>
-                            <th style="padding:10px 12px;text-align:center;color:#555;font-weight:800;border-bottom:2px solid #e8e8e8;">الطريقة</th>
-                            <th style="padding:10px 12px;text-align:center;color:#555;font-weight:800;border-bottom:2px solid #e8e8e8;">الوقت</th>
+                        <tr style="background:#f7f8fa;position:sticky;top:0;border-bottom:2px solid #e0e0e0;">
+                            <th style="padding:10px 12px;text-align:right;color:#555;font-weight:800;border:none;">العميل</th>
+                            <th style="padding:10px 12px;text-align:right;color:#555;font-weight:800;border:none;">العيادة</th>
+                            <th style="padding:10px 12px;text-align:right;color:#555;font-weight:800;border:none;">الخدمة</th>
+                            <th style="padding:10px 12px;text-align:center;color:#555;font-weight:800;border:none;">المبلغ</th>
+                            <th style="padding:10px 12px;text-align:center;color:#555;font-weight:800;border:none;">الطريقة</th>
+                            <th style="padding:10px 12px;text-align:center;color:#555;font-weight:800;border:none;">الوقت</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($todayRevenueDetails as $row)
-                        <tr style="border-bottom:1px solid #f0f0f0;">
+                        <tr style="border-bottom:1px solid #f5f5f5;">
                             <td style="padding:9px 12px;font-weight:700;color:#1a1a2e;">
                                 {{ $row['name'] }}
                                 @if($row['file_id'])<span style="color:#aaa;font-size:.75rem;"> #{{ $row['file_id'] }}</span>@endif

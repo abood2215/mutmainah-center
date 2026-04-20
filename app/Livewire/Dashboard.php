@@ -49,6 +49,7 @@ class Dashboard extends Component
             ->leftJoin('kstu as k', 'k.id', '=', 'r.st_id')
             ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
             ->where('p.price', '>', 0)
+            ->where('p.acc_id', 0)
             ->where('p.pdate', $today)
             ->select(
                 'k.full_name',
