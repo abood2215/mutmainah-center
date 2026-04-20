@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class ImportOpeningBalances extends Command
 {
-    protected $signature   = 'balances:import {--dry-run : عرض فقط بدون حفظ} {--file-id= : تجربة على ملف واحد فقط} {--path= : مسار الملف}';
+    protected $signature   = 'balances:import {--dry-run : عرض فقط بدون حفظ} {--file-id= : تجربة على ملف واحد فقط} {--path= : مسار الملف} {--zero-unlisted : صفّر رصيد الـ pre-17 لمن ليس في الملف}';
     protected $description = 'تسوية أرصدة العملاء بناءً على تقرير النظام القديم';
 
     private const CUTOFF = '2026-04-18'; // ما قبل هذا التاريخ = النظام القديم
@@ -138,7 +138,68 @@ class ImportOpeningBalances extends Command
         }
         if ($dryRun) $this->warn("\nوضع المعاينة — لم يُحفظ شيء.");
 
+        // ── تصفير الـ pre-17 لمن ليس في الملف ──
+        if ($this->option('zero-unlisted') && $singleId === null) {
+            $this->newLine();
+            $this->info('جارٍ فحص العملاء غير الموجودين في الملف...');
+            $this->zeroUnlisted($rows, $dryRun);
+        }
+
         return 0;
+    }
+
+    private function zeroUnlisted(array $rows, bool $dryRun): void
+    {
+        // file_ids الموجودة في الملف
+        $listedFileIds = array_map(fn($r) => (int) $r['file_id'], $rows);
+
+        // كل الـ acck التي لها stu_id → نفحص من ليس في الملف
+        $acckList = DB::table('acck as a')
+            ->join('kstu as k', 'k.id', '=', 'a.stu_id')
+            ->whereNotNull('a.stu_id')
+            ->where('a.stu_id', '>', 0)
+            ->select('a.id as acck_id', 'k.id as patient_id', 'k.file_id', 'k.full_name')
+            ->get();
+
+        $zeroed = 0;
+        $bar = $this->output->createProgressBar($acckList->count());
+        $bar->start();
+
+        foreach ($acckList as $acc) {
+            if (in_array((int) $acc->file_id, $listedFileIds)) {
+                $bar->advance();
+                continue; // موجود في الملف — تمت معالجته مسبقاً
+            }
+
+            $balance = $this->calcSystemBalance($acc->patient_id, $acc->acck_id);
+
+            if (abs($balance) < 0.001) {
+                $bar->advance();
+                continue; // رصيده 0 أصلاً
+            }
+
+            if ($dryRun) {
+                $this->newLine();
+                $this->line("[تصفير] {$acc->full_name} | ملف:{$acc->file_id} | رصيد:{$balance}");
+                $zeroed++;
+                $bar->advance();
+                continue;
+            }
+
+            // إضافة قيد تسوية يعكس الرصيد
+            if ($balance > 0) {
+                DB::table('kpayments')->insert($this->buildRow($acc->acck_id, $balance, 2, 0));
+            } else {
+                DB::table('kpayments')->insert($this->buildRow($acc->acck_id, abs($balance), 1, 1));
+            }
+
+            $zeroed++;
+            $bar->advance();
+        }
+
+        $bar->finish();
+        $this->newLine(2);
+        $this->info("تم تصفير: {$zeroed} عميل غير مدرج في الملف");
     }
 
     // يحسب الرصيد كما يراه النظام حتى 17 أبريل فقط
