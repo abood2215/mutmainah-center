@@ -478,9 +478,16 @@ $breakdownGrandTotal = collect($groups)->flatten(1)->sum('val') + $sondatTotal;
                 <div style="font-size:0.7rem; color:rgba(255,255,255,0.6); font-family:'Inter';">Vouchers (سند)</div>
             </div>
         </div>
-        <div style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:24px; padding:0.3rem 1.2rem; direction:ltr;">
-            <span style="font-weight:900; color:#fff; font-size:1.1rem; font-family:'Inter';">{{ number_format($sondatTotal, 2) }}</span>
-            <span style="font-size:0.72rem; color:rgba(255,255,255,0.6); font-family:'Tajawal'; margin-right:3px;">د.ك</span>
+        <div style="display:flex; align-items:center; gap:0.5rem; direction:ltr;">
+            @if($breakdownGrandTotal > 0 && $sondatTotal > 0)
+            <span style="background:rgba(255,255,255,0.2); color:#fff; font-weight:700; font-size:0.78rem; font-family:'Inter'; padding:0.15rem 0.5rem; border-radius:12px; border:1px solid rgba(255,255,255,0.35);">
+                {{ number_format($sondatTotal / $breakdownGrandTotal * 100, 1) }}%
+            </span>
+            @endif
+            <div style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:24px; padding:0.3rem 1.2rem;">
+                <span style="font-weight:900; color:#fff; font-size:1.1rem; font-family:'Inter';">{{ number_format($sondatTotal, 2) }}</span>
+                <span style="font-size:0.72rem; color:rgba(255,255,255,0.6); font-family:'Tajawal'; margin-right:3px;">د.ك</span>
+            </div>
         </div>
     </div>
 
