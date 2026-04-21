@@ -131,8 +131,9 @@ Route::middleware(['auth.employee'])->group(function () {
         $clientAmount    = $total - $totalDiscount - $insuranceAmount;
 
         $paymentLabels = [
-            1=>'نقدا', 3=>'شبكة', 4=>'تحويل بنكي', 5=>'سند',
-            6=>'فيزا', 11=>'Myfatoorah', 12=>'stcpay', 14=>'دفع سريع', 23=>'مجاني - من الرصيد',
+            1=>'نقدا', 2=>'شيك', 3=>'شبكة', 4=>'تحويل بنكي', 5=>'سند',
+            6=>'فيزا', 7=>'مجاني', 8=>'آجل', 11=>'Myfatoorah',
+            12=>'stcpay', 14=>'دفع سريع', 23=>'مجاني - من الرصيد',
         ];
         $paymentLabel = $paymentLabels[$invoice?->payment_method ?? 1] ?? 'نقدا';
 
