@@ -319,11 +319,12 @@ class NewCheck extends Component
             'diab'            => '',
         ]);
 
-        // تحديث الموعد القديم (إن وُجد) ليصبح مكتملاً فيختفي من قائمة المواعيد
+        // تحديث الموعد القديم (إن وُجد) ليصبح مكتملاً — فقط السجلات التي قبل الكشف الجديد
         DB::table('rec')
             ->where('st_id', $this->patientId)
             ->where('rec_date', $today)
             ->where('confirm_id', 0)
+            ->where('id', '<', $recId)
             ->update(['confirm_id' => 1]);
 
         $payMethod = $this->isFree ? 7 : (int)$this->paymentMethod;
