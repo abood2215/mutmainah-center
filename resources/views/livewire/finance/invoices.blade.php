@@ -191,13 +191,45 @@ $years  = range(2000, now()->year + 1);
             </thead>
             <tbody>
                 @forelse($invoices as $i => $inv)
+                @if($inv->is_voided)
+                <tr style="border-bottom:1px solid #fca5a5; background:#fff5f5;"
+                    onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fff5f5'">
+                    <td style="padding:0.4rem 0.6rem; text-align:center; color:#888; font-size:0.78rem; border-left:1px solid #fca5a5;">{{ $i + 1 }}</td>
+                    <td style="padding:0.4rem 0.75rem; font-weight:700; color:#7f1d1d; border-left:1px solid #fca5a5;">{{ $inv->patient_name ?: '—' }}</td>
+                    <td style="padding:0.4rem 0.55rem; text-align:center; color:#b91c1c; font-weight:800; border-left:1px solid #fca5a5; font-size:0.79rem;">{{ $inv->file_id ?: '—' }}</td>
+                    <td style="padding:0.4rem 0.55rem; text-align:center; border-left:1px solid #fca5a5;">
+                        <span style="background:#fee2e2; color:#b91c1c; font-weight:900; font-size:0.79rem; padding:0.15rem 0.5rem; border-radius:4px; border:1px solid #fca5a5;">
+                            #{{ $inv->rec_id ?: '—' }} ملغاة
+                        </span>
+                    </td>
+                    <td style="padding:0.4rem 0.55rem; text-align:center; color:#b91c1c; font-weight:700; border-left:1px solid #fca5a5; white-space:nowrap; font-size:0.8rem; direction:ltr;">{{ fmt_date($inv->pdate) }}</td>
+                    <td colspan="5" style="padding:0.4rem 0.55rem; color:#7f1d1d; font-size:0.77rem; border-left:1px solid #fca5a5; direction:rtl;">
+                        @php
+                            $desc = $inv->description ?? '';
+                            if (preg_match('/السبب:\s*(.+?)(?:\s*—|$)/u', $desc, $dm)) {
+                                echo 'السبب: ' . $dm[1];
+                            }
+                        @endphp
+                    </td>
+                    <td style="padding:0.4rem 0.55rem; text-align:center; color:#b91c1c; font-size:0.77rem;">{{ trim($inv->rep_name) ?: '—' }}</td>
+                </tr>
+                @else
                 <tr style="border-bottom:1px solid #ebebeb; {{ $i % 2 == 0 ? 'background:#fff;' : 'background:#fafafa;' }}"
                     onmouseover="this.style.background='#fff8e1'" onmouseout="this.style.background='{{ $i % 2 == 0 ? '#fff' : '#fafafa' }}'">
                     <td style="padding:0.4rem 0.6rem; text-align:center; color:#888; font-size:0.78rem; border-left:1px solid #eee;">{{ $i + 1 }}</td>
                     <td style="padding:0.4rem 0.75rem; font-weight:700; color:#1a1a2e; border-left:1px solid #eee;">{{ $inv->patient_name ?: '—' }}</td>
                     <td style="padding:0.4rem 0.55rem; text-align:center; color:#c8401a; font-weight:800; border-left:1px solid #eee; font-size:0.79rem;">{{ $inv->file_id ?: '—' }}</td>
                     <td style="padding:0.4rem 0.55rem; text-align:center; border-left:1px solid #eee;">
-                        <span style="color:#c8401a; font-weight:800; font-size:0.8rem;">{{ $inv->vno ?: $inv->serial_no ?: '—' }}</span>
+                        @if($inv->rec_id)
+                        <a href="{{ route('finance.invoice-print', ['recId' => $inv->rec_id]) }}" target="_blank"
+                           style="color:#1565c0; font-weight:900; font-size:0.85rem; text-decoration:none; padding:0.15rem 0.5rem; border:1px solid #1565c0; border-radius:4px; display:inline-block;"
+                           onmouseover="this.style.background='#1565c0'; this.style.color='#fff'"
+                           onmouseout="this.style.background=''; this.style.color='#1565c0'">
+                            #{{ $inv->rec_id }}
+                        </a>
+                        @else
+                        <span style="color:#aaa; font-size:0.8rem;">—</span>
+                        @endif
                     </td>
                     <td style="padding:0.4rem 0.55rem; text-align:center; color:#1565c0; font-weight:700; border-left:1px solid #eee; white-space:nowrap; font-size:0.8rem; direction:ltr; unicode-bidi:isolate;">{{ fmt_date($inv->pdate) }}</td>
                     <td style="padding:0.4rem 0.55rem; text-align:left; font-weight:700; color:#333; border-left:1px solid #eee; font-size:0.81rem; direction:ltr;">{{ number_format($inv->price, 2) }}</td>
@@ -214,6 +246,7 @@ $years  = range(2000, now()->year + 1);
                     <td style="padding:0.4rem 0.55rem; text-align:left; font-weight:900; color:var(--primary); border-left:1px solid #eee; font-size:0.86rem; direction:ltr;">{{ number_format($inv->net, 2) }}</td>
                     <td style="padding:0.4rem 0.55rem; text-align:center; color:#555; font-size:0.77rem;">{{ trim($inv->rep_name) ?: $currentUserName ?: '—' }}</td>
                 </tr>
+                @endif
                 @empty
                 <tr>
                     <td colspan="11" style="padding:3rem; text-align:center; color:var(--text-muted);">

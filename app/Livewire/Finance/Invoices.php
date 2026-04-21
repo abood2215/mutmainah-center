@@ -146,7 +146,7 @@ class Invoices extends Component
         if ($this->searched) {
             $invoices = $this->buildInvoicesQuery()
                 ->select(
-                    'k.id', 'k.serial_no', 'k.vno', 'r.rec_date as pdate', 'k.price',
+                    'k.id', 'k.serial_no', 'k.vno', 'r.id as rec_id', 'r.rec_date as pdate', 'k.price',
                     'k.discount', 'k.tax_value', 'k.payment_method',
                     DB::raw('(k.price - COALESCE(k.discount, 0)) as net'),
                     's.full_name as patient_name', 's.file_id',
@@ -154,7 +154,37 @@ class Invoices extends Component
                     DB::raw("CONCAT(COALESCE(e.first_name,''), ' ', COALESCE(e.middle_initial,'')) as rep_name")
                 )
                 ->orderByRaw("STR_TO_DATE(r.rec_date, '%e-%c-%Y') DESC, k.id DESC")
-                ->get();
+                ->get()
+                ->map(fn($r) => (object) array_merge((array)$r, ['is_voided' => false]));
+
+            // الفواتير الملغاة من activity_logs
+            $voidedQ = DB::table('activity_logs as al')
+                ->leftJoin('kstu as s', 's.id', '=', 'al.subject_id')
+                ->where('al.action', 'voided');
+            if ($df = $this->dateFrom())
+                $voidedQ->whereRaw("DATE(al.created_at) >= ?", [$df]);
+            if ($dt = $this->dateTo())
+                $voidedQ->whereRaw("DATE(al.created_at) <= ?", [$dt]);
+            $voidedLogs = $voidedQ->select('al.description', 'al.user_name', 'al.created_at', 's.full_name as patient_name', 's.file_id')
+                ->orderBy('al.id', 'desc')->get()
+                ->map(function($v) {
+                    preg_match('/#(\d+)/', $v->description, $m);
+                    $recId = $m[1] ?? null;
+                    $date  = \Carbon\Carbon::parse($v->created_at)->format('j-n-Y');
+                    return (object)[
+                        'is_voided'    => true,
+                        'rec_id'       => $recId,
+                        'patient_name' => $v->patient_name,
+                        'file_id'      => $v->file_id,
+                        'pdate'        => $date,
+                        'price'        => 0, 'discount' => 0, 'tax_value' => 0, 'net' => 0,
+                        'payment_method' => null,
+                        'rep_name'     => $v->user_name,
+                        'description'  => $v->description,
+                    ];
+                });
+
+            $invoices = $invoices->concat($voidedLogs);
 
             $totals = [
                 'amount'   => $invoices->sum('price'),
