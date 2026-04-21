@@ -177,7 +177,7 @@ class Book extends Component
             'per_id'            => 0,
             'order_id'          => 0,
             'pharm_id'          => 0,
-            'user_id'           => 0,
+            'user_id'           => auth()->id() ?? 0,
             'transfer_doc_id'   => 0,
             'rev_id'            => 0,
             'rev_days'          => 0,
