@@ -385,23 +385,25 @@ $years  = range(2000, now()->year + 1);
 $groups = [
     'كلاسيك' => [
         ['en'=>'Cash',           'ar'=>'النقدية',        'val'=>$payBreak[1]['total']  ?? 0, 'icon'=>'💵'],
-        ['en'=>'Visa',           'ar'=>'الفيزا',          'val'=>$payBreak[2]['total']  ?? 0, 'icon'=>'💳'],
+        ['en'=>'Cheque',         'ar'=>'الشيك',           'val'=>$payBreak[2]['total']  ?? 0, 'icon'=>'📝'],
+        ['en'=>'Visa',           'ar'=>'الفيزا',          'val'=>$payBreak[6]['total']  ?? 0, 'icon'=>'💳'],
         ['en'=>'Net / شبكة',    'ar'=>'الشبكة',          'val'=>$payBreak[3]['total']  ?? 0, 'icon'=>'🏦'],
-        ['en'=>'Bank Transfer',  'ar'=>'التحويل البنكي',  'val'=>$vMethodBreak['bank']  ?? 0, 'icon'=>'🏛'],
+        ['en'=>'Bank Transfer',  'ar'=>'التحويل البنكي',  'val'=>$payBreak[4]['total']  ?? 0, 'icon'=>'🏛'],
     ],
     'إلكتروني' => [
-        ['en'=>'myfatoorah',     'ar'=>'ماي فاتورة',     'val'=>$vMethodBreak['myf']   ?? 0, 'icon'=>'📲'],
+        ['en'=>'myfatoorah',     'ar'=>'ماي فاتورة',     'val'=>$payBreak[11]['total'] ?? 0, 'icon'=>'📲'],
         ['en'=>'Deema',          'ar'=>'ديمة',            'val'=>$vMethodBreak['deema'] ?? 0, 'icon'=>'📲'],
         ['en'=>'stcpay',         'ar'=>'STC Pay',         'val'=>$payBreak[12]['total'] ?? 0, 'icon'=>'📲'],
         ['en'=>'Quick Pay',      'ar'=>'الدفع السريع',   'val'=>$payBreak[14]['total'] ?? 0, 'icon'=>'📲'],
     ],
     'أخرى' => [
-        ['en'=>'Kidding',        'ar'=>'كيدينج',          'val'=>0,                           'icon'=>'📋'],
-        ['en'=>'زكاة',           'ar'=>'',                'val'=>0,                           'icon'=>'📋'],
-        ['en'=>'نقل رصيد',       'ar'=>'',                'val'=>0,                           'icon'=>'📋'],
+        ['en'=>'Free',           'ar'=>'مجاني',           'val'=>$payBreak[7]['total']  ?? 0, 'icon'=>'🎁'],
+        ['en'=>'Deferred',       'ar'=>'آجل',             'val'=>$payBreak[8]['total']  ?? 0, 'icon'=>'📋'],
+        ['en'=>'Free-Balance',   'ar'=>'مجاني-رصيد',     'val'=>$payBreak[23]['total'] ?? 0, 'icon'=>'🎁'],
     ],
 ];
 $sondatTotal = $payBreak[5]['total'] ?? 0;
+$breakdownGrandTotal = collect($groups)->flatten(1)->sum('val') + $sondatTotal;
 @endphp
 
 <div style="background:#fff; border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:0 4px 16px rgba(0,0,0,0.08); margin-bottom:1rem;">
@@ -437,12 +439,17 @@ $sondatTotal = $payBreak[5]['total'] ?? 0;
             </div>
         </div>
 
-        {{-- القيمة --}}
-        <div style="text-align:left; direction:ltr;">
+        {{-- القيمة والنسبة --}}
+        <div style="text-align:left; direction:ltr; display:flex; align-items:center; gap:0.45rem;">
             @if($hasVal)
             <span style="background:#fff3e0; color:#c8401a; font-weight:900; font-size:0.92rem; font-family:'Inter'; padding:0.2rem 0.65rem; border-radius:20px; border:1px solid #f5cba7;">
                 {{ number_format($item['val'], 2) }}
             </span>
+            @if($breakdownGrandTotal > 0)
+            <span style="background:#e0f2fe; color:#0369a1; font-weight:700; font-size:0.75rem; font-family:'Inter'; padding:0.15rem 0.45rem; border-radius:12px; border:1px solid #bae6fd; white-space:nowrap;">
+                {{ number_format($item['val'] / $breakdownGrandTotal * 100, 1) }}%
+            </span>
+            @endif
             @else
             <span style="color:#d1d5db; font-size:0.82rem; font-family:'Inter'; font-weight:600;">—</span>
             @endif
@@ -450,6 +457,17 @@ $sondatTotal = $payBreak[5]['total'] ?? 0;
     </div>
     @endforeach
     @endforeach
+
+    {{-- الإجمالي الكلي --}}
+    @if($breakdownGrandTotal > 0)
+    <div style="background:#f0fdf4; padding:0.6rem 1.5rem; border-top:2px solid #bbf7d0; display:flex; align-items:center; justify-content:space-between;">
+        <span style="font-weight:900; color:#166534; font-size:0.88rem; font-family:'Tajawal',sans-serif;">الإجمالي الكلي (الفواتير + السندات)</span>
+        <span style="font-weight:900; color:#166534; font-size:1.05rem; font-family:'Inter'; direction:ltr;">
+            {{ number_format($breakdownGrandTotal, 2) }}
+            <span style="font-size:0.72rem; color:#4ade80; font-family:'Tajawal'; margin-right:2px;">د.ك</span>
+        </span>
+    </div>
+    @endif
 
     {{-- شريط السندات الإجمالي --}}
     <div style="background:linear-gradient(135deg,#166534 0%,#16a34a 100%); padding:0.75rem 1.5rem; display:flex; align-items:center; justify-content:space-between;">
