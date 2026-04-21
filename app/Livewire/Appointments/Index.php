@@ -250,7 +250,7 @@ class Index extends Component
     {
         $today = now()->format('j-n-Y');
 
-        // حذف المواعيد المنتهية تلقائياً (مرة واحدة في اليوم)
+        // حذف المواعيد المنتهية تلقائياً — الأيام الماضية (مرة واحدة كل 6 ساعات)
         Cache::remember('appt_past_close_' . now()->format('Y-m-d'), 3600 * 6, function () {
             $pastDates = [];
             for ($i = 1; $i <= 30; $i++) {
@@ -274,10 +274,36 @@ class Index extends Component
                 ])->toArray();
 
                 DB::table('activity_logs')->insert($logs);
+                DB::table('rec')->whereIn('id', $toDelete->pluck('id'))->delete();
+            }
 
-                DB::table('rec')
-                    ->whereIn('id', $toDelete->pluck('id'))
-                    ->delete();
+            return $toDelete->count();
+        });
+
+        // حذف مواعيد اليوم اللي عدى وقتها (يُفحص كل ربع ساعة)
+        Cache::remember('appt_today_close_' . now()->format('Y-m-d-H') . '_' . (int)(now()->minute / 15), 900, function () use ($today) {
+            $nowTime = now()->format('H:i');
+
+            $toDelete = DB::table('rec')
+                ->where('confirm_id', 0)
+                ->where('rec_date', $today)
+                ->whereRaw("rec_time != '' AND rec_time IS NOT NULL")
+                ->whereRaw("TIME(CONCAT(LPAD(SUBSTRING_INDEX(rec_time,':',1),2,'0'),':',LPAD(SUBSTRING_INDEX(rec_time,':',-1),2,'0'))) < TIME(?)", [$nowTime])
+                ->get(['id', 'st_id', 'rec_date', 'rec_time']);
+
+            if ($toDelete->isNotEmpty()) {
+                $logs = $toDelete->map(fn($r) => [
+                    'action'      => 'deleted',
+                    'subject'     => 'appointment',
+                    'subject_id'  => $r->st_id,
+                    'description' => 'حذف تلقائي لموعد اليوم بعد انتهاء وقته الساعة ' . $r->rec_time,
+                    'user_id'     => 0,
+                    'user_name'   => 'النظام',
+                    'created_at'  => now(),
+                ])->toArray();
+
+                DB::table('activity_logs')->insert($logs);
+                DB::table('rec')->whereIn('id', $toDelete->pluck('id'))->delete();
             }
 
             return $toDelete->count();
