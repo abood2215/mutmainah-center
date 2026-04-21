@@ -125,6 +125,7 @@ class Dashboard extends Component
 
             $monthlyRevenue = DB::table('kpayments')
                 ->where('price', '>', 0)
+                ->where('acc_id', 0)
                 ->where('pdate', 'like', "%-{$currentMonth}-{$currentYear}")
                 ->sum('price');
 
@@ -132,6 +133,7 @@ class Dashboard extends Component
             $daysInMonth  = now()->daysInMonth;
             $dailyRevenue = DB::table('kpayments')
                 ->where('price', '>', 0)
+                ->where('acc_id', 0)
                 ->where('pdate', 'like', "%-{$currentMonth}-{$currentYear}")
                 ->select(DB::raw("CAST(SUBSTRING_INDEX(pdate, '-', 1) AS UNSIGNED) as day"), DB::raw('SUM(price) as total'))
                 ->groupBy(DB::raw("CAST(SUBSTRING_INDEX(pdate, '-', 1) AS UNSIGNED)"))
@@ -154,6 +156,7 @@ class Dashboard extends Component
                 $y   = $dt->year;
                 $rev = DB::table('kpayments')
                     ->where('price', '>', 0)
+                    ->where('acc_id', 0)
                     ->where('pdate', 'like', "%-{$m}-{$y}")
                     ->sum('price');
                 $chartMonthLabels[] = $dt->locale('ar')->isoFormat('MMM YY');
@@ -206,6 +209,7 @@ class Dashboard extends Component
 
                 $dr = DB::table('kpayments')
                     ->where('price', '>', 0)
+                    ->where('acc_id', 0)
                     ->where('pdate', 'like', "%-{$m}-{$y}")
                     ->select(DB::raw("CAST(SUBSTRING_INDEX(pdate, '-', 1) AS UNSIGNED) as day"), DB::raw('SUM(price) as total'))
                     ->groupBy(DB::raw("CAST(SUBSTRING_INDEX(pdate, '-', 1) AS UNSIGNED)"))
