@@ -389,6 +389,7 @@ $groups = [
         ['en'=>'Visa',           'ar'=>'الفيزا',          'val'=>$payBreak[6]['total']  ?? 0, 'icon'=>'💳'],
         ['en'=>'Net / شبكة',    'ar'=>'الشبكة',          'val'=>$payBreak[3]['total']  ?? 0, 'icon'=>'🏦'],
         ['en'=>'Bank Transfer',  'ar'=>'التحويل البنكي',  'val'=>$payBreak[4]['total']  ?? 0, 'icon'=>'🏛'],
+        ['en'=>'Voucher',        'ar'=>'السندات',         'val'=>$payBreak[5]['total']  ?? 0, 'icon'=>'🧾'],
     ],
     'إلكتروني' => [
         ['en'=>'myfatoorah',     'ar'=>'ماي فاتورة',     'val'=>$payBreak[11]['total'] ?? 0, 'icon'=>'📲'],
@@ -402,8 +403,6 @@ $groups = [
         ['en'=>'Free-Balance',   'ar'=>'مجاني-رصيد',     'val'=>$payBreak[23]['total'] ?? 0, 'icon'=>'🎁'],
     ],
 ];
-$sondatTotal = $payBreak[5]['total'] ?? 0;
-$breakdownGrandTotal = collect($groups)->flatten(1)->sum('val') + $sondatTotal;
 @endphp
 
 <div style="background:#fff; border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:0 4px 16px rgba(0,0,0,0.08); margin-bottom:1rem;">
@@ -439,17 +438,12 @@ $breakdownGrandTotal = collect($groups)->flatten(1)->sum('val') + $sondatTotal;
             </div>
         </div>
 
-        {{-- القيمة والنسبة --}}
-        <div style="text-align:left; direction:ltr; display:flex; align-items:center; gap:0.45rem;">
+        {{-- القيمة --}}
+        <div style="text-align:left; direction:ltr;">
             @if($hasVal)
             <span style="background:#fff3e0; color:#c8401a; font-weight:900; font-size:0.92rem; font-family:'Inter'; padding:0.2rem 0.65rem; border-radius:20px; border:1px solid #f5cba7;">
                 {{ number_format($item['val'], 2) }}
             </span>
-            @if($breakdownGrandTotal > 0)
-            <span style="background:#e0f2fe; color:#0369a1; font-weight:700; font-size:0.75rem; font-family:'Inter'; padding:0.15rem 0.45rem; border-radius:12px; border:1px solid #bae6fd; white-space:nowrap;">
-                {{ number_format($item['val'] / $breakdownGrandTotal * 100, 1) }}%
-            </span>
-            @endif
             @else
             <span style="color:#d1d5db; font-size:0.82rem; font-family:'Inter'; font-weight:600;">—</span>
             @endif
@@ -458,38 +452,6 @@ $breakdownGrandTotal = collect($groups)->flatten(1)->sum('val') + $sondatTotal;
     @endforeach
     @endforeach
 
-    {{-- الإجمالي الكلي --}}
-    @if($breakdownGrandTotal > 0)
-    <div style="background:#f0fdf4; padding:0.6rem 1.5rem; border-top:2px solid #bbf7d0; display:flex; align-items:center; justify-content:space-between;">
-        <span style="font-weight:900; color:#166534; font-size:0.88rem; font-family:'Tajawal',sans-serif;">الإجمالي الكلي (الفواتير + السندات)</span>
-        <span style="font-weight:900; color:#166534; font-size:1.05rem; font-family:'Inter'; direction:ltr;">
-            {{ number_format($breakdownGrandTotal, 2) }}
-            <span style="font-size:0.72rem; color:#4ade80; font-family:'Tajawal'; margin-right:2px;">د.ك</span>
-        </span>
-    </div>
-    @endif
-
-    {{-- شريط السندات الإجمالي --}}
-    <div style="background:linear-gradient(135deg,#166534 0%,#16a34a 100%); padding:0.75rem 1.5rem; display:flex; align-items:center; justify-content:space-between;">
-        <div style="display:flex; align-items:center; gap:0.6rem;">
-            <span style="font-size:1rem;">🧾</span>
-            <div>
-                <div style="font-weight:900; color:#fff; font-size:0.92rem; font-family:'Tajawal',sans-serif;">السندات</div>
-                <div style="font-size:0.7rem; color:rgba(255,255,255,0.6); font-family:'Inter';">Vouchers (سند)</div>
-            </div>
-        </div>
-        <div style="display:flex; align-items:center; gap:0.5rem; direction:ltr;">
-            @if($breakdownGrandTotal > 0 && $sondatTotal > 0)
-            <span style="background:rgba(255,255,255,0.2); color:#fff; font-weight:700; font-size:0.78rem; font-family:'Inter'; padding:0.15rem 0.5rem; border-radius:12px; border:1px solid rgba(255,255,255,0.35);">
-                {{ number_format($sondatTotal / $breakdownGrandTotal * 100, 1) }}%
-            </span>
-            @endif
-            <div style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:24px; padding:0.3rem 1.2rem;">
-                <span style="font-weight:900; color:#fff; font-size:1.1rem; font-family:'Inter';">{{ number_format($sondatTotal, 2) }}</span>
-                <span style="font-size:0.72rem; color:rgba(255,255,255,0.6); font-family:'Tajawal'; margin-right:3px;">د.ك</span>
-            </div>
-        </div>
-    </div>
 
 </div>
 @endif
