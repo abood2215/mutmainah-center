@@ -3,7 +3,16 @@
 
 {{-- زر الطباعة (يظهر فقط بعد البحث) --}}
 @if($searched)
-<div class="no-print" style="display:flex; justify-content:flex-end; margin-bottom:0.75rem;">
+<div class="no-print" style="display:flex; justify-content:flex-end; gap:0.6rem; margin-bottom:0.75rem;">
+    <button wire:click="exportExcel" wire:loading.attr="disabled" wire:target="exportExcel"
+        style="padding:0.45rem 1.4rem; background:#1d6f42; color:#fff; border:none; border-radius:6px; font-weight:800; font-size:0.88rem; font-family:'Tajawal',sans-serif; cursor:pointer; display:flex; align-items:center; gap:0.4rem;"
+        onmouseover="this.style.background='#155234'" onmouseout="this.style.background='#1d6f42'">
+        <span wire:loading.remove wire:target="exportExcel">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Excel
+        </span>
+        <span wire:loading wire:target="exportExcel">⏳</span>
+    </button>
     <button type="button" onclick="window.print()"
         style="padding:0.45rem 1.4rem; background:#16a34a; color:#fff; border:none; border-radius:6px; font-weight:800; font-size:0.88rem; font-family:'Tajawal',sans-serif; cursor:pointer; display:flex; align-items:center; gap:0.4rem;"
         onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">

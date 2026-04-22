@@ -137,29 +137,30 @@ Route::middleware(['auth.employee'])->group(function () {
         ];
         $paymentLabel = $paymentLabels[$invoice?->payment_method ?? 1] ?? 'نقدا';
 
-        // اسم الكاشير من kpayments.user_id → employees
-        $cashierUserId = $invoice?->user_id ?? 0;
-        $cashierEmp = $cashierUserId
-            ? DB::table('employees')->where('id', $cashierUserId)->first(['first_name','middle_initial','user_name'])
-            : null;
-        if ($cashierEmp && trim(($cashierEmp->first_name ?? '') . ($cashierEmp->middle_initial ?? ''))) {
-            $cashierName = trim(($cashierEmp->first_name ?? '') . ' ' . ($cashierEmp->middle_initial ?? ''));
-        } elseif ($cashierEmp && $cashierEmp->user_name) {
-            $cashierName = $cashierEmp->user_name;
-        } else {
-            // fallback: rec.user_id → employees
-            $recUserId = $rec->user_id ?? 0;
-            $recEmp = $recUserId
-                ? DB::table('employees')->where('id', $recUserId)->first(['first_name','middle_initial','user_name'])
-                : null;
-            if ($recEmp && trim(($recEmp->first_name ?? '') . ($recEmp->middle_initial ?? ''))) {
-                $cashierName = trim(($recEmp->first_name ?? '') . ' ' . ($recEmp->middle_initial ?? ''));
-            } elseif ($recEmp && $recEmp->user_name) {
-                $cashierName = $recEmp->user_name;
-            } else {
-                $cashierName = '—';
+        // helper: ابحث عن موظف بـ id أو emp_no (للفواتير القديمة)
+        $findEmp = function (int $uid) {
+            if (!$uid) return null;
+            $e = DB::table('employees')->where('id', $uid)->first(['first_name','middle_initial','user_name']);
+            if (!$e) {
+                $e = DB::table('employees')->where('emp_no', (string)$uid)->first(['first_name','middle_initial','user_name']);
             }
+            return $e;
+        };
+        $empToName = function ($e): string {
+            if (!$e) return '';
+            $n = trim(($e->first_name ?? '') . ' ' . ($e->middle_initial ?? ''));
+            if ($n !== '' && $n !== ' ') return $n;
+            return $e->user_name ?? '';
+        };
+
+        // الأولوية: kpayments.user_id → rec.user_id
+        $cashierUserId = (int)($invoice?->user_id ?? 0);
+        $cashierName   = $empToName($findEmp($cashierUserId));
+        if (!$cashierName) {
+            $recUserId   = (int)($rec->user_id ?? 0);
+            $cashierName = $empToName($findEmp($recUserId));
         }
+        $cashierName = $cashierName ?: '—';
 
         return view('finance.invoice-print', compact(
             'rec', 'patient', 'clinicName', 'branchName', 'items',

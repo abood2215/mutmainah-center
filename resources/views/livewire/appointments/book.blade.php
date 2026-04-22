@@ -174,6 +174,20 @@
             </div>
         </div>
 
+        <!-- ④ ملاحظات الموعد -->
+        <div style="border:1px solid var(--border); border-radius:12px; overflow:hidden;">
+            <div style="background:#4a5568; padding:0.6rem 1.25rem; display:flex; align-items:center; gap:0.5rem;">
+                <span style="background:rgba(255,255,255,0.25); color:#fff; font-size:0.72rem; font-weight:900; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">٤</span>
+                <span style="color:#fff; font-weight:900; font-size:0.9rem;">ملاحظات الموعد <span style="font-weight:500; font-size:0.78rem; opacity:0.75;">(اختياري)</span></span>
+            </div>
+            <div style="padding:1.25rem;">
+                <textarea wire:model="notes" rows="3"
+                    placeholder="أي ملاحظات إضافية على هذا الموعد..."
+                    class="form-input"
+                    style="resize:vertical; min-height:80px;"></textarea>
+            </div>
+        </div>
+
         <!-- ملخص الحجز -->
         @if($patientId && $selectedTime && $selectedClinic && $selectedDate)
         <div style="background:linear-gradient(135deg, var(--primary), #a02535); border-radius:12px; padding:1.25rem 1.5rem; color:#fff;">
@@ -194,6 +208,12 @@
                     <div style="font-weight:900; font-size:0.95rem; direction:ltr; text-align:right;">{{ \Carbon\Carbon::parse($selectedDate)->format('d/m/Y') }} — {{ $selectedTime }}</div>
                 </div>
             </div>
+            @if($notes)
+            <div style="margin-top:0.75rem; background:rgba(255,255,255,0.1); border-radius:8px; padding:0.65rem 1rem;">
+                <div style="font-size:0.72rem; opacity:0.75; margin-bottom:0.25rem;">الملاحظات</div>
+                <div style="font-weight:700; font-size:0.9rem;">{{ $notes }}</div>
+            </div>
+            @endif
         </div>
         @endif
 

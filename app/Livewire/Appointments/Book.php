@@ -13,6 +13,7 @@ class Book extends Component
     public string $selectedDate   = '';
     public string $selectedTime   = '';
     public string $patientSearch  = '';
+    public string $notes          = '';
     public ?int   $patientId      = null;
     public        $patient        = null;
     public array  $patientResults = [];
@@ -188,7 +189,7 @@ class Book extends Component
             'sym'               => '',
             'dia'               => '',
             'pres'              => '',
-            'notes'             => '',
+            'notes'             => $this->notes,
             'pressure'          => '',
             'heat'              => '',
             'pulse'             => '',

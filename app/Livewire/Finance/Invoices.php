@@ -71,6 +71,46 @@ class Invoices extends Component
         $this->searched  = false;
     }
 
+    public function exportExcel(): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        $rows = $this->buildInvoicesQuery()
+            ->select(
+                'r.id as rec_id', 'r.rec_date as pdate', 'k.price', 'k.discount',
+                'k.payment_method',
+                DB::raw('(k.price - COALESCE(k.discount,0)) as net'),
+                's.full_name as patient_name', 's.file_id',
+                'c.name as clinic_name',
+                DB::raw("CONCAT(COALESCE(e.first_name,''),' ',COALESCE(e.middle_initial,'')) as rep_name")
+            )
+            ->orderByRaw("STR_TO_DATE(r.rec_date, '%e-%c-%Y') DESC, k.id DESC")
+            ->get();
+
+        $labels = collect(self::PAYMENT_LABELS)->mapWithKeys(fn($v, $k) => [$k => $v['ar']]);
+
+        return response()->streamDownload(function () use ($rows, $labels) {
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF");
+            fputcsv($out, ['رقم الفاتورة', 'التاريخ', 'العميل', 'رقم الملف', 'العيادة', 'المبلغ', 'الخصم', 'الصافي', 'طريقة الدفع', 'المسؤول']);
+            foreach ($rows as $r) {
+                fputcsv($out, [
+                    $r->rec_id,
+                    $r->pdate,
+                    $r->patient_name,
+                    $r->file_id,
+                    $r->clinic_name,
+                    number_format($r->price, 3),
+                    number_format($r->discount, 3),
+                    number_format($r->net, 3),
+                    $labels[$r->payment_method] ?? '',
+                    trim($r->rep_name),
+                ]);
+            }
+            fclose($out);
+        }, 'invoices-' . now()->format('Y-m-d') . '.csv', [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
     private function dateFrom(): ?string
     {
         return ($this->fromYear && $this->fromMonth && $this->fromDay)
@@ -112,15 +152,20 @@ class Invoices extends Component
 
     private function buildVouchersQuery()
     {
-        $q = DB::table('vouchers as v')
-            ->leftJoin('acck as a', 'a.id', '=', 'v.account_id')
-            ->where('v.credit', '>', 0)
-            ->where('v.rec_id', 0);
+        $q = DB::table('kpayments as k')
+            ->join('acck as a', 'a.id', '=', 'k.acc_id')
+            ->leftJoin('kstu as s', 's.id', '=', 'a.stu_id')
+            ->where('k.acc_id', '>', 0)
+            ->where('k.status', 1);
 
+        if ($this->filterUser)
+            $q->where('k.user_id', $this->filterUser);
+        if ($this->filterBranch)
+            $q->where('s.branch_id', $this->filterBranch);
         if ($df = $this->dateFrom())
-            $q->whereRaw("STR_TO_DATE(v.pdate, '%e-%c-%Y') >= ?", [$df]);
+            $q->whereRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') >= ?", [$df]);
         if ($dt = $this->dateTo())
-            $q->whereRaw("STR_TO_DATE(v.pdate, '%e-%c-%Y') <= ?", [$dt]);
+            $q->whereRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') <= ?", [$dt]);
 
         return $q;
     }
@@ -201,11 +246,14 @@ class Invoices extends Component
 
             $vouchers = $this->buildVouchersQuery()
                 ->select(
-                    'v.id', 'v.pdate', 'v.credit', 'v.debit',
-                    'v.pdesc', 'v.notes', 'v.serial_no', 'v.ptype',
-                    'a.name as patient_name'
+                    'k.id', 'k.pdate',
+                    DB::raw('COALESCE(NULLIF(k.amount,0), k.price, 0) as credit'),
+                    DB::raw('0 as debit'),
+                    'k.pdesc', 'k.notes',
+                    DB::raw('COALESCE(NULLIF(k.vno,""), k.id) as serial_no'),
+                    's.full_name as patient_name'
                 )
-                ->orderByRaw("STR_TO_DATE(v.pdate, '%e-%c-%Y') DESC, v.id DESC")
+                ->orderByRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') DESC, k.id DESC")
                 ->get();
 
             $vTotals = [
