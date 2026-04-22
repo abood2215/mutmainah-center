@@ -62,6 +62,7 @@ class Invoices extends Component
         $this->filterClinic  = '';
         $this->filterUser    = '';
         $this->filterPayment = '';
+        $this->filterBranch  = '';
         $this->fromDay   = '1';
         $this->fromMonth = now()->format('n');
         $this->fromYear  = now()->format('Y');
