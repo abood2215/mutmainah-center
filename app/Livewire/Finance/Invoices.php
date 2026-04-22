@@ -27,7 +27,6 @@ class Invoices extends Component
 
     const PAYMENT_LABELS = [
         1  => ['ar' => 'نقد',              'en' => 'Cash'],
-        2  => ['ar' => 'شيك',              'en' => 'Cheque'],
         3  => ['ar' => 'شبكة',             'en' => 'Net'],
         4  => ['ar' => 'تحويل بنكي',       'en' => 'Bank'],
         5  => ['ar' => 'سند',              'en' => 'Voucher'],

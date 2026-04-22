@@ -40,7 +40,6 @@ class Movements extends Component
 
     const PAYMENT_METHODS = [
         '1'  => 'نقدا',
-        '2'  => 'شيك',
         '3'  => 'شبكة',
         '6'  => 'فيزا',
         '4'  => 'تحويل بنكي',
