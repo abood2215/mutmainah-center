@@ -256,7 +256,7 @@ body {
             <img src="{{ asset('logo.jpg') }}" alt="مطمئنة">
         </div>
         <div class="header-mid">
-            <div class="ar">مركـز مطمئنة الاستشاري</div>
+            <div class="ar">شركة مركز مطمئنة الكويتية للاستشارات اللغوية</div>
             <div class="en">MUTMAINAH ADVISORY CENTER</div>
         </div>
         <div class="inv-no-box">
