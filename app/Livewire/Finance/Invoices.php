@@ -247,7 +247,7 @@ class Invoices extends Component
 
             $vouchers = $this->buildVouchersQuery()
                 ->select(
-                    'k.id', 'k.pdate',
+                    'k.id', 'k.pdate', 'k.payment_method',
                     DB::raw('COALESCE(NULLIF(k.amount,0), k.price, 0) as credit'),
                     DB::raw('0 as debit'),
                     'k.pdesc', 'k.notes',
@@ -261,6 +261,22 @@ class Invoices extends Component
                 'credit' => $vouchers->sum('credit'),
                 'debit'  => $vouchers->sum('debit'),
             ];
+
+            // أضف مبالغ السندات (حسب طريقة الدفع) لتفصيل طرق الدفع
+            foreach ($vouchers as $v) {
+                $pm  = (int)($v->payment_method ?? 0);
+                $amt = (float)$v->credit;
+                if ($pm && $amt > 0) {
+                    if (isset($payBreak[$pm])) {
+                        $payBreak[$pm]['total'] += $amt;
+                    } elseif (isset(self::PAYMENT_LABELS[$pm])) {
+                        $payBreak[$pm] = array_merge(
+                            ['label' => self::PAYMENT_LABELS[$pm]['ar'], 'en' => self::PAYMENT_LABELS[$pm]['en']],
+                            ['total' => $amt]
+                        );
+                    }
+                }
+            }
 
             // كسر طرق دفع السندات الخارجية من pdesc
             $vMethodBreak = ['bank' => 0, 'myf' => 0, 'deema' => 0];
