@@ -712,7 +712,7 @@
                             style="{{ $isFree ? 'background:#f5f5f5; opacity:.7;' : '' }}">
                         <option value="1">نقدي — Cash</option>
                         <option value="2">شيك — Cheque</option>
-                        <option value="3">K-Net</option>
+                        <option value="3">شبكة — K-Net</option>
                         <option value="4">تحويل بنكي — Bank Transfer</option>
                         <option value="6">فيزا — Visa</option>
                         <option value="11">MyFatoorah</option>
