@@ -173,10 +173,10 @@
                 </div>
             </div>
 
-            <!-- دونات توزيع العيادات -->
+            <!-- دونات توزيع المكاتب -->
             <div class="card" wire:ignore>
                 <div class="card-header">
-                    <span class="card-title" id="clinicChartTitle">🏥 العيادات — <span id="clinicChartMonth">{{ now()->locale('ar')->isoFormat('MMMM YYYY') }}</span></span>
+                    <span class="card-title" id="clinicChartTitle">🏥 المكاتب — <span id="clinicChartMonth">{{ now()->locale('ar')->isoFormat('MMMM YYYY') }}</span></span>
                 </div>
                 <div style="padding:1rem; position:relative; height:220px;">
                     <canvas id="clinicDonutChart"></canvas>
@@ -240,7 +240,7 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <span class="card-title">🏥 توزيع العيادات اليوم</span>
+                        <span class="card-title">🏥 توزيع المكاتب اليوم</span>
                     </div>
                     <div class="card-body" style="padding:1rem;">
                         @forelse($clinicStats as $stat)
@@ -303,7 +303,7 @@
                     <thead>
                         <tr style="background:#f7f8fa;position:sticky;top:0;border-bottom:2px solid #e0e0e0;">
                             <th style="padding:10px 12px;text-align:right;color:#555;font-weight:800;border:none;">العميل</th>
-                            <th style="padding:10px 12px;text-align:right;color:#555;font-weight:800;border:none;">العيادة</th>
+                            <th style="padding:10px 12px;text-align:right;color:#555;font-weight:800;border:none;">المكتب</th>
                             <th style="padding:10px 12px;text-align:right;color:#555;font-weight:800;border:none;">الخدمة</th>
                             <th style="padding:10px 12px;text-align:center;color:#555;font-weight:800;border:none;">المبلغ</th>
                             <th style="padding:10px 12px;text-align:center;color:#555;font-weight:800;border:none;">الطريقة</th>

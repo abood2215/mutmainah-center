@@ -5,7 +5,7 @@
 <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
     <div>
         <h1 style="font-size:1.4rem; font-weight:900; color:var(--primary); margin:0; font-family:'Tajawal',sans-serif;">⚙️ إدارة الخدمات</h1>
-        <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.2rem; font-weight:600;">إضافة وتعديل وحذف خدمات العيادات</div>
+        <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.2rem; font-weight:600;">إضافة وتعديل وحذف خدمات المكاتب</div>
     </div>
     <button wire:click="openCreate"
         style="display:inline-flex; align-items:center; gap:0.5rem; background:var(--primary); color:#fff; padding:0.65rem 1.4rem; border-radius:10px; font-weight:800; font-size:0.9rem; border:none; cursor:pointer; font-family:'Tajawal',sans-serif;">
@@ -29,7 +29,7 @@
         <span style="position:absolute; right:0.85rem; top:50%; transform:translateY(-50%); opacity:0.35; font-size:1rem;">🔍</span>
     </div>
     <select wire:model.live="filterClinic" class="form-input" style="width:220px;">
-        <option value="">جميع العيادات</option>
+        <option value="">جميع المكاتب</option>
         @foreach($clinics as $cl)
         <option value="{{ $cl->id }}">{{ $cl->name }}</option>
         @endforeach
@@ -67,7 +67,7 @@
                 <tr style="background:#f1f5f9; border-bottom:2px solid var(--border);">
                     <th style="padding:0.75rem 1.25rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim);">#</th>
                     <th style="padding:0.75rem 1rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim);">اسم الخدمة</th>
-                    <th style="padding:0.75rem 1rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim);">العيادة / الأخصائي</th>
+                    <th style="padding:0.75rem 1rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim);">المكتب / الأخصائي</th>
                     <th style="padding:0.75rem 1rem; text-align:center; font-size:0.78rem; font-weight:800; color:var(--text-dim);">سعر الجلسة</th>
                     <th style="padding:0.75rem 1rem; text-align:center; font-size:0.78rem; font-weight:800; color:var(--text-dim);">التكلفة</th>
                     <th style="padding:0.75rem 1rem; text-align:center; font-size:0.78rem; font-weight:800; color:var(--text-dim);">الحالة</th>
@@ -159,9 +159,9 @@
                 @error('formName') <div style="color:#dc2626; font-size:0.75rem; margin-top:0.25rem;">{{ $message }}</div> @enderror
             </div>
 
-            {{-- العيادة / الأخصائي --}}
+            {{-- المكتب / الأخصائي --}}
             <div>
-                <label style="font-size:0.8rem; font-weight:800; color:var(--text-dim); display:block; margin-bottom:0.35rem;">العيادة / الأخصائي <span style="color:var(--primary);">*</span></label>
+                <label style="font-size:0.8rem; font-weight:800; color:var(--text-dim); display:block; margin-bottom:0.35rem;">المكتب / الأخصائي <span style="color:var(--primary);">*</span></label>
                 <select wire:model="formClinic" class="form-input" style="width:100%;">
                     <option value="">— اختر —</option>
                     @foreach($clinics as $cl)

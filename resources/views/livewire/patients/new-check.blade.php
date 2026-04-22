@@ -503,9 +503,9 @@
         <div class="ac-body">
 
             <div class="ac-field">
-                <label class="lbl-red">العيادة</label>
+                <label class="lbl-red">المكتب</label>
                 <select wire:model.live="filterClinic" class="nc-inp" style="min-width:150px;">
-                    <option value="">— اختر العيادة —</option>
+                    <option value="">— اختر المكتب —</option>
                     @foreach($clinics as $clinic)
                         <option value="{{ $clinic->id }}">{{ $clinic->name }}</option>
                     @endforeach
@@ -524,7 +524,7 @@
                         @if(!$filterClinic) disabled @endif
                         style="{{ !$filterClinic ? 'background:#f5f5f5;color:#aaa;' : '' }}">
                     @if(!$filterClinic)
-                        <option value="">← اختر العيادة أولاً</option>
+                        <option value="">← اختر المكتب أولاً</option>
                     @else
                         <option value="">— اختر الخدمة —</option>
                         @foreach($services as $svc)
@@ -556,7 +556,7 @@
                         <th style="width:40px; text-align:center;">#</th>
                         <th style="text-align:right;">الخدمة</th>
                         <th style="text-align:center; width:100px;">الكود</th>
-                        <th style="text-align:center; width:130px;">العيادة</th>
+                        <th style="text-align:center; width:130px;">المكتب</th>
                         <th style="text-align:center; width:100px;">السعر</th>
                         <th style="text-align:center; width:130px;">ملاحظات</th>
                         <th style="text-align:center; width:80px;">التأمين</th>

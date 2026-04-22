@@ -164,7 +164,7 @@ class Dashboard extends Component
                 $chartMonthKeys[]   = ['year' => $y, 'month' => $m, 'label' => $dt->locale('ar')->isoFormat('MMMM YYYY')];
             }
 
-            // توزيع العيادات هذا الشهر
+            // توزيع المكاتب هذا الشهر
             $clinicChartData = DB::table('rec as r')
                 ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
                 ->where('r.confirm_id', 1)
@@ -261,7 +261,7 @@ class Dashboard extends Component
             ->limit(8)
             ->get();
 
-        // إحصائيات العيادات اليوم (لا cache)
+        // إحصائيات المكاتب اليوم (لا cache)
         $clinicStats = DB::table('rec as r')
             ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
             ->where('r.rec_date', $today)

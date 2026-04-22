@@ -690,7 +690,7 @@
                     <li><a href="{{ route('finance.reports') }}?type=pb"><span>💰</span> أرصدة العملاء</a></li>
                     <li><a href="{{ route('finance.reports') }}?type=services"><span>🔬</span> الخدمات</a></li>
                     <li><a href="{{ route('finance.reports') }}?type=appointments"><span>📅</span> المواعيد</a></li>
-                    <li><a href="{{ route('finance.reports') }}?type=clinics"><span>🏛️</span> العيادات</a></li>
+                    <li><a href="{{ route('finance.reports') }}?type=clinics"><span>🏛️</span> المكاتب</a></li>
                     <li><a href="{{ route('finance.reports') }}?type=pfs"><span>📊</span> البيان المالي</a></li>
                 </ul>
             </li>
@@ -700,7 +700,7 @@
                     <span class="nav-icon">⚙️</span> الإعدادات
                 </a>
                 <ul class="dd-menu">
-                    <li><a href="{{ route('clinics.index') }}"><span>🏥</span> العيادات</a></li>
+                    <li><a href="{{ route('clinics.index') }}"><span>🏥</span> المكاتب</a></li>
                     <li><a href="{{ route('employees.index') }}"><span>👨‍⚕️</span> الموظفين</a></li>
                     <li><a href="{{ route('system.users') }}"><span>👤</span> المستخدمين</a></li>
                     <li><a href="{{ route('system.services') }}"><span>🩺</span> الخدمات</a></li>
@@ -790,9 +790,9 @@
                 <a href="{{ route('finance.reports') }}" class="more-link">📊 التقارير</a>
                 <a href="{{ route('finance.reports') }}?type=pb" class="more-link">💰 أرصدة العملاء</a>
                 <a href="{{ route('finance.reports') }}?type=services" class="more-link">🔬 الخدمات</a>
-                <a href="{{ route('finance.reports') }}?type=clinics" class="more-link">🏛 العيادات</a>
+                <a href="{{ route('finance.reports') }}?type=clinics" class="more-link">🏛 المكاتب</a>
                 <a href="{{ route('finance.reports') }}?type=pfs" class="more-link">📈 البيان المالي</a>
-                <a href="{{ route('clinics.index') }}" class="more-link">🏥 العيادات</a>
+                <a href="{{ route('clinics.index') }}" class="more-link">🏥 المكاتب</a>
                 <a href="{{ route('employees.index') }}" class="more-link">👨‍⚕️ الموظفين</a>
                 <a href="{{ route('system.users') }}" class="more-link">👤 المستخدمين</a>
                 <a href="{{ route('system.services') }}" class="more-link">🩺 الخدمات</a>

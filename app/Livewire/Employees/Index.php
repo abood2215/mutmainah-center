@@ -51,7 +51,7 @@ class Index extends Component
         $this->selectedEmpId   = $empId;
         $this->selectedEmpName = $empName;
 
-        // العيادات المرتبطة بالموظف مع حالتها الحقيقية من stop_clinic
+        // المكاتب المرتبطة بالموظف مع حالتها الحقيقية من stop_clinic
         $stoppedIds = DB::table('stop_clinic')
             ->where('state_id', 1)
             ->pluck('clinic_id')

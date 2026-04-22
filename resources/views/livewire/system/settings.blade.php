@@ -9,7 +9,7 @@
     <div style="padding:3rem; text-align:center; color:var(--text-muted);">
         <div style="font-size:3rem; margin-bottom:1rem; opacity:0.2;">🔧</div>
         <div style="font-size:1.1rem; font-weight:800;">قريباً...</div>
-        <div style="font-size:0.9rem; margin-top:0.5rem;">التحكم بالعيادات والخدمات وتفضيلات النظام الأساسية</div>
+        <div style="font-size:0.9rem; margin-top:0.5rem;">التحكم بالمكاتب والخدمات وتفضيلات النظام الأساسية</div>
     </div>
 
 </div>

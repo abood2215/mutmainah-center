@@ -87,10 +87,10 @@
             </div>
             @endif
 
-            {{-- أعلى العيادات --}}
+            {{-- أعلى المكاتب --}}
             @if($branch->topClinics->count())
             <div style="padding:0 1.5rem 1.25rem;">
-                <div style="font-size:0.78rem; font-weight:800; color:var(--text-dim); margin-bottom:0.6rem; text-transform:uppercase; letter-spacing:0.5px;">أعلى العيادات إيراداً</div>
+                <div style="font-size:0.78rem; font-weight:800; color:var(--text-dim); margin-bottom:0.6rem; text-transform:uppercase; letter-spacing:0.5px;">أعلى المكاتب إيراداً</div>
                 @foreach($branch->topClinics as $j => $clinic)
                 <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.4rem;">
                     <span style="width:20px; height:20px; background:{{ $c['bg'] }}; color:#fff; border-radius:4px; font-size:0.68rem; font-weight:900; display:flex; align-items:center; justify-content:center; flex-shrink:0;">{{ $j+1 }}</span>

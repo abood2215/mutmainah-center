@@ -19,9 +19,9 @@ $payLabels = [1=>'نقد',2=>'فيزا',3=>'شبكة',4=>'تحويل',5=>'سند
 
     <div style="background:var(--navy); padding:0.5rem 0;">
 
-        {{-- العيادة --}}
+        {{-- المكتب --}}
         <div style="padding:0.6rem 1.25rem; border-bottom:1px solid rgba(255,255,255,0.1);">
-            <div style="font-weight:900; color:#fbbf24; font-size:0.85rem; margin-bottom:0.35rem; font-family:'Tajawal',sans-serif;">Clinic : العيادة</div>
+            <div style="font-weight:900; color:#fbbf24; font-size:0.85rem; margin-bottom:0.35rem; font-family:'Tajawal',sans-serif;">Clinic : المكتب</div>
             <select wire:model="filterClinic" style="width:100%; padding:0.45rem 0.65rem; border:1px solid rgba(255,255,255,0.3); border-radius:5px; background:rgba(255,255,255,0.95); font-family:'Tajawal',sans-serif; font-size:0.88rem; outline:none;">
                 <option value="">— الكل —</option>
                 @foreach($clinics as $cl)
@@ -117,7 +117,7 @@ $payLabels = [1=>'نقد',2=>'فيزا',3=>'شبكة',4=>'تحويل',5=>'سند
                     <th style="padding:0.55rem 0.6rem; text-align:center; font-weight:900; color:var(--text-dim);">#</th>
                     <th style="padding:0.55rem 0.6rem; font-weight:900; color:var(--text-dim);">العميل</th>
                     <th style="padding:0.55rem 0.6rem; font-weight:900; color:var(--text-dim);">التاريخ</th>
-                    <th style="padding:0.55rem 0.6rem; font-weight:900; color:var(--text-dim);">العيادة</th>
+                    <th style="padding:0.55rem 0.6rem; font-weight:900; color:var(--text-dim);">المكتب</th>
                     <th style="padding:0.55rem 0.6rem; font-weight:900; color:var(--text-dim);">الخدمة</th>
                     <th style="padding:0.55rem 0.6rem; text-align:center; font-weight:900; color:var(--text-dim);">السعر</th>
                     <th style="padding:0.55rem 0.6rem; text-align:center; font-weight:900; color:#dc2626;">الخصم</th>

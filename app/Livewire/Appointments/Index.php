@@ -193,7 +193,7 @@ class Index extends Component
             ->first();
 
         if (!$spec) {
-            $this->dispatch('spec-notif-error', msg: 'لا يوجد أخصائي مرتبط بهذه العيادة');
+            $this->dispatch('spec-notif-error', msg: 'لا يوجد أخصائي مرتبط بهذه المكتب');
             return;
         }
 

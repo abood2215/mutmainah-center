@@ -46,8 +46,8 @@ $years  = range(2000, now()->year + 1);
             @endforeach
         </select>
 
-        {{-- العيادة --}}
-        <label style="color:#fbbf24; font-weight:800; font-size:0.88rem; white-space:nowrap;">العيادة : Clinic</label>
+        {{-- المكتب --}}
+        <label style="color:#fbbf24; font-weight:800; font-size:0.88rem; white-space:nowrap;">المكتب : Clinic</label>
         <select wire:model="filterClinic" style="padding:0.4rem 0.65rem; border:1px solid rgba(255,255,255,0.2); border-radius:6px; background:rgba(255,255,255,0.1); color:#fff; font-family:'Tajawal',sans-serif; font-weight:700; font-size:0.85rem; width:100%;">
             <option value="" style="color:#000;">الكل : All</option>
             @foreach($clinics as $clinic)

@@ -7,7 +7,7 @@
             <div style="width:42px; height:42px; background:var(--primary-glow); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.4rem;">📅</div>
             <div>
                 <h1 style="font-size:1.4rem; font-weight:900; color:var(--primary); margin:0; font-family:'Tajawal',sans-serif;">حجز موعد جديد</h1>
-                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.1rem;">اختر العيادة والتاريخ والوقت ثم ابحث عن العميل</div>
+                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.1rem;">اختر المكتب والتاريخ والوقت ثم ابحث عن العميل</div>
             </div>
         </div>
         <a href="{{ route('appointments.index') }}" wire:navigate class="btn btn-secondary">⬅ العودة للمواعيد</a>
@@ -23,17 +23,17 @@
 
     <div style="padding:1.75rem; display:flex; flex-direction:column; gap:1.5rem;">
 
-        <!-- ① العيادة والتاريخ -->
+        <!-- ① المكتب والتاريخ -->
         <div style="border:1px solid var(--border); border-radius:12px; overflow:hidden;">
             <div style="background:var(--primary); padding:0.6rem 1.25rem; display:flex; align-items:center; gap:0.5rem;">
                 <span style="background:rgba(255,255,255,0.25); color:#fff; font-size:0.72rem; font-weight:900; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">١</span>
-                <span style="color:#fff; font-weight:900; font-size:0.9rem;">اختيار العيادة والتاريخ</span>
+                <span style="color:#fff; font-weight:900; font-size:0.9rem;">اختيار المكتب والتاريخ</span>
             </div>
             <div class="pg-2col" style="padding:1.25rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
                 <div>
-                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">العيادة *</label>
+                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:0.4rem;">المكتب *</label>
                     <select wire:model.live="selectedClinic" class="form-input">
-                        <option value="">— اختر العيادة —</option>
+                        <option value="">— اختر المكتب —</option>
                         @foreach($clinics as $clinic)
                             <option value="{{ $clinic->id }}">{{ $clinic->name }}</option>
                         @endforeach
@@ -198,7 +198,7 @@
                     <div style="font-weight:900; font-size:0.95rem;">{{ $patient?->full_name }}</div>
                 </div>
                 <div style="background:rgba(255,255,255,0.1); border-radius:8px; padding:0.65rem 1rem;">
-                    <div style="font-size:0.72rem; opacity:0.75; margin-bottom:0.25rem;">العيادة</div>
+                    <div style="font-size:0.72rem; opacity:0.75; margin-bottom:0.25rem;">المكتب</div>
                     <div style="font-weight:900; font-size:0.95rem;">
                         {{ collect($clinics)->firstWhere('id', (int)$selectedClinic)?->name ?? '—' }}
                     </div>

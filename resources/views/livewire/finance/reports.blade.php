@@ -9,7 +9,7 @@
         'pb'=>['label'=>'أرصدة العملاء','icon'=>'💰'],
         'services'=>['label'=>'الخدمات','icon'=>'🏥'],
         'appointments'=>['label'=>'المواعيد','icon'=>'📅'],
-        'clinics'=>['label'=>'العيادات','icon'=>'🏛️'],
+        'clinics'=>['label'=>'المكاتب','icon'=>'🏛️'],
         'claims'=>['label'=>'المطالبات','icon'=>'📋'],
         'pfs'=>['label'=>'البيان المالي','icon'=>'📊'],
         'patients'=>['label'=>'العملاء','icon'=>'👥'],
@@ -42,9 +42,9 @@
                 </div>
                 @if(!in_array($reportType, ['pb', 'patients', 'services']))
                 <div>
-                    <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); margin-bottom:0.3rem;">العيادة</div>
+                    <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); margin-bottom:0.3rem;">المكتب</div>
                     <select wire:model="filterClinic" class="form-input" style="width:210px;">
-                        <option value="">جميع العيادات</option>
+                        <option value="">جميع المكاتب</option>
                         @foreach($clinics as $clinic)
                             <option value="{{ $clinic->id }}">{{ $clinic->name }}</option>
                         @endforeach
@@ -94,7 +94,7 @@
                     @if($reportType === 'income')
                     <thead><tr style="background:#fafbfc; border-bottom:2px solid var(--border);">
                         <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">التاريخ</th>
-                        <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">العيادة</th>
+                        <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">المكتب</th>
                         <th style="padding:0.7rem 1rem; text-align:center; font-weight:800; color:var(--text-dim);">العدد</th>
                         <th style="padding:0.7rem 1rem; text-align:center; font-weight:800; color:var(--primary);">الإجمالي</th>
                     </tr></thead>
@@ -112,7 +112,7 @@
                         <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">#</th>
                         <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">العميل</th>
                         <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">التاريخ</th>
-                        <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">العيادة</th>
+                        <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">المكتب</th>
                         <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">البيان</th>
                         <th style="padding:0.7rem 1rem; text-align:center; font-weight:800; color:var(--primary);">المبلغ</th>
                     </tr></thead>
@@ -168,7 +168,7 @@
                     @elseif($reportType === 'services')
                     <thead><tr style="background:#fafbfc; border-bottom:2px solid var(--border);">
                         <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">الخدمة</th>
-                        <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">العيادة</th>
+                        <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">المكتب</th>
                         <th style="padding:0.7rem 1rem; text-align:center; font-weight:800; color:var(--primary);">السعر</th>
                         <th style="padding:0.7rem 1rem; text-align:center; font-weight:800; color:var(--text-dim);">التكلفة</th>
                     </tr></thead>
@@ -188,7 +188,7 @@
                         <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">الجوال</th>
                         <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">التاريخ</th>
                         <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">الوقت</th>
-                        <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">العيادة</th>
+                        <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">المكتب</th>
                         <th style="padding:0.7rem 1rem; text-align:center; font-weight:800; color:var(--text-dim);">الحالة</th>
                     </tr></thead>
                     <tbody>@forelse($rows as $r)
@@ -205,7 +205,7 @@
 
                     @elseif($reportType === 'clinics')
                     <thead><tr style="background:#fafbfc; border-bottom:2px solid var(--border);">
-                        <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">العيادة</th>
+                        <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">المكتب</th>
                         <th style="padding:0.7rem 1rem; text-align:center; font-weight:800; color:var(--text-dim);">الزيارات</th>
                         <th style="padding:0.7rem 1rem; text-align:center; font-weight:800; color:var(--primary);">الإيراد</th>
                     </tr></thead>
@@ -222,7 +222,7 @@
                         <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">العميل</th>
                         <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">شركة التأمين</th>
                         <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">التاريخ</th>
-                        <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">العيادة</th>
+                        <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">المكتب</th>
                         <th style="padding:0.7rem 1rem; text-align:center; font-weight:800; color:var(--success);">مبلغ التأمين</th>
                         <th style="padding:0.7rem 1rem; text-align:center; font-weight:800; color:var(--primary);">الإجمالي</th>
                     </tr></thead>

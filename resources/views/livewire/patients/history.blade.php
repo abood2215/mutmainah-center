@@ -154,7 +154,7 @@
                     <thead>
                         <tr style="background:#fafbfc; border-bottom:2px solid var(--border);">
                             <th style="padding:0.7rem 0.9rem; text-align:center; font-weight:800; color:var(--text-dim);">التاريخ</th>
-                            <th style="padding:0.7rem 0.9rem; font-weight:800; color:var(--text-dim);">العيادة</th>
+                            <th style="padding:0.7rem 0.9rem; font-weight:800; color:var(--text-dim);">المكتب</th>
                             <th style="padding:0.7rem 0.9rem; font-weight:800; color:var(--text-dim);">الأخصائي</th>
                             <th style="padding:0.7rem 0.9rem; font-weight:800; color:var(--text-dim);">الوصف</th>
                             <th style="padding:0.7rem 0.9rem; font-weight:800; color:var(--text-dim);">تقييم الحالة</th>

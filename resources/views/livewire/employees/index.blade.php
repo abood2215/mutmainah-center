@@ -29,7 +29,7 @@
                     <th style="padding:0.55rem 0.75rem; text-align:center; font-weight:900; color:#555; border-left:1px solid #ccc;">التليفون</th>
                     <th style="padding:0.55rem 0.75rem; text-align:center; font-weight:900; color:#555; border-left:1px solid #ccc; min-width:140px;">البريد الالكتروني</th>
                     <th style="padding:0.55rem 0.75rem; text-align:center; font-weight:900; color:#555; border-left:1px solid #ccc;">الحالة</th>
-                    <th style="padding:0.55rem 0.75rem; text-align:center; font-weight:900; color:#0099aa; border-left:1px solid #ccc;">العيادات</th>
+                    <th style="padding:0.55rem 0.75rem; text-align:center; font-weight:900; color:#0099aa; border-left:1px solid #ccc;">المكاتب</th>
                     <th style="padding:0.55rem 0.75rem; text-align:center; font-weight:900; color:#555; border-left:1px solid #ccc; width:60px;">تعديل</th>
                     <th style="padding:0.55rem 0.75rem; text-align:center; font-weight:900; color:#555; width:60px;">حذف</th>
                 </tr>
@@ -71,7 +71,7 @@
                         <button wire:click="openClinics({{ $emp->id }}, {{ \Illuminate\Support\Js::from($fullName) }})"
                             style="padding:0.3rem 0.7rem; background:{{ $selectedEmpId === $emp->id ? '#8b1c2b' : '#e8f4fd' }}; border:1.5px solid {{ $selectedEmpId === $emp->id ? '#8b1c2b' : '#0099aa' }}; border-radius:5px; color:{{ $selectedEmpId === $emp->id ? '#fff' : '#0099aa' }}; cursor:pointer; font-size:0.82rem; font-weight:800; font-family:'Tajawal',sans-serif; white-space:nowrap;"
                             title="عرض عيادات الموظف">
-                            🏥 العيادات
+                            🏥 المكاتب
                         </button>
                     </td>
                     <td style="padding:0.55rem 0.75rem; text-align:center; border-left:1px solid #eee;">
@@ -94,7 +94,7 @@
         </table>
     </div>
 
-    <!-- قسم العيادات -->
+    <!-- قسم المكاتب -->
     @if($selectedEmpId)
     <div style="margin:0; border-top:3px solid #8b1c2b; background:#fafbfc; padding:1.25rem 1.75rem; animation:fadeIn 0.3s ease;">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
@@ -129,7 +129,7 @@
                 </div>
                 <button wire:click="toggleClinic({{ $clinic['id'] }})"
                     style="padding:0.35rem 0.85rem; background:{{ $clinic['active'] == 1 ? '#fff8e1' : '#e8f5e9' }}; border:1.5px solid {{ $clinic['active'] == 1 ? '#f0c040' : '#66bb6a' }}; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:800; color:{{ $clinic['active'] == 1 ? '#c8941a' : '#2e7d32' }}; font-family:'Tajawal',sans-serif; white-space:nowrap; flex-shrink:0;"
-                    title="{{ $clinic['active'] == 1 ? 'إيقاف العيادة' : 'تفعيل العيادة' }}">
+                    title="{{ $clinic['active'] == 1 ? 'إيقاف المكتب' : 'تفعيل المكتب' }}">
                     {{ $clinic['active'] == 1 ? '⏸ إيقاف' : '▶ تفعيل' }}
                 </button>
             </div>

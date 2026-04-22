@@ -100,7 +100,7 @@ class History extends Component
 
     public function render()
     {
-        // سجل الزيارات من rec مع العيادة والطبيب
+        // سجل الزيارات من rec مع المكتب والطبيب
         $visits = DB::table('rec as r')
             ->leftJoin('clinic as c', 'c.id', '=', 'r.clinic_id')
             ->leftJoin('employees as e', 'e.id', '=', 'r.doc_id')

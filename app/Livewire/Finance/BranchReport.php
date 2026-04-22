@@ -92,7 +92,7 @@ class BranchReport extends Component
             ->groupBy('k.branch_id')
             ->get()->pluck('cnt', 'branch_id');
 
-        // ══ 5. إيرادات العيادات لكل فرع (استعلام واحد، نأخذ أعلى 5 لاحقاً في PHP) ══
+        // ══ 5. إيرادات المكاتب لكل فرع (استعلام واحد، نأخذ أعلى 5 لاحقاً في PHP) ══
         $clinicRevenues = DB::table('kpayments as p')
             ->join('rec as r', 'r.id', '=', 'p.rec_id')
             ->join('kstu as k', 'k.id', '=', 'r.st_id')

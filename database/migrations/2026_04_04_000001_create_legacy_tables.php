@@ -88,7 +88,7 @@ return new class extends Migration
         }
 
         // ══════════════════════════════════════
-        // clinic — العيادات
+        // clinic — المكاتب
         // ══════════════════════════════════════
         if (!Schema::hasTable('clinic')) {
             Schema::create('clinic', function (Blueprint $table) {

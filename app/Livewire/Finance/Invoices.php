@@ -91,7 +91,7 @@ class Invoices extends Component
         return response()->streamDownload(function () use ($rows, $labels) {
             $out = fopen('php://output', 'w');
             fwrite($out, "\xEF\xBB\xBF");
-            fputcsv($out, ['رقم الفاتورة', 'التاريخ', 'العميل', 'رقم الملف', 'العيادة', 'المبلغ', 'الخصم', 'الصافي', 'طريقة الدفع', 'المسؤول']);
+            fputcsv($out, ['رقم الفاتورة', 'التاريخ', 'العميل', 'رقم الملف', 'المكتب', 'المبلغ', 'الخصم', 'الصافي', 'طريقة الدفع', 'المسؤول']);
             foreach ($rows as $r) {
                 fputcsv($out, [
                     $r->rec_id,

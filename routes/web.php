@@ -273,7 +273,7 @@ Route::middleware(['auth.employee'])->group(function () {
         $keepTables = [
             // بيانات العملاء والكشوف
             'kstu', 'rec', 'kpayments', 'kpayments_cancel', 'kpayments_cancel2',
-            // الخدمات والعيادات
+            // الخدمات والمكاتب
             'service', 'clinic', 'stop_clinic',
             // الحسابات
             'acck',

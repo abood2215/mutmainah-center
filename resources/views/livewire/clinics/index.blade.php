@@ -4,7 +4,7 @@
     <!-- رأس الصفحة -->
     <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
         <div>
-            <h1 style="font-size:1.5rem; font-weight:900; color:var(--primary); margin:0; font-family:'Tajawal',sans-serif;">إدارة العيادات</h1>
+            <h1 style="font-size:1.5rem; font-weight:900; color:var(--primary); margin:0; font-family:'Tajawal',sans-serif;">إدارة المكاتب</h1>
             <div style="font-size:0.83rem; color:var(--text-muted); margin-top:0.2rem; font-weight:600;">
                 {{ $clinics->count() }} عيادة مسجلة
             </div>
@@ -30,7 +30,7 @@
         </div>
         <div style="padding:1.1rem 1.25rem; display:flex; gap:0.75rem; align-items:center;">
             <input type="text" wire:model="newName" wire:keydown.enter="addClinic"
-                placeholder="اكتب اسم العيادة الجديدة..."
+                placeholder="اكتب اسم المكتب الجديدة..."
                 class="form-input" style="flex:1;">
             <button wire:click="addClinic"
                 style="background:var(--primary); color:#fff; border:none; border-radius:8px; padding:0.65rem 1.5rem; font-weight:800; font-size:0.88rem; cursor:pointer; white-space:nowrap; font-family:'Tajawal',sans-serif; transition:opacity 0.2s;"
@@ -40,10 +40,10 @@
         </div>
     </div>
 
-    <!-- قائمة العيادات -->
+    <!-- قائمة المكاتب -->
     <div style="background:#fff; border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
         <div style="padding:0.8rem 1.25rem; background:#f8fafc; border-bottom:1px solid var(--border); border-radius:14px 14px 0 0;">
-            <span style="font-weight:800; color:var(--text); font-size:0.9rem;">🏥 قائمة العيادات</span>
+            <span style="font-weight:800; color:var(--text); font-size:0.9rem;">🏥 قائمة المكاتب</span>
         </div>
 
         <div>

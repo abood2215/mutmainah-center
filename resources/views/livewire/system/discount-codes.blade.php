@@ -202,11 +202,11 @@
                 <input type="number" wire:model="maxUses" min="0" class="form-input" style="width:100%;">
             </div>
 
-            {{-- العيادة --}}
+            {{-- المكتب --}}
             <div>
-                <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--text-dim); margin-bottom:0.35rem;">العيادة <span style="color:var(--text-muted); font-weight:400;">(اختياري)</span></label>
+                <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--text-dim); margin-bottom:0.35rem;">المكتب <span style="color:var(--text-muted); font-weight:400;">(اختياري)</span></label>
                 <select wire:model="clinicId" class="form-input" style="width:100%;">
-                    <option value="0">كل العيادات</option>
+                    <option value="0">كل المكاتب</option>
                     @foreach($clinics as $c)
                     <option value="{{ $c->id }}">{{ $c->name }}</option>
                     @endforeach

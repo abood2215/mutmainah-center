@@ -47,7 +47,7 @@
             <div style="width:44px; height:44px; background:#ede9fe; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0;">🏢</div>
             <div>
                 <div style="font-size:1.8rem; font-weight:900; color:var(--navy); line-height:1;">{{ $clinics->count() }}</div>
-                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; margin-top:0.1rem;">العيادات</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; margin-top:0.1rem;">المكاتب</div>
             </div>
         </div>
     </div>
@@ -64,7 +64,7 @@
                 <span style="position:absolute; right:0.85rem; top:50%; transform:translateY(-50%); opacity:0.35; font-size:1rem;">🔍</span>
             </div>
             <select wire:model.live="selectedClinic" class="form-input" style="width:210px;">
-                <option value="">جميع العيادات</option>
+                <option value="">جميع المكاتب</option>
                 @foreach($clinics as $clinic)
                     <option value="{{ $clinic->id }}">{{ $clinic->name }}</option>
                 @endforeach
@@ -86,7 +86,7 @@
                         <th style="padding:0.75rem 1.25rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap;">#</th>
                         <th style="padding:0.75rem 1rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px;">الوقت والتاريخ</th>
                         <th style="padding:0.75rem 1rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px;">العميل</th>
-                        <th style="padding:0.75rem 1rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px;">العيادة</th>
+                        <th style="padding:0.75rem 1rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px;">المكتب</th>
                         <th style="padding:0.75rem 1rem; text-align:right; font-size:0.78rem; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px;">الحجز بواسطة</th>
                         <th style="padding:0.75rem 1rem; text-align:center; font-size:0.78rem; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px;">الحالة</th>
                         <th style="padding:0.75rem 1rem; text-align:center; font-size:0.78rem; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px;">إجراءات</th>
@@ -236,9 +236,9 @@
                 <label style="font-size:0.8rem; font-weight:800; color:var(--text-dim); display:block; margin-bottom:0.35rem;">الوقت</label>
                 <input type="time" wire:model="editTime" class="form-input" style="width:100%;">
             </div>
-            {{-- العيادة --}}
+            {{-- المكتب --}}
             <div>
-                <label style="font-size:0.8rem; font-weight:800; color:var(--text-dim); display:block; margin-bottom:0.35rem;">العيادة</label>
+                <label style="font-size:0.8rem; font-weight:800; color:var(--text-dim); display:block; margin-bottom:0.35rem;">المكتب</label>
                 <select wire:model="editClinic" class="form-input" style="width:100%;">
                     <option value="">— اختر —</option>
                     @foreach($clinics as $cl)
@@ -404,7 +404,7 @@ $wire.on('open-specialist-wa', (payload) => {
     var specFirst = (d.specName || '').split(/\s+/)[0] || d.specName || 'الأخصائي';
     var msg = 'مساء الخير ' + specFirst + ' 🌟' + nl;
     msg += 'جدول مواعيدك اليوم — ' + (d.date || '') + nl;
-    msg += 'العيادة: ' + (d.clinicName || '') + nl + nl;
+    msg += 'المكتب: ' + (d.clinicName || '') + nl + nl;
     var appts = d.appts || [];
     if (appts.length === 0) {
         msg += 'لا توجد مواعيد محجوزة.';

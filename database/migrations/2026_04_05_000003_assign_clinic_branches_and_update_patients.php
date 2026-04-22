@@ -28,7 +28,7 @@ return new class extends Migration
             });
         }
 
-        // 2. تحديث العيادات
+        // 2. تحديث المكاتب
         DB::table('clinic')->whereIn('id', $this->floor3)->update(['branch_id' => 1]);
         DB::table('clinic')->whereIn('id', $this->floor6)->update(['branch_id' => 2]);
 

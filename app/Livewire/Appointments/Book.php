@@ -139,7 +139,7 @@ class Book extends Component
             'selectedTime'   => 'required',
             'patientId'      => 'required|integer',
         ], [
-            'selectedClinic.required' => 'يرجى اختيار العيادة',
+            'selectedClinic.required' => 'يرجى اختيار المكتب',
             'selectedDate.required'   => 'يرجى اختيار التاريخ',
             'selectedTime.required'   => 'يرجى اختيار وقت الموعد',
             'patientId.required'      => 'يرجى اختيار العميل',
@@ -147,7 +147,7 @@ class Book extends Component
 
         $dateFormatted = \Carbon\Carbon::parse($this->selectedDate)->format('j-n-Y');
 
-        // منع الحجز المزدوج: نفس العميل + نفس العيادة + نفس الوقت + نفس التاريخ
+        // منع الحجز المزدوج: نفس العميل + نفس المكتب + نفس الوقت + نفس التاريخ
         $duplicate = DB::table('rec')
             ->where('st_id',    $this->patientId)
             ->where('clinic_id',$this->selectedClinic)
@@ -157,7 +157,7 @@ class Book extends Component
             ->exists();
 
         if ($duplicate) {
-            $this->addError('selectedTime', 'هذا العميل لديه موعد مسبق في نفس العيادة والوقت والتاريخ');
+            $this->addError('selectedTime', 'هذا العميل لديه موعد مسبق في نفس المكتب والوقت والتاريخ');
             return;
         }
 
@@ -200,7 +200,7 @@ class Book extends Component
         $clinicName = collect($this->clinics)->where('id', (int)$this->selectedClinic)->first()?->name ?? 'غير محدد';
         ActivityLogger::log(
             'booked', 'appointment', $this->patientId,
-            'حجز موعد — العيادة: ' . $clinicName .
+            'حجز موعد — المكتب: ' . $clinicName .
             ' — التاريخ: ' . $dateFormatted .
             ' — الوقت: ' . $this->selectedTime
         );

@@ -15,7 +15,7 @@ class Index extends Component
     public ?string $successMsg   = null;
     public ?string $errorMsg     = null;
 
-    #[Title('إدارة العيادات')]
+    #[Title('إدارة المكاتب')]
     public function startEdit(int $id, string $name): void
     {
         $this->editingId   = $id;
@@ -35,13 +35,13 @@ class Index extends Component
         $name = trim($this->editingName);
 
         if ($name === '') {
-            $this->errorMsg = 'اسم العيادة لا يمكن أن يكون فارغاً';
+            $this->errorMsg = 'اسم المكتب لا يمكن أن يكون فارغاً';
             return;
         }
 
         DB::table('clinic')->where('id', $this->editingId)->update(['name' => $name]);
 
-        $this->successMsg  = 'تم تحديث اسم العيادة بنجاح';
+        $this->successMsg  = 'تم تحديث اسم المكتب بنجاح';
         $this->editingId   = null;
         $this->editingName = '';
         $this->errorMsg    = null;
@@ -52,7 +52,7 @@ class Index extends Component
         $name = trim($this->newName);
 
         if ($name === '') {
-            $this->errorMsg = 'يرجى إدخال اسم العيادة';
+            $this->errorMsg = 'يرجى إدخال اسم المكتب';
             return;
         }
 
@@ -70,7 +70,7 @@ class Index extends Component
         ]);
 
         $this->newName    = '';
-        $this->successMsg = 'تمت إضافة العيادة بنجاح';
+        $this->successMsg = 'تمت إضافة المكتب بنجاح';
         $this->errorMsg   = null;
     }
 
@@ -91,13 +91,13 @@ class Index extends Component
         $inUse = DB::table('rec')->where('clinic_id', $this->confirmDelete)->exists();
 
         if ($inUse) {
-            $this->errorMsg      = 'لا يمكن حذف هذه العيادة لأنها مرتبطة بكشوفات مسجلة';
+            $this->errorMsg      = 'لا يمكن حذف هذه المكتب لأنها مرتبطة بكشوفات مسجلة';
             $this->confirmDelete = null;
             return;
         }
 
         DB::table('clinic')->where('id', $this->confirmDelete)->delete();
-        $this->successMsg    = 'تم حذف العيادة بنجاح';
+        $this->successMsg    = 'تم حذف المكتب بنجاح';
         $this->confirmDelete = null;
     }
 

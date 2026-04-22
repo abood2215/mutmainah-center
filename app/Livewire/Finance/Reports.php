@@ -193,7 +193,7 @@ class Reports extends Component
     }
 
     /* ══════════════════════════════════════════════
-       5. العيادات – Clinics
+       5. المكاتب – Clinics
     ══════════════════════════════════════════════ */
     private function getClinicsData()
     {

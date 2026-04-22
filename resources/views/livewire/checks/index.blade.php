@@ -9,7 +9,7 @@
             <div style="font-weight:900; color:#1b5e20; font-size:.95rem;">تم تحويل العميل بنجاح</div>
             <div style="font-size:.83rem; color:#2e7d32; margin-top:2px;">
                 <strong>{{ $cs['patient'] }}</strong>
-                &nbsp;|&nbsp; العيادة: <strong>{{ $cs['clinic'] }}</strong>
+                &nbsp;|&nbsp; المكتب: <strong>{{ $cs['clinic'] }}</strong>
                 &nbsp;|&nbsp; المبلغ: <strong>{{ number_format($cs['total'], 3) }} د.ك</strong>
                 &nbsp;|&nbsp; رقم الكشف: <strong>#{{ $cs['rec_id'] }}</strong>
             </div>
@@ -55,9 +55,9 @@
                     </div>
 
                     <div style="display: flex; gap: 0.5rem; align-items: center;">
-                        <span style="font-size: 0.82rem; font-weight: 800; color: var(--text-dim); white-space: nowrap;">العيادة:</span>
+                        <span style="font-size: 0.82rem; font-weight: 800; color: var(--text-dim); white-space: nowrap;">المكتب:</span>
                         <select wire:model="filterClinic" class="form-input" style="width:200px; font-weight: 700;">
-                            <option value="">جميع العيادات</option>
+                            <option value="">جميع المكاتب</option>
                             @foreach($clinics as $clinic)
                                 <option value="{{ $clinic->id }}">{{ $clinic->name }}</option>
                             @endforeach
@@ -150,7 +150,7 @@
                                 <th style="padding:1rem; text-align:center; font-size:0.8rem; font-weight:900; color:var(--text-dim); width:50px;">#</th>
                                 <th style="padding:1rem; font-size:0.8rem; font-weight:900; color:var(--text-dim); min-width:180px; text-align: right;">العميل</th>
                                 <th style="padding:1rem; text-align:center; font-size:0.8rem; font-weight:900; color:var(--text-dim);">تاريخ الكشف</th>
-                                <th style="padding:1rem; font-size:0.8rem; font-weight:900; color:var(--text-dim); min-width:160px; text-align: right;">العيادة / المستشار</th>
+                                <th style="padding:1rem; font-size:0.8rem; font-weight:900; color:var(--text-dim); min-width:160px; text-align: right;">المكتب / المستشار</th>
                                 <th style="padding:1rem; text-align:center; font-size:0.8rem; font-weight:900; color:var(--text-dim);">المبلغ</th>
                                 <th style="padding:1rem; text-align:center; font-size:0.8rem; font-weight:900; color:var(--text-dim);">الفاتورة</th>
                                 <th style="padding:1rem; text-align:center; font-size:0.8rem; font-weight:900; color:var(--text-dim);">الحالة</th>
