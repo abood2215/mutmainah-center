@@ -41,16 +41,16 @@ class History extends Component
 
         abort_if(!$this->patient, 404);
 
-        // تحميل الحقول من kstu مع تنظيف HTML tags
-        $this->current_complaint      = $this->cleanHtml($this->patient->chronic);
-        $this->psychiatric_treatments = $this->cleanHtml($this->patient->heir);
-        $this->impression             = $this->cleanHtml($this->patient->surg);
-        $this->plan                   = $this->cleanHtml($this->patient->allerg);
-        $this->family_history         = $this->cleanHtml($this->patient->f_history);
-        $this->personal_history       = $this->cleanHtml($this->patient->notes);
-        $this->mental_state           = $this->cleanHtml($this->patient->evalu);
-        $this->recommendations        = $this->cleanHtml($this->patient->recomn);
-        $this->future_plan            = $this->cleanHtml($this->patient->fut_plan);
+        // الحقول تبدأ فارغة — البيانات محفوظة بقاعدة البيانات لكن غير معروضة
+        $this->current_complaint      = '';
+        $this->psychiatric_treatments = '';
+        $this->impression             = '';
+        $this->plan                   = '';
+        $this->family_history         = '';
+        $this->personal_history       = '';
+        $this->mental_state           = '';
+        $this->recommendations        = '';
+        $this->future_plan            = '';
 
         // تحميل تاريخ الميلاد - محاولة استخراج يوم/شهر/سنة من date_of_birth
         if ($this->patient->date_of_birth) {
