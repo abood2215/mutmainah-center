@@ -147,11 +147,18 @@ Route::middleware(['auth.employee'])->group(function () {
         } elseif ($cashierEmp && $cashierEmp->user_name) {
             $cashierName = $cashierEmp->user_name;
         } else {
-            // fallback: ابحث عن user_name في employees بغض النظر
-            $byUserId = $cashierUserId
-                ? DB::table('employees')->where('id', $cashierUserId)->value('user_name')
+            // fallback: rec.user_id → employees
+            $recUserId = $rec->user_id ?? 0;
+            $recEmp = $recUserId
+                ? DB::table('employees')->where('id', $recUserId)->first(['first_name','middle_initial','user_name'])
                 : null;
-            $cashierName = $byUserId ?? auth()->user()?->getName() ?? '';
+            if ($recEmp && trim(($recEmp->first_name ?? '') . ($recEmp->middle_initial ?? ''))) {
+                $cashierName = trim(($recEmp->first_name ?? '') . ' ' . ($recEmp->middle_initial ?? ''));
+            } elseif ($recEmp && $recEmp->user_name) {
+                $cashierName = $recEmp->user_name;
+            } else {
+                $cashierName = '—';
+            }
         }
 
         return view('finance.invoice-print', compact(
