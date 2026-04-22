@@ -284,7 +284,7 @@
 
     <!-- شريط سفلي -->
     <div style="background:var(--navy); color:rgba(255,255,255,0.5); padding:0.65rem 1.75rem; font-size:0.78rem; font-weight:700; display:flex; align-items:center; gap:0.5rem; border-top:3px solid var(--gold);">
-        <span style="color:var(--gold);">●</span> شركة مركز مطمئنة للأستشارات التربوية والتدريب &mdash; نظام إدارة المركز
+        <span style="color:var(--gold);">●</span> شركة مركز مطمئنة الكويتية للاستشارات اللغوية &mdash; نظام إدارة المركز
     </div>
 
     {{-- ── Modal إيرادات اليوم ── --}}

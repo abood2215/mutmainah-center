@@ -468,7 +468,7 @@ $groups = [
 
 {{-- تذييل الطباعة --}}
 <div class="print-footer" style="display:none; margin-top:1rem; text-align:center; font-size:0.72rem; color:#9ca3af; font-family:'Tajawal',sans-serif; border-top:1px solid #e2e8f0; padding-top:0.5rem;">
-    تاريخ الطباعة: {{ now()->format('d/m/Y H:i') }} &nbsp;|&nbsp; شركة مركز مطمئنة للأستشارات التربوية والتدريب
+    تاريخ الطباعة: {{ now()->format('d/m/Y H:i') }} &nbsp;|&nbsp; شركة مركز مطمئنة الكويتية للاستشارات اللغوية
 </div>
 
 <style>

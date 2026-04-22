@@ -230,7 +230,7 @@
 
         {{-- تذييل الطباعة --}}
         <div class="print-footer" style="display:none; margin-top:1.5rem; text-align:center; font-size:0.72rem; color:#9ca3af; font-family:'Tajawal',sans-serif; border-top:1px solid #e2e8f0; padding-top:0.5rem;">
-            تاريخ الطباعة: {{ now()->format('d/m/Y H:i') }} &nbsp;|&nbsp; شركة مركز مطمئنة للأستشارات التربوية والتدريب
+            تاريخ الطباعة: {{ now()->format('d/m/Y H:i') }} &nbsp;|&nbsp; شركة مركز مطمئنة الكويتية للاستشارات اللغوية
         </div>
 
     </div>
@@ -242,7 +242,7 @@
 
         {{-- رأس الكشف --}}
         <div style="text-align:center; border-bottom:2px solid #1a1a2e; padding-bottom:1rem; margin-bottom:1.25rem;">
-            <div style="font-size:1.1rem; font-weight:900; color:#1a1a2e; margin-bottom:4px;">شركة مركز مطمئنة للأستشارات التربوية والتدريب</div>
+            <div style="font-size:1.1rem; font-weight:900; color:#1a1a2e; margin-bottom:4px;">شركة مركز مطمئنة الكويتية للاستشارات اللغوية</div>
             <div style="font-size:1.4rem; font-weight:900; color:#8b1c2b; margin-bottom:8px;">كشف حساب عميل</div>
             <div style="display:flex; justify-content:center; gap:2rem; font-size:0.88rem; color:#374151;">
                 <span><strong>الاسم:</strong> {{ $patient->full_name }}</span>
@@ -319,7 +319,7 @@
         {{-- تذييل --}}
         <div style="margin-top:1.5rem; border-top:1px solid #e5e7eb; padding-top:0.75rem; display:flex; justify-content:space-between; font-size:0.72rem; color:#9ca3af;">
             <span>تاريخ الطباعة: {{ now()->format('d/m/Y H:i') }}</span>
-            <span>شركة مركز مطمئنة للأستشارات التربوية والتدريب</span>
+            <span>شركة مركز مطمئنة الكويتية للاستشارات اللغوية</span>
         </div>
     </div>
 </div>

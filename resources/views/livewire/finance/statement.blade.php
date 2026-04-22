@@ -271,7 +271,7 @@ $years  = range(2000, now()->year + 1);
     {{-- تذييل الكشف --}}
     <div style="padding:0.75rem 1.5rem; border-top:1px solid #e2e8f0; background:#fafbfc; display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:#9ca3af; font-family:'Tajawal',sans-serif;">
         <span>تاريخ الطباعة: {{ now()->format('d/m/Y H:i') }}</span>
-        <span>شركة مركز مطمئنة للأستشارات التربوية والتدريب</span>
+        <span>شركة مركز مطمئنة الكويتية للاستشارات اللغوية</span>
     </div>
 
 </div>

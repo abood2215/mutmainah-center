@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title ?? 'شركة مركز مطمئنة للأستشارات التربوية والتدريب' }}</title>
+    <title>{{ $title ?? 'شركة مركز مطمئنة الكويتية للاستشارات اللغوية' }}</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -642,7 +642,7 @@
             <img src="/logo.jpg" alt="مطمئنة">
             <div>
                 <div class="t-name">مطمئنة</div>
-                <div class="t-gold">شركة مركز مطمئنة للأستشارات التربوية والتدريب</div>
+                <div class="t-gold">شركة مركز مطمئنة الكويتية للاستشارات اللغوية</div>
             </div>
         </a>
 
@@ -750,7 +750,7 @@
 
     <!-- ═══════ FOOTER ═══════ -->
     <footer class="page-footer">
-        جميع الحقوق محفوظة &copy; {{ date('Y') }} &mdash; <strong>شركة مركز مطمئنة للأستشارات التربوية والتدريب</strong>
+        جميع الحقوق محفوظة &copy; {{ date('Y') }} &mdash; <strong>شركة مركز مطمئنة الكويتية للاستشارات اللغوية</strong>
     </footer>
 
     <!-- ═══════ BOTTOM NAV (موبايل فقط) ═══════ -->
