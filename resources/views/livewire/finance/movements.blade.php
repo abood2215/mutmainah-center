@@ -146,11 +146,9 @@
                 <label style="display:block; font-size:0.75rem; font-weight:800; color:#6b7280; margin-bottom:0.4rem;">الشركة / Company</label>
                 <select wire:model="newComId"
                     style="width:100%; padding:0.65rem 0.9rem; border:1.5px solid #e5e7eb; border-radius:8px; font-family:'Tajawal',sans-serif; font-size:0.88rem; outline:none; background:#fff; cursor:pointer; box-sizing:border-box;">
-                    <option value="0">— على نفقته / بدون شركة —</option>
+                    <option value="0">— بدون شركة —</option>
                     @foreach($companies as $com)
-                        @if($com->id != 28)
                         <option value="{{ $com->id }}">{{ $com->name }}</option>
-                        @endif
                     @endforeach
                 </select>
             </div>
