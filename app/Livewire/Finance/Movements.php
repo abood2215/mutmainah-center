@@ -14,11 +14,12 @@ class Movements extends Component
     use WithPagination;
 
     /* ══ فلاتر البحث ══ */
-    public string $filterType    = 'all'; // all | receipt | payment
-    public string $fromDate      = '';   // YYYY-MM-DD
-    public string $toDate        = '';   // YYYY-MM-DD
-    public string $accountSearch = '';
-    public bool   $searched      = false;
+    public string $filterType      = 'all'; // all | receipt | payment
+    public string $fromDate        = '';   // YYYY-MM-DD
+    public string $toDate          = '';   // YYYY-MM-DD
+    public string $accountSearch   = '';
+    public string $filterCompanyId = '0';
+    public bool   $searched        = false;
 
     /* ══ نموذج إضافة حركة جديدة ══ */
     public bool   $showAddModal     = true;
@@ -37,6 +38,7 @@ class Movements extends Component
     public string $newMonth         = '';
     public string $newYear          = '';
     public string $newDesc          = '';
+    public string $newComId         = '0';
 
     const PAYMENT_METHODS = [
         '1'  => 'نقدا',
@@ -209,7 +211,7 @@ class Movements extends Component
             'status'         => $isReceipt ? 1 : 2,
             'p_amount'       => 0,
             'c_amount'       => 0,
-            'com_id'         => 0,
+            'com_id'         => (int)$this->newComId,
             'dis_id'         => 0,
             'vno'            => 0,
             'ptime'          => now()->format('H:i'),
@@ -261,13 +263,15 @@ class Movements extends Component
         $this->newMonth         = now()->format('n');
         $this->newYear          = now()->format('Y');
         $this->newDesc          = '';
+        $this->newComId         = '0';
     }
 
     /* ══ Render ══ */
     public function render()
     {
-        $movements = null;
+        $movements  = null;
         $grandTotal = 0;
+        $companies  = DB::table('kcom')->orderBy('id')->get(['id', 'name']);
 
         if ($this->searched) {
             $from = $this->fromDate ?: now()->startOfMonth()->format('Y-m-d');
@@ -277,6 +281,7 @@ class Movements extends Component
                 ->join('acck as a', 'a.id', '=', 'k.acc_id')
                 ->leftJoin('kstu as s', 's.id', '=', 'a.stu_id')
                 ->leftJoin('employees as e', 'e.id', '=', 'k.user_id')
+                ->leftJoin('kcom as co', 'co.id', '=', 'k.com_id')
                 ->where('k.acc_id', '>', 0)
                 ->whereRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') >= ?", [$from])
                 ->whereRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') <= ?", [$to]);
@@ -294,6 +299,10 @@ class Movements extends Component
                 $query->where('s.full_name', 'like', $term);
             }
 
+            if ($this->filterCompanyId && $this->filterCompanyId !== '0') {
+                $query->where('k.com_id', (int)$this->filterCompanyId);
+            }
+
             $grandTotal = (clone $query)->sum(
                 DB::raw('COALESCE(NULLIF(k.amount,0), NULLIF(k.price,0), 0)')
             );
@@ -305,10 +314,12 @@ class Movements extends Component
                     'k.pdesc',
                     'k.status',
                     'k.payment_method',
+                    'k.com_id',
                     DB::raw('COALESCE(NULLIF(k.amount,0), NULLIF(k.price,0), 0) as mov_amount'),
                     's.full_name as patient_name',
                     's.id as patient_id',
                     'a.name as acck_name',
+                    'co.name as company_name',
                     DB::raw("CONCAT(IFNULL(e.first_name,''), IF(e.middle_initial IS NOT NULL AND e.middle_initial != '', CONCAT(' ', e.middle_initial), '')) as emp_name")
                 )
                 ->orderByRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') DESC, k.id DESC")
@@ -319,6 +330,7 @@ class Movements extends Component
             'movements'  => $movements,
             'grandTotal' => $grandTotal,
             'payMethods' => self::PAYMENT_METHODS,
+            'companies'  => $companies,
         ])->layout('layouts.app');
     }
 }

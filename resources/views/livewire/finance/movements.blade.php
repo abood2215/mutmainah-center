@@ -141,6 +141,20 @@
                     onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='#e5e7eb'"></textarea>
             </div>
 
+            {{-- الشركة --}}
+            <div>
+                <label style="display:block; font-size:0.75rem; font-weight:800; color:#6b7280; margin-bottom:0.4rem;">الشركة / Company</label>
+                <select wire:model="newComId"
+                    style="width:100%; padding:0.65rem 0.9rem; border:1.5px solid #e5e7eb; border-radius:8px; font-family:'Tajawal',sans-serif; font-size:0.88rem; outline:none; background:#fff; cursor:pointer; box-sizing:border-box;">
+                    <option value="0">— على نفقته / بدون شركة —</option>
+                    @foreach($companies as $com)
+                        @if($com->id != 28)
+                        <option value="{{ $com->id }}">{{ $com->name }}</option>
+                        @endif
+                    @endforeach
+                </select>
+            </div>
+
         </div>
 
         {{-- زر الحفظ --}}
@@ -190,6 +204,16 @@
                 <input type="text" wire:model.live.debounce.400ms="accountSearch" placeholder="بحث..."
                     style="flex:1; padding:0.48rem 0.65rem; border:1.5px solid rgba(200,148,26,0.4); border-radius:7px; font-family:'Tajawal',sans-serif; font-size:0.83rem; background:#1e1e3a; color:#fff; outline:none;">
             </div>
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+                <label style="color:rgba(255,255,255,0.75); font-size:0.78rem; font-weight:800; white-space:nowrap;">الشركة</label>
+                <select wire:model="filterCompanyId"
+                    style="flex:1; padding:0.48rem 0.65rem; border:1.5px solid rgba(200,148,26,0.4); border-radius:7px; font-family:'Tajawal',sans-serif; font-size:0.83rem; background:#1e1e3a; color:#fff; outline:none;">
+                    <option value="0" style="background:#1e1e3a;">الكل</option>
+                    @foreach($companies as $com)
+                    <option value="{{ $com->id }}" style="background:#1e1e3a;">{{ $com->name }}</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
         <div style="display:flex; gap:0.6rem; justify-content:center; margin-top:0.85rem; padding-top:0.85rem; border-top:1px solid rgba(200,148,26,0.2);">
             <button wire:click="send"
@@ -226,6 +250,7 @@
                     <th style="padding:0.65rem 1rem; font-size:0.72rem; font-weight:900; text-align:right; white-space:nowrap;">الحساب</th>
                     <th style="padding:0.65rem 0.75rem; font-size:0.72rem; font-weight:900; text-align:center; white-space:nowrap;">المبلغ</th>
                     <th style="padding:0.65rem 1rem; font-size:0.72rem; font-weight:900; text-align:right; white-space:nowrap;">البيان / المرجع</th>
+                    <th style="padding:0.65rem 0.75rem; font-size:0.72rem; font-weight:900; text-align:center; white-space:nowrap;">الشركة</th>
                     <th style="padding:0.65rem 0.75rem; font-size:0.72rem; font-weight:900; text-align:center; white-space:nowrap;">سجّله</th>
                     <th style="padding:0.65rem 0.75rem; font-size:0.72rem; font-weight:900; text-align:center; white-space:nowrap;">النوع</th>
                     <th style="padding:0.65rem 0.75rem; font-size:0.72rem; font-weight:900; text-align:center; width:40px;">✕</th>
@@ -264,6 +289,13 @@
                         <div style="margin-top:0.2rem; background:#dbeafe; color:#1d4ed8; font-size:0.7rem; font-weight:800; padding:0.1rem 0.4rem; border-radius:4px; display:inline-block; direction:ltr; font-family:'Inter';">Ref: {{ trim($parts[1]) }}</div>
                         @endif
                     </td>
+                    <td style="padding:0.65rem 0.75rem; text-align:center; white-space:nowrap;">
+                        @if($mov->company_name)
+                        <span style="background:#eff6ff; color:#1d4ed8; padding:0.15rem 0.5rem; border-radius:5px; font-size:0.72rem; font-weight:800; border:1px solid #bfdbfe;">{{ $mov->company_name }}</span>
+                        @else
+                        <span style="color:#9ca3af; font-size:0.75rem;">—</span>
+                        @endif
+                    </td>
                     <td style="padding:0.65rem 0.75rem; text-align:center; font-size:0.82rem; color:#374151; font-weight:600; white-space:nowrap;">
                         {{ trim($mov->emp_name) ?: '—' }}
                     </td>
@@ -282,7 +314,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="9" style="padding:3rem; text-align:center; color:var(--text-muted);">
+                    <td colspan="10" style="padding:3rem; text-align:center; color:var(--text-muted);">
                         <div style="font-size:2rem; opacity:0.15; margin-bottom:0.5rem;">💳</div>
                         <div style="font-weight:800; font-size:0.9rem;">لا توجد حركات في هذه الفترة</div>
                     </td>
