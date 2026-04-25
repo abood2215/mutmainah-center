@@ -18,7 +18,7 @@ class Movements extends Component
     public string $fromDate        = '';   // YYYY-MM-DD
     public string $toDate          = '';   // YYYY-MM-DD
     public string $accountSearch   = '';
-    public string $filterCompanyId = '0';
+    public string $filterBranchId  = '0';
     public bool   $searched        = false;
 
     /* ══ نموذج إضافة حركة جديدة ══ */
@@ -38,7 +38,7 @@ class Movements extends Component
     public string $newMonth         = '';
     public string $newYear          = '';
     public string $newDesc          = '';
-    public string $newComId         = '0';
+    public string $newBranchId      = '0';
 
     const PAYMENT_METHODS = [
         '1'  => 'نقدا',
@@ -205,13 +205,13 @@ class Movements extends Component
             'c_id'           => 0,
             'p_id'           => 0,
             'bank'           => 0,
-            'branch'         => 0,
+            'branch'         => (int)$this->newBranchId,
             'check_no'       => 0,
             'pharm_id'       => 0,
             'status'         => $isReceipt ? 1 : 2,
             'p_amount'       => 0,
             'c_amount'       => 0,
-            'com_id'         => (int)$this->newComId,
+            'com_id'         => 0,
             'dis_id'         => 0,
             'vno'            => 0,
             'ptime'          => now()->format('H:i'),
@@ -263,7 +263,7 @@ class Movements extends Component
         $this->newMonth         = now()->format('n');
         $this->newYear          = now()->format('Y');
         $this->newDesc          = '';
-        $this->newComId         = '0';
+        $this->newBranchId      = '0';
     }
 
     /* ══ Render ══ */
@@ -271,7 +271,7 @@ class Movements extends Component
     {
         $movements  = null;
         $grandTotal = 0;
-        $companies  = DB::table('kcom')->orderBy('id')->get(['id', 'name']);
+        $branches   = DB::table('branches')->where('is_active', 1)->orderBy('id')->get(['id', 'name']);
 
         if ($this->searched) {
             $from = $this->fromDate ?: now()->startOfMonth()->format('Y-m-d');
@@ -281,7 +281,7 @@ class Movements extends Component
                 ->join('acck as a', 'a.id', '=', 'k.acc_id')
                 ->leftJoin('kstu as s', 's.id', '=', 'a.stu_id')
                 ->leftJoin('employees as e', 'e.id', '=', 'k.user_id')
-                ->leftJoin('kcom as co', 'co.id', '=', 'k.com_id')
+                ->leftJoin('branches as br', 'br.id', '=', 'k.branch')
                 ->where('k.acc_id', '>', 0)
                 ->whereRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') >= ?", [$from])
                 ->whereRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') <= ?", [$to]);
@@ -299,8 +299,8 @@ class Movements extends Component
                 $query->where('s.full_name', 'like', $term);
             }
 
-            if ($this->filterCompanyId && $this->filterCompanyId !== '0') {
-                $query->where('k.com_id', (int)$this->filterCompanyId);
+            if ($this->filterBranchId && $this->filterBranchId !== '0') {
+                $query->where('k.branch', (int)$this->filterBranchId);
             }
 
             $grandTotal = (clone $query)->sum(
@@ -314,12 +314,12 @@ class Movements extends Component
                     'k.pdesc',
                     'k.status',
                     'k.payment_method',
-                    'k.com_id',
+                    'k.branch',
                     DB::raw('COALESCE(NULLIF(k.amount,0), NULLIF(k.price,0), 0) as mov_amount'),
                     's.full_name as patient_name',
                     's.id as patient_id',
                     'a.name as acck_name',
-                    'co.name as company_name',
+                    'br.name as branch_name',
                     DB::raw("CONCAT(IFNULL(e.first_name,''), IF(e.middle_initial IS NOT NULL AND e.middle_initial != '', CONCAT(' ', e.middle_initial), '')) as emp_name")
                 )
                 ->orderByRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') DESC, k.id DESC")
@@ -330,7 +330,7 @@ class Movements extends Component
             'movements'  => $movements,
             'grandTotal' => $grandTotal,
             'payMethods' => self::PAYMENT_METHODS,
-            'companies'  => $companies,
+            'branches'   => $branches,
         ])->layout('layouts.app');
     }
 }

@@ -141,14 +141,14 @@
                     onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='#e5e7eb'"></textarea>
             </div>
 
-            {{-- الشركة --}}
+            {{-- الدور / الفرع --}}
             <div>
-                <label style="display:block; font-size:0.75rem; font-weight:800; color:#6b7280; margin-bottom:0.4rem;">الشركة / Company</label>
-                <select wire:model="newComId"
-                    style="width:100%; padding:0.65rem 0.9rem; border:1.5px solid #e5e7eb; border-radius:8px; font-family:'Tajawal',sans-serif; font-size:0.88rem; outline:none; background:#fff; cursor:pointer; box-sizing:border-box;">
-                    <option value="0">— بدون شركة —</option>
-                    @foreach($companies as $com)
-                        <option value="{{ $com->id }}">{{ $com->name }}</option>
+                <label style="display:block; font-size:0.75rem; font-weight:800; color:#6b7280; margin-bottom:0.4rem;">الدور / الفرع <span style="color:#dc2626;">*</span></label>
+                <select wire:model="newBranchId"
+                    style="width:100%; padding:0.65rem 0.9rem; border:1.5px solid {{ $newBranchId !== '0' ? '#4caf50' : '#e5e7eb' }}; border-radius:8px; font-family:'Tajawal',sans-serif; font-size:0.88rem; outline:none; background:{{ $newBranchId !== '0' ? '#f0fdf4' : '#fff' }}; cursor:pointer; box-sizing:border-box; transition:all 0.2s;">
+                    <option value="0">— اختر الدور —</option>
+                    @foreach($branches as $br)
+                        <option value="{{ $br->id }}">{{ $br->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -203,12 +203,12 @@
                     style="flex:1; padding:0.48rem 0.65rem; border:1.5px solid rgba(200,148,26,0.4); border-radius:7px; font-family:'Tajawal',sans-serif; font-size:0.83rem; background:#1e1e3a; color:#fff; outline:none;">
             </div>
             <div style="display:flex; align-items:center; gap:0.5rem;">
-                <label style="color:rgba(255,255,255,0.75); font-size:0.78rem; font-weight:800; white-space:nowrap;">الشركة</label>
-                <select wire:model="filterCompanyId"
+                <label style="color:rgba(255,255,255,0.75); font-size:0.78rem; font-weight:800; white-space:nowrap;">الدور</label>
+                <select wire:model="filterBranchId"
                     style="flex:1; padding:0.48rem 0.65rem; border:1.5px solid rgba(200,148,26,0.4); border-radius:7px; font-family:'Tajawal',sans-serif; font-size:0.83rem; background:#1e1e3a; color:#fff; outline:none;">
                     <option value="0" style="background:#1e1e3a;">الكل</option>
-                    @foreach($companies as $com)
-                    <option value="{{ $com->id }}" style="background:#1e1e3a;">{{ $com->name }}</option>
+                    @foreach($branches as $br)
+                    <option value="{{ $br->id }}" style="background:#1e1e3a;">{{ $br->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -248,7 +248,7 @@
                     <th style="padding:0.65rem 1rem; font-size:0.72rem; font-weight:900; text-align:right; white-space:nowrap;">الحساب</th>
                     <th style="padding:0.65rem 0.75rem; font-size:0.72rem; font-weight:900; text-align:center; white-space:nowrap;">المبلغ</th>
                     <th style="padding:0.65rem 1rem; font-size:0.72rem; font-weight:900; text-align:right; white-space:nowrap;">البيان / المرجع</th>
-                    <th style="padding:0.65rem 0.75rem; font-size:0.72rem; font-weight:900; text-align:center; white-space:nowrap;">الشركة</th>
+                    <th style="padding:0.65rem 0.75rem; font-size:0.72rem; font-weight:900; text-align:center; white-space:nowrap;">الدور</th>
                     <th style="padding:0.65rem 0.75rem; font-size:0.72rem; font-weight:900; text-align:center; white-space:nowrap;">سجّله</th>
                     <th style="padding:0.65rem 0.75rem; font-size:0.72rem; font-weight:900; text-align:center; white-space:nowrap;">النوع</th>
                     <th style="padding:0.65rem 0.75rem; font-size:0.72rem; font-weight:900; text-align:center; width:40px;">✕</th>
@@ -288,8 +288,8 @@
                         @endif
                     </td>
                     <td style="padding:0.65rem 0.75rem; text-align:center; white-space:nowrap;">
-                        @if($mov->company_name)
-                        <span style="background:#eff6ff; color:#1d4ed8; padding:0.15rem 0.5rem; border-radius:5px; font-size:0.72rem; font-weight:800; border:1px solid #bfdbfe;">{{ $mov->company_name }}</span>
+                        @if($mov->branch_name)
+                        <span style="background:#f0fdf4; color:#166534; padding:0.15rem 0.55rem; border-radius:5px; font-size:0.72rem; font-weight:800; border:1px solid #bbf7d0;">{{ $mov->branch_name }}</span>
                         @else
                         <span style="color:#9ca3af; font-size:0.75rem;">—</span>
                         @endif
