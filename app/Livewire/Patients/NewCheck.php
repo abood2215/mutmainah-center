@@ -319,13 +319,27 @@ class NewCheck extends Component
             'diab'            => '',
         ]);
 
-        // تحديث الموعد القديم (إن وُجد) ليصبح مكتملاً — فقط السجلات التي قبل الكشف الجديد
-        DB::table('rec')
+        // حذف مواعيد العميل اليوم بعد إنشاء الكشف (لا تحويلها لكشوف وهمية)
+        $oldAppts = DB::table('rec')
             ->where('st_id', $this->patientId)
             ->where('rec_date', $today)
             ->where('confirm_id', 0)
             ->where('id', '<', $recId)
-            ->update(['confirm_id' => 1]);
+            ->get(['id', 'st_id', 'rec_date', 'rec_time']);
+
+        if ($oldAppts->isNotEmpty()) {
+            DB::table('rec')->whereIn('id', $oldAppts->pluck('id'))->delete();
+            $logs = $oldAppts->map(fn($r) => [
+                'action'      => 'deleted',
+                'subject'     => 'appointment',
+                'subject_id'  => $r->st_id,
+                'description' => 'حذف تلقائي للموعد بعد إنشاء الكشف — ' . $r->rec_date . ($r->rec_time ? ' الساعة ' . $r->rec_time : ''),
+                'user_id'     => $currentUserId,
+                'user_name'   => auth()->user()?->getName() ?? 'النظام',
+                'created_at'  => now(),
+            ])->toArray();
+            DB::table('activity_logs')->insert($logs);
+        }
 
         $payMethod = $this->isFree ? 7 : (int)$this->paymentMethod;
         $totalDisc = $this->isFree ? $this->getTotal() : (float)$this->totalDiscount;
