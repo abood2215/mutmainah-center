@@ -28,7 +28,23 @@ class EmployeeUserProvider implements UserProvider
 
     public function validateCredentials(Authenticatable $user, array $credentials): bool
     {
-        return $user->getAuthPassword() === md5($credentials['password']);
+        $stored   = $user->getAuthPassword();
+        $plain    = $credentials['password'];
+
+        // bcrypt (الحسابات المُرقَّاة)
+        if (str_starts_with($stored, '$2y$') || str_starts_with($stored, '$2b$')) {
+            return password_verify($plain, $stored);
+        }
+
+        // MD5 legacy — تحقق ثم رقِّ تلقائياً
+        if ($stored === md5($plain)) {
+            DB::table('employees')
+                ->where('id', $user->getAuthIdentifier())
+                ->update(['arway' => password_hash($plain, PASSWORD_BCRYPT)]);
+            return true;
+        }
+
+        return false;
     }
 
     public function rehashPasswordIfRequired(Authenticatable $user, array $credentials, bool $force = false): void {}

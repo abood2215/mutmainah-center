@@ -69,7 +69,7 @@ class Users extends Component
             'middle_initial'=> trim($this->newMiddleName),
             'third_name'    => '',
             'user_name'     => $userName,
-            'arway'         => md5($password), // legacy MD5 required by EmployeeUserProvider
+            'arway'         => password_hash($password, PASSWORD_BCRYPT),
 
             'state'         => 1,
             // أعمدة إجبارية بدون قيمة افتراضية
@@ -152,7 +152,7 @@ class Users extends Component
         }
 
         if ($this->editPassword !== '') {
-            $data['arway'] = md5($this->editPassword);
+            $data['arway'] = password_hash($this->editPassword, PASSWORD_BCRYPT);
         }
 
         DB::table('employees')->where('id', $this->editingId)->update($data);
