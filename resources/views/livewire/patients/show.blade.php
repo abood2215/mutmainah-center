@@ -24,10 +24,22 @@
                 <span style="background:rgba(255,255,255,0.2); color:#fff; padding:0.25rem 0.9rem; border-radius:20px; font-weight:800; font-size:0.9rem; font-family:'Inter';">
                     #{{ $patient->file_id }}
                 </span>
+                @if((auth()->user()?->role ?? '') === 'admin')
+                <button wire:click="{{ $editMode ? 'cancelEdit' : 'openEdit' }}" class="no-print"
+                        style="background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.4); border-radius:8px; padding:0.25rem 0.85rem; font-size:0.78rem; font-weight:800; cursor:pointer; font-family:'Tajawal',sans-serif;">
+                    {{ $editMode ? '✕ إلغاء' : '✏️ تعديل' }}
+                </button>
+                @endif
             </div>
         </div>
 
+        {{-- flash --}}
+        @if(session()->has('edit_saved'))
+        <div class="no-print" style="background:#e8f5e9; color:#2e7d32; padding:0.5rem 1.25rem; font-size:0.82rem; font-weight:700; border-bottom:1px solid #c8e6c9;">✅ {{ session('edit_saved') }}</div>
+        @endif
+
         {{-- جدول البيانات --}}
+        @if(!$editMode)
         <div style="background:#fff; overflow-x:auto;">
             <table style="width:100%; border-collapse:collapse;">
                 <thead>
@@ -62,6 +74,52 @@
                 </tbody>
             </table>
         </div>
+        @else
+        {{-- وضع التعديل --}}
+        <div style="background:#fffbeb; border-bottom:1px solid #fde68a; padding:1.1rem 1.5rem;" class="no-print">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.9rem;">
+                <div>
+                    <label style="display:block; font-size:0.75rem; font-weight:800; color:#92400e; margin-bottom:0.3rem;">الاسم الكامل *</label>
+                    <input wire:model="editName" type="text" class="form-input" style="width:100%; box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.75rem; font-weight:800; color:#92400e; margin-bottom:0.3rem;">الهوية / الإقامة</label>
+                    <input wire:model="editSsn" type="text" class="form-input" style="width:100%; box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.75rem; font-weight:800; color:#92400e; margin-bottom:0.3rem;">الجوال</label>
+                    <input wire:model="editPhone" type="text" class="form-input" style="width:100%; box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.75rem; font-weight:800; color:#92400e; margin-bottom:0.3rem;">الجنس</label>
+                    <select wire:model="editGender" class="form-input" style="width:100%; box-sizing:border-box;">
+                        <option value="0">— غير محدد —</option>
+                        <option value="1">ذكر</option>
+                        <option value="2">أنثى</option>
+                    </select>
+                </div>
+                <div style="grid-column:1/-1;">
+                    <label style="display:block; font-size:0.75rem; font-weight:800; color:#92400e; margin-bottom:0.3rem;">جهة التأمين</label>
+                    <select wire:model="editComId" class="form-input" style="width:100%; box-sizing:border-box;">
+                        <option value="28">على نفقته</option>
+                        @foreach($insurances as $ins)
+                            @if($ins->id != 28)
+                            <option value="{{ $ins->id }}">{{ $ins->name }}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div style="margin-top:0.9rem; display:flex; gap:0.6rem;">
+                <button wire:click="saveEdit" class="btn btn-primary" style="padding:0.45rem 1.5rem; font-size:0.88rem;">
+                    💾 حفظ التعديلات
+                </button>
+                <button wire:click="cancelEdit" class="btn" style="padding:0.45rem 1rem; font-size:0.88rem; background:#f4f6f9; color:#374151; border:1px solid #e5e7eb;">
+                    إلغاء
+                </button>
+            </div>
+        </div>
+        @endif
 
         {{-- تعديل الفرع --}}
         @if(session()->has('branch_saved'))
