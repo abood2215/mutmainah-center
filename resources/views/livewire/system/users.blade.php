@@ -51,7 +51,8 @@
                 <div>
                     <label style="display:block; font-size:0.75rem; font-weight:800; color:#6b7280; margin-bottom:0.35rem;">الصلاحية <span style="color:#dc2626;">*</span></label>
                     <select wire:model="newRole" class="form-input" style="width:100%; box-sizing:border-box;">
-                        <option value="reception">استقبال</option>
+                        <option value="reception">مستقبل ثاني</option>
+                        <option value="reception1">مستقبل أول</option>
                         <option value="admin">مدير</option>
                     </select>
                 </div>
@@ -149,15 +150,17 @@
                         <td style="padding:0.85rem 1rem; text-align:center;">
                             @if($editingId === $user->id)
                                 <select wire:model="editRole" class="form-input" style="font-size:0.82rem; padding:0.35rem 0.6rem;">
-                                    <option value="">— بدون —</option>
+                                    <option value="reception">مستقبل ثاني</option>
+                                    <option value="reception1">مستقبل أول</option>
                                     <option value="admin">مدير</option>
-                                    <option value="reception">استقبال</option>
                                 </select>
                             @else
                                 @if(($user->role ?? '') === 'admin')
                                     <span style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; padding:0.2rem 0.75rem; border-radius:20px; font-size:0.75rem; font-weight:800;">مدير</span>
+                                @elseif(($user->role ?? '') === 'reception1')
+                                    <span style="background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; padding:0.2rem 0.75rem; border-radius:20px; font-size:0.75rem; font-weight:800;">مستقبل أول</span>
                                 @elseif(($user->role ?? '') === 'reception')
-                                    <span style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; padding:0.2rem 0.75rem; border-radius:20px; font-size:0.75rem; font-weight:800;">استقبال</span>
+                                    <span style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; padding:0.2rem 0.75rem; border-radius:20px; font-size:0.75rem; font-weight:800;">مستقبل ثاني</span>
                                 @else
                                     <span style="color:#d1d5db; font-size:0.78rem;">—</span>
                                 @endif

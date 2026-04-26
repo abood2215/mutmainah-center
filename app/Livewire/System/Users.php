@@ -94,7 +94,7 @@ class Users extends Component
 
         // أضف role فقط إذا كان العمود موجوداً
         if (Cache::remember('emp_col_role', 86400, fn() => Schema::hasColumn('employees', 'role'))) {
-            $data['role'] = in_array($this->newRole, ['admin', 'reception']) ? $this->newRole : 'reception';
+            $data['role'] = in_array($this->newRole, ['admin', 'reception1', 'reception']) ? $this->newRole : 'reception';
         }
         if (Cache::remember('emp_col_branch', 86400, fn() => Schema::hasColumn('employees', 'branch_id'))) {
             $data['branch_id'] = in_array($this->newBranchId, [1, 2]) ? $this->newBranchId : 1;
@@ -145,7 +145,7 @@ class Users extends Component
         ];
 
         if (Cache::remember('emp_col_role', 86400, fn() => Schema::hasColumn('employees', 'role'))) {
-            $data['role'] = $this->editRole ?: null;
+            $data['role'] = in_array($this->editRole, ['admin', 'reception1', 'reception']) ? $this->editRole : 'reception';
         }
         if (Cache::remember('emp_col_branch', 86400, fn() => Schema::hasColumn('employees', 'branch_id'))) {
             $data['branch_id'] = in_array($this->editBranchId, [1, 2]) ? $this->editBranchId : 1;

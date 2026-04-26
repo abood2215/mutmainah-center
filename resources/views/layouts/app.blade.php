@@ -677,8 +677,12 @@
                 </ul>
             </li>
 
-            @php $isAdmin = (auth()->user()?->role ?? '') === 'admin'; @endphp
-            @if($isAdmin)
+            @php
+                $userRole = auth()->user()?->role ?? '';
+                $isAdmin = $userRole === 'admin';
+                $canSeeReports = in_array($userRole, ['admin', 'reception1']);
+            @endphp
+            @if($canSeeReports)
             <li class="{{ request()->routeIs('finance.reports') ? 'active' : '' }}">
                 <a href="{{ route('finance.reports') }}">
                     <span class="nav-icon">📊</span> التقارير
@@ -786,12 +790,14 @@
                 <a href="{{ route('finance.vouchers') }}" class="more-link">📑 السندات</a>
                 <a href="{{ route('finance.statement') }}" class="more-link">📄 بيان حساب</a>
                 <a href="{{ route('finance.balances') }}" class="more-link">💰 أرصدة العملاء</a>
-                @if($isAdmin ?? false)
+                @if($canSeeReports ?? false)
                 <a href="{{ route('finance.reports') }}" class="more-link">📊 التقارير</a>
                 <a href="{{ route('finance.reports') }}?type=pb" class="more-link">💰 أرصدة العملاء</a>
                 <a href="{{ route('finance.reports') }}?type=services" class="more-link">🔬 الخدمات</a>
                 <a href="{{ route('finance.reports') }}?type=clinics" class="more-link">🏛 المكاتب</a>
                 <a href="{{ route('finance.reports') }}?type=pfs" class="more-link">📈 البيان المالي</a>
+                @endif
+                @if($isAdmin ?? false)
                 <a href="{{ route('clinics.index') }}" class="more-link">🏥 المكاتب</a>
                 <a href="{{ route('employees.index') }}" class="more-link">👨‍⚕️ الموظفين</a>
                 <a href="{{ route('system.users') }}" class="more-link">👤 المستخدمين</a>
