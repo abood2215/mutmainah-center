@@ -90,14 +90,16 @@ class Show extends Component
     public function render()
     {
         $activityLogs = [];
-        try {
-            $activityLogs = DB::table('activity_logs')
-                ->where('subject_id', $this->patient->id)
-                ->whereIn('subject', ['patient', 'check', 'attachment', 'appointment', 'payment', 'discount', 'voided'])
-                ->orderBy('id', 'desc')
-                ->limit(30)
-                ->get();
-        } catch (\Throwable) {}
+        if ((auth()->user()?->role ?? '') === 'admin') {
+            try {
+                $activityLogs = DB::table('activity_logs')
+                    ->where('subject_id', $this->patient->id)
+                    ->whereIn('subject', ['patient', 'check', 'attachment', 'appointment', 'payment', 'discount', 'voided'])
+                    ->orderBy('id', 'desc')
+                    ->limit(30)
+                    ->get();
+            } catch (\Throwable) {}
+        }
 
         return view('livewire.patients.show', compact('activityLogs'))->layout('layouts.app');
     }

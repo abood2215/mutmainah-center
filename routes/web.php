@@ -256,6 +256,7 @@ Route::middleware(['auth.employee'])->group(function () {
 
     // Admin only
     Route::middleware('require.admin')->group(function () {
+        Route::get('/system/activity-log',    \App\Livewire\System\ActivityLog::class)->name('system.activity-log');
         Route::get('/system/users',           \App\Livewire\System\Users::class)->name('system.users');
         Route::get('/system/settings',        \App\Livewire\System\Settings::class)->name('system.settings');
         Route::get('/system/discount-codes',  \App\Livewire\System\DiscountCodes::class)->name('system.discount-codes');

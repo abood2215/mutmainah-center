@@ -707,6 +707,7 @@
                     <li><a href="{{ route('clinics.index') }}"><span>🏥</span> المكاتب</a></li>
                     <li><a href="{{ route('employees.index') }}"><span>👨‍⚕️</span> الموظفين</a></li>
                     <li><a href="{{ route('system.users') }}"><span>👤</span> المستخدمين</a></li>
+                    <li><a href="{{ route('system.activity-log') }}"><span>🕓</span> سجل النشاط</a></li>
                     <li><a href="{{ route('system.services') }}"><span>🩺</span> الخدمات</a></li>
                     <li><a href="{{ route('system.discount-codes') }}"><span>🏷️</span> كودات الخصم</a></li>
                     <li><a href="{{ route('system.backup') }}"><span>💾</span> باك اب</a></li>
@@ -801,6 +802,7 @@
                 <a href="{{ route('clinics.index') }}" class="more-link">🏥 المكاتب</a>
                 <a href="{{ route('employees.index') }}" class="more-link">👨‍⚕️ الموظفين</a>
                 <a href="{{ route('system.users') }}" class="more-link">👤 المستخدمين</a>
+                <a href="{{ route('system.activity-log') }}" class="more-link">🕓 سجل النشاط</a>
                 <a href="{{ route('system.services') }}" class="more-link">🩺 الخدمات</a>
                 <a href="{{ route('system.discount-codes') }}" class="more-link">🏷️ كودات الخصم</a>
                 <a href="{{ route('system.backup') }}" class="more-link">💾 باك اب</a>
