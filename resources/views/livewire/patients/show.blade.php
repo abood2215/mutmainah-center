@@ -24,12 +24,10 @@
                 <span style="background:rgba(255,255,255,0.2); color:#fff; padding:0.25rem 0.9rem; border-radius:20px; font-weight:800; font-size:0.9rem; font-family:'Inter';">
                     #{{ $patient->file_id }}
                 </span>
-                @if((auth()->user()?->role ?? '') === 'admin')
                 <button wire:click="{{ $editMode ? 'cancelEdit' : 'openEdit' }}" class="no-print"
                         style="background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.4); border-radius:8px; padding:0.25rem 0.85rem; font-size:0.78rem; font-weight:800; cursor:pointer; font-family:'Tajawal',sans-serif;">
                     {{ $editMode ? '✕ إلغاء' : '✏️ تعديل' }}
                 </button>
-                @endif
             </div>
         </div>
 

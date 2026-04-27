@@ -84,7 +84,6 @@ class Show extends Component
 
     public function openEdit(): void
     {
-        if ((auth()->user()?->role ?? '') !== 'admin') return;
         $this->editName   = $this->patient->full_name ?? '';
         $this->editSsn    = $this->patient->ssn   ?? '';
         $this->editPhone  = $this->patient->phone  ?? '';
@@ -100,7 +99,6 @@ class Show extends Component
 
     public function saveEdit(): void
     {
-        if ((auth()->user()?->role ?? '') !== 'admin') return;
 
         $this->validate([
             'editName'  => 'required|string|max:200',
