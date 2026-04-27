@@ -305,9 +305,11 @@
                         @endif
                     </td>
                     <td style="padding:0.65rem 0.75rem; text-align:center;">
+                        @if((auth()->user()?->role ?? '') === 'admin')
                         <button wire:click="deleteMovement({{ $mov->id }})" wire:confirm="هل أنت متأكد من حذف هذه الحركة؟"
                             style="width:26px; height:26px; background:#fee2e2; border:1px solid #fecaca; border-radius:5px; cursor:pointer; color:#b91c1c; font-size:0.8rem; font-weight:900; display:flex; align-items:center; justify-content:center; margin:auto; transition:all 0.2s;"
                             onmouseover="this.style.background='#fca5a5'" onmouseout="this.style.background='#fee2e2'">✕</button>
+                        @endif
                     </td>
                 </tr>
                 @empty

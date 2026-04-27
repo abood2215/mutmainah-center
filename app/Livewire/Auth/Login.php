@@ -18,7 +18,7 @@ class Login extends Component
 
     private function throttleKey(): string
     {
-        return 'login.' . request()->ip();
+        return 'login.' . \Illuminate\Support\Str::lower(trim($this->username)) . '|' . request()->ip();
     }
 
     #[Title('تسجيل الدخول — مركز مطمئنة')]

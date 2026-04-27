@@ -53,6 +53,7 @@ class Users extends Component
 
     public function createUser(): void
     {
+        abort_if((auth()->user()?->role ?? '') !== 'admin', 403);
         $firstName = trim($this->newFirstName);
         $userName  = trim($this->newUserName);
         $password  = trim($this->newPassword);
@@ -130,6 +131,7 @@ class Users extends Component
 
     public function saveEdit(): void
     {
+        abort_if((auth()->user()?->role ?? '') !== 'admin', 403);
         $firstName = trim($this->editFirstName);
         $userName  = trim($this->editUserName);
 
@@ -165,6 +167,7 @@ class Users extends Component
 
     public function toggleState(int $id, int $currentState): void
     {
+        abort_if((auth()->user()?->role ?? '') !== 'admin', 403);
         $newState = ($currentState === 1) ? 8 : 1;
         DB::table('employees')->where('id', $id)->update(['state' => $newState]);
         $this->successMsg = $newState === 1 ? 'تم تفعيل المستخدم' : 'تم تعطيل المستخدم';

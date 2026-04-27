@@ -49,7 +49,7 @@ class Attachments extends Component
         foreach ($this->files as $file) {
             $folder   = 'attachments/' . $this->patientId;
             $path     = $file->store($folder, 'public');
-            $fileName = $file->getClientOriginalName();
+            $fileName = basename($file->getClientOriginalName());
 
             DB::table('uploadedfiles')->insert([
                 'st_id'      => $this->patientId,

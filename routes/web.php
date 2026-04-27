@@ -266,10 +266,9 @@ Route::middleware(['auth.employee'])->group(function () {
         Route::get('/employees',            \App\Livewire\Employees\Index::class)->name('employees.index');
     });
 
-    // Backup — مدير النظام ونجيبة فقط
+    // Backup — المدير فقط
     Route::get('/system/backup', function () {
-        $authId = auth()->user()?->getAuthIdentifier();
-        if (!in_array($authId, [107, 189])) abort(403);
+        abort_if((auth()->user()?->role ?? '') !== 'admin', 403);
 
         $dbName = config('database.connections.mysql.database');
         $now    = now()->format('Y-m-d_H-i');
