@@ -170,7 +170,7 @@ Route::middleware(['auth.employee'])->group(function () {
     })->name('finance.invoice-print');
 
     Route::post('/finance/invoice/{recId}/void', function ($recId) {
-        if ((auth()->user()?->user_name ?? '') !== '228') abort(403);
+        abort_if((auth()->user()?->role ?? '') !== 'admin', 403);
 
         $rec = DB::table('rec')->where('id', $recId)->first();
         abort_if(!$rec, 404);
@@ -183,6 +183,7 @@ Route::middleware(['auth.employee'])->group(function () {
         if (request()->hasFile('attachment') && request()->file('attachment')->isValid()) {
             $file = request()->file('attachment');
             abort_if($file->getSize() > 5 * 1024 * 1024, 422, 'حجم الملف يتجاوز 5MB');
+            request()->validate(['attachment' => 'file|mimes:jpg,jpeg,png,gif,pdf|max:5120']);
             $attachPath = $file->store('void-invoices', 'public');
         }
 
