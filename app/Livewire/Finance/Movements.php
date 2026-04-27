@@ -99,9 +99,9 @@ class Movements extends Component
 
         DB::table('kpayments')->where('id', $id)->delete();
 
-        ActivityLogger::log('deleted', 'payment', $mov->patient_id ?? 0,
-            'حذف حركة مالية #' . $id . ' — المبلغ: ' . number_format($mov->mov_amount, 3) . ' د.ك — ' .
-            ($mov->status == 1 ? 'سند قبض' : 'سند صرف') . ' — ' . ($mov->patient_name ?? '—')
+        ActivityLogger::log('cancelled', 'payment', $mov->patient_id ?? 0,
+            'إلغاء ' . ($mov->status == 1 ? 'سند قبض' : 'سند صرف') . ' #' . $id .
+            ' — المبلغ: ' . number_format($mov->mov_amount, 3) . ' د.ك — ' . ($mov->patient_name ?? '—')
         );
     }
 

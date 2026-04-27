@@ -186,7 +186,7 @@
                     'deleted'   => '🗑️',
                     'receipt'   => '💰',
                     'payment'   => '💸',
-                    'cancelled' => '❌',
+                    'cancelled' => $log->subject === 'payment' ? '🚫' : '❌',
                     'booked'    => '📅',
                     'discount'  => '🏷️',
                     'voided'    => '🚫',
