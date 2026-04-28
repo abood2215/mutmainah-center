@@ -265,8 +265,8 @@ class NewCheck extends Component
     {
         if (empty($this->items)) return;
 
-        // تحقق من الرصيد فقط عند الدفع "من الرصيد" (paymentMethod=5)
-        if ($this->hasAccount && !$this->isFree && (int)$this->paymentMethod === 5) {
+        // تحقق من الرصيد عند الدفع "من الرصيد" (5) أو MyFatoorah (11)
+        if ($this->hasAccount && !$this->isFree && in_array((int)$this->paymentMethod, [5, 11])) {
             $due = $this->getPatientAmount();
             if ($due > 0 && $this->balance < $due) {
                 session()->flash('balance_error',

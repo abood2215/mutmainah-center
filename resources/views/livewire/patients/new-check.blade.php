@@ -725,7 +725,7 @@
                 </div>
 
                 @php
-                    $afDanger = $hasAccount && !$isFree && (int)$paymentMethod === 5 && $patientAmount > 0 && $balance < $patientAmount;
+                    $afDanger = $hasAccount && !$isFree && in_array((int)$paymentMethod, [5, 11]) && $patientAmount > 0 && $balance < $patientAmount;
                 @endphp
                 <div class="nc-amount-final {{ $afDanger ? 'af-danger' : '' }}">
                     <div class="af-lbl">{{ $afDanger ? '⛔ الرصيد غير كافٍ' : 'المبلغ على العميل' }}</div>
@@ -744,7 +744,7 @@
 
     {{-- ── الشريط السفلي ── --}}
     @php
-        $balanceInsufficient = $hasAccount && !$isFree && (int)$paymentMethod === 5 && $patientAmount > 0 && $balance < $patientAmount;
+        $balanceInsufficient = $hasAccount && !$isFree && in_array((int)$paymentMethod, [5, 11]) && $patientAmount > 0 && $balance < $patientAmount;
     @endphp
 
     <div class="nc-footer">
