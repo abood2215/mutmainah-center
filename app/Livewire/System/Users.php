@@ -24,6 +24,7 @@ class Users extends Component
     public string  $editPassword    = '';
     public string  $editRole        = '';
     public int     $editBranchId    = 1;
+    public array   $editClinicIds   = [];
 
     // ── إضافة مستخدم جديد ──
     public bool    $showAddForm     = false;
@@ -33,6 +34,7 @@ class Users extends Component
     public string  $newPassword     = '';
     public string  $newRole         = 'reception';
     public int     $newBranchId     = 1;
+    public array   $newClinicIds    = [];
 
     public ?string $successMsg = null;
     public ?string $errorMsg   = null;
@@ -48,6 +50,7 @@ class Users extends Component
         $this->newFirstName = $this->newMiddleName = $this->newUserName = $this->newPassword = '';
         $this->newRole = 'reception';
         $this->newBranchId = 1;
+        $this->newClinicIds = [];
         $this->successMsg = $this->errorMsg = null;
     }
 
@@ -93,12 +96,17 @@ class Users extends Component
             'mr_id'         => 0,
         ];
 
-        // أضف role فقط إذا كان العمود موجوداً
+        $allowedRoles = ['admin', 'reception1', 'reception', 'clinic'];
         if (Cache::remember('emp_col_role', 86400, fn() => Schema::hasColumn('employees', 'role'))) {
-            $data['role'] = in_array($this->newRole, ['admin', 'reception1', 'reception']) ? $this->newRole : 'reception';
+            $data['role'] = in_array($this->newRole, $allowedRoles) ? $this->newRole : 'reception';
         }
         if (Cache::remember('emp_col_branch', 86400, fn() => Schema::hasColumn('employees', 'branch_id'))) {
             $data['branch_id'] = in_array($this->newBranchId, [1, 2]) ? $this->newBranchId : 1;
+        }
+        if (Schema::hasColumn('employees', 'clinic_ids')) {
+            $data['clinic_ids'] = $this->newRole === 'clinic' && !empty($this->newClinicIds)
+                ? json_encode(array_map('intval', $this->newClinicIds))
+                : null;
         }
 
         DB::table('employees')->insert($data);
@@ -107,6 +115,7 @@ class Users extends Component
         $this->newFirstName = $this->newMiddleName = $this->newUserName = $this->newPassword = '';
         $this->newRole      = 'reception';
         $this->newBranchId  = 1;
+        $this->newClinicIds = [];
         $this->errorMsg  = null;
         $this->successMsg = 'تم إنشاء المستخدم بنجاح ✓';
     }
@@ -123,6 +132,7 @@ class Users extends Component
         $this->editPassword   = '';
         $this->editRole       = $emp->role ?? '';
         $this->editBranchId   = (int)($emp->branch_id ?? 1);
+        $this->editClinicIds  = $emp->clinic_ids ? json_decode($emp->clinic_ids, true) : [];
         $this->successMsg     = null;
         $this->errorMsg       = null;
     }
@@ -146,11 +156,17 @@ class Users extends Component
             'user_name'      => $userName,
         ];
 
+        $allowedRoles = ['admin', 'reception1', 'reception', 'clinic'];
         if (Cache::remember('emp_col_role', 86400, fn() => Schema::hasColumn('employees', 'role'))) {
-            $data['role'] = in_array($this->editRole, ['admin', 'reception1', 'reception']) ? $this->editRole : 'reception';
+            $data['role'] = in_array($this->editRole, $allowedRoles) ? $this->editRole : 'reception';
         }
         if (Cache::remember('emp_col_branch', 86400, fn() => Schema::hasColumn('employees', 'branch_id'))) {
             $data['branch_id'] = in_array($this->editBranchId, [1, 2]) ? $this->editBranchId : 1;
+        }
+        if (Schema::hasColumn('employees', 'clinic_ids')) {
+            $data['clinic_ids'] = $this->editRole === 'clinic' && !empty($this->editClinicIds)
+                ? json_encode(array_map('intval', $this->editClinicIds))
+                : null;
         }
 
         if ($this->editPassword !== '') {
@@ -202,12 +218,15 @@ class Users extends Component
         $totalActive = DB::table('employees')->where('state', 1)->count();
         $totalAll    = DB::table('employees')->count();
 
+        $clinics = DB::table('clinic')->where('state_id', 1)->orderBy('name')->get(['id', 'name']);
+
         return view('livewire.system.users', [
             'users'       => $users,
             'totalActive' => $totalActive,
             'totalAll'    => $totalAll,
             'hasRole'     => $hasRole,
             'hasBranchId' => $hasBranchId,
+            'clinics'     => $clinics,
         ])->layout('layouts.app');
     }
 }

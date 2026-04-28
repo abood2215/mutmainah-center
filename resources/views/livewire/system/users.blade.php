@@ -54,8 +54,22 @@
                         <option value="reception">مستقبل ثاني</option>
                         <option value="reception1">مستقبل أول</option>
                         <option value="admin">مدير</option>
+                        <option value="clinic">عيادة (قراءة فقط)</option>
                     </select>
                 </div>
+                @if($newRole === 'clinic')
+                <div style="grid-column: 1 / -1;">
+                    <label style="display:block; font-size:0.75rem; font-weight:800; color:#6b7280; margin-bottom:0.5rem;">العيادات المسموح بها <span style="color:#dc2626;">*</span></label>
+                    <div style="display:flex; flex-wrap:wrap; gap:0.5rem; padding:0.75rem; border:1px solid #d1d5db; border-radius:8px; background:#f9fafb;">
+                        @foreach($clinics as $cl)
+                        <label style="display:flex; align-items:center; gap:0.35rem; font-size:0.82rem; cursor:pointer; background:#fff; border:1px solid #e5e7eb; border-radius:6px; padding:0.3rem 0.65rem;">
+                            <input type="checkbox" wire:model="newClinicIds" value="{{ $cl->id }}" style="accent-color:var(--primary);">
+                            {{ $cl->name }}
+                        </label>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
                 @if($hasBranchId)
                 <div>
                     <label style="display:block; font-size:0.75rem; font-weight:800; color:#6b7280; margin-bottom:0.35rem;">الفرع / الدور</label>
@@ -153,7 +167,18 @@
                                     <option value="reception">مستقبل ثاني</option>
                                     <option value="reception1">مستقبل أول</option>
                                     <option value="admin">مدير</option>
+                                    <option value="clinic">عيادة (قراءة فقط)</option>
                                 </select>
+                                @if($editRole === 'clinic')
+                                <div style="margin-top:0.5rem; display:flex; flex-wrap:wrap; gap:0.4rem; max-width:280px;">
+                                    @foreach($clinics as $cl)
+                                    <label style="display:flex; align-items:center; gap:0.3rem; font-size:0.78rem; cursor:pointer; background:#fff; border:1px solid #e5e7eb; border-radius:5px; padding:0.2rem 0.5rem;">
+                                        <input type="checkbox" wire:model="editClinicIds" value="{{ $cl->id }}" style="accent-color:var(--primary);">
+                                        {{ $cl->name }}
+                                    </label>
+                                    @endforeach
+                                </div>
+                                @endif
                             @else
                                 @if(($user->role ?? '') === 'admin')
                                     <span style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; padding:0.2rem 0.75rem; border-radius:20px; font-size:0.75rem; font-weight:800;">مدير</span>
@@ -161,6 +186,8 @@
                                     <span style="background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; padding:0.2rem 0.75rem; border-radius:20px; font-size:0.75rem; font-weight:800;">مستقبل أول</span>
                                 @elseif(($user->role ?? '') === 'reception')
                                     <span style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; padding:0.2rem 0.75rem; border-radius:20px; font-size:0.75rem; font-weight:800;">مستقبل ثاني</span>
+                                @elseif(($user->role ?? '') === 'clinic')
+                                    <span style="background:#fdf4ff; color:#7c3aed; border:1px solid #e9d5ff; padding:0.2rem 0.75rem; border-radius:20px; font-size:0.75rem; font-weight:800;">عيادة</span>
                                 @else
                                     <span style="color:#d1d5db; font-size:0.78rem;">—</span>
                                 @endif

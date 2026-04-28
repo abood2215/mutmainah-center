@@ -646,6 +646,13 @@
             </div>
         </a>
 
+        @php
+            $userRole    = auth()->user()?->role ?? '';
+            $isAdmin     = $userRole === 'admin';
+            $isClinic    = $userRole === 'clinic';
+            $canSeeReports = in_array($userRole, ['admin', 'reception1']);
+        @endphp
+
         <ul class="topbar-nav" id="topNav">
             <li class="{{ request()->routeIs('checks.*') ? 'active' : '' }}">
                 <a href="{{ route('checks.index') }}">
@@ -653,6 +660,7 @@
                 </a>
             </li>
 
+            @if(!$isClinic)
             <li class="{{ request()->routeIs('patients.*') ? 'active' : '' }}">
                 <a href="{{ route('patients.index') }}">
                     <span class="nav-icon">👥</span> العملاء
@@ -676,12 +684,16 @@
                     <li><a href="{{ route('finance.balances') }}"><span>💰</span> أرصدة العملاء</a></li>
                 </ul>
             </li>
+            @endif
 
-            @php
-                $userRole = auth()->user()?->role ?? '';
-                $isAdmin = $userRole === 'admin';
-                $canSeeReports = in_array($userRole, ['admin', 'reception1']);
-            @endphp
+            @if($isClinic)
+            <li class="{{ request()->routeIs('finance.reports') ? 'active' : '' }}">
+                <a href="{{ route('finance.reports') }}?type=clinics">
+                    <span class="nav-icon">📊</span> تقرير العيادة
+                </a>
+            </li>
+            @endif
+
             @if($canSeeReports)
             <li class="{{ request()->routeIs('finance.reports') ? 'active' : '' }}">
                 <a href="{{ route('finance.reports') }}">
@@ -764,6 +776,7 @@
         <a href="{{ route('checks.index') }}" class="btm-nav-item {{ request()->routeIs('checks.*') ? 'active' : '' }}">
             <span class="bi">📋</span><span>الكشوف</span>
         </a>
+        @if(!$isClinic)
         <a href="{{ route('patients.index') }}" class="btm-nav-item {{ request()->routeIs('patients.*') ? 'active' : '' }}">
             <span class="bi">👥</span><span>العملاء</span>
         </a>
@@ -776,6 +789,11 @@
         <button class="btm-nav-item {{ request()->routeIs('finance.reports','finance.invoices','finance.vouchers','system.*','clinics.*','employees.*') ? 'active' : '' }}" onclick="toggleMore()">
             <span class="bi">⋯</span><span>المزيد</span>
         </button>
+        @else
+        <a href="{{ route('finance.reports') }}?type=clinics" class="btm-nav-item {{ request()->routeIs('finance.reports') ? 'active' : '' }}">
+            <span class="bi">📊</span><span>التقرير</span>
+        </a>
+        @endif
     </nav>
 
     <!-- ═══════ MORE PANEL ═══════ -->

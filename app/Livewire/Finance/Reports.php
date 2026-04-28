@@ -208,7 +208,12 @@ class Reports extends Component
             ->groupBy('c.id', 'c.name')
             ->orderBy('revenue', 'desc');
 
-        if ($this->filterClinic) $query->where('c.id', $this->filterClinic);
+        if ($this->filterClinic) {
+            $query->where('c.id', $this->filterClinic);
+        } elseif ((auth()->user()?->role ?? '') === 'clinic') {
+            $ids = json_decode(auth()->user()?->clinic_ids ?? '[]', true);
+            if (!empty($ids)) $query->whereIn('c.id', $ids);
+        }
 
         $rows = $query->paginate(20);
         return ['rows' => $rows, 'summary' => []];
@@ -429,9 +434,31 @@ class Reports extends Component
     /* ══════════════════════════════════════════════
        Render
     ══════════════════════════════════════════════ */
+    public function mount(): void
+    {
+        // دور عيادة: اجبر نوع التقرير على clinics وابحث مباشرة
+        if ((auth()->user()?->role ?? '') === 'clinic') {
+            $this->reportType = 'clinics';
+            $this->searched   = true;
+            $clinicIds = json_decode(auth()->user()?->clinic_ids ?? '[]', true);
+            if (!empty($clinicIds)) {
+                $this->filterClinic = (string) $clinicIds[0];
+            }
+        }
+    }
+
     public function render()
     {
+        $userRole  = auth()->user()?->role ?? '';
+        $isClinic  = $userRole === 'clinic';
+        $userClinicIds = $isClinic ? json_decode(auth()->user()?->clinic_ids ?? '[]', true) : [];
+
         $clinics = DB::table('clinic')->where('state_id', 1)->orderBy('name')->get(['id', 'name']);
+
+        // دور عيادة: يرى عيادته فقط
+        if ($isClinic && !empty($userClinicIds)) {
+            $clinics = $clinics->whereIn('id', $userClinicIds)->values();
+        }
 
         $rows    = collect();
         $summary = [];

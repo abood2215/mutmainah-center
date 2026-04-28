@@ -28,6 +28,15 @@ class RequireAuth
 
         session(['last_activity' => time()]);
 
+        // دور عيادة: يُسمح فقط بالكشوفات وتقرير المكاتب
+        $role = auth()->user()?->role ?? '';
+        if ($role === 'clinic') {
+            $allowed = $request->routeIs('checks.*') || $request->routeIs('finance.reports');
+            if (!$allowed) {
+                return redirect()->route('checks.index');
+            }
+        }
+
         $response = $next($request);
         $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
         $response->headers->set('Pragma', 'no-cache');

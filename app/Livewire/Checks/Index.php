@@ -52,7 +52,14 @@ class Index extends Component
                 'b.name as branch_name'
             );
 
-        if ($this->filterBranch) {
+        // دور عيادة: فلتر إجباري بعيادات المستخدم
+        $userRole = auth()->user()?->role ?? '';
+        if ($userRole === 'clinic') {
+            $clinicIds = json_decode(auth()->user()?->clinic_ids ?? '[]', true);
+            if (!empty($clinicIds)) {
+                $query->whereIn('r.clinic_id', $clinicIds);
+            }
+        } elseif ($this->filterBranch) {
             $query->where('c.branch_id', $this->filterBranch);
         }
 

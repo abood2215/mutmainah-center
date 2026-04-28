@@ -258,9 +258,11 @@ Route::middleware(['auth.employee'])->group(function () {
         ]);
     })->name('finance.movement-print');
 
+    // عيادة: تقرير المكاتب فقط (RequireAuth يمرّرها)
+    Route::get('/finance/reports', \App\Livewire\Finance\Reports::class)->name('finance.reports');
+
     // مستقبل أول + مدير
     Route::middleware('require.reception1')->group(function () {
-        Route::get('/finance/reports',      \App\Livewire\Finance\Reports::class)->name('finance.reports');
         Route::get('/finance/branch-report',\App\Livewire\Finance\BranchReport::class)->name('finance.branch-report');
     });
 
