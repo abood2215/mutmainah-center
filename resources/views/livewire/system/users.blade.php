@@ -50,7 +50,7 @@
                 </div>
                 <div>
                     <label style="display:block; font-size:0.75rem; font-weight:800; color:#6b7280; margin-bottom:0.35rem;">الصلاحية <span style="color:#dc2626;">*</span></label>
-                    <select wire:model="newRole" class="form-input" style="width:100%; box-sizing:border-box;">
+                    <select wire:model.live="newRole" class="form-input" style="width:100%; box-sizing:border-box;">
                         <option value="reception">مستقبل ثاني</option>
                         <option value="reception1">مستقبل أول</option>
                         <option value="admin">مدير</option>
@@ -163,7 +163,7 @@
                         @if($hasRole)
                         <td style="padding:0.85rem 1rem; text-align:center;">
                             @if($editingId === $user->id)
-                                <select wire:model="editRole" class="form-input" style="font-size:0.82rem; padding:0.35rem 0.6rem;">
+                                <select wire:model.live="editRole" class="form-input" style="font-size:0.82rem; padding:0.35rem 0.6rem;">
                                     <option value="reception">مستقبل ثاني</option>
                                     <option value="reception1">مستقبل أول</option>
                                     <option value="admin">مدير</option>

@@ -40,7 +40,7 @@
                     <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); margin-bottom:0.3rem;">إلى تاريخ</div>
                     <input type="date" wire:model="dateTo" class="form-input" style="width:160px;">
                 </div>
-                @if(!in_array($reportType, ['pb', 'patients', 'services']))
+                @if(!in_array($reportType, ['pb', 'patients', 'services']) && (auth()->user()?->role ?? '') !== 'clinic')
                 <div>
                     <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); margin-bottom:0.3rem;">المكتب</div>
                     <select wire:model="filterClinic" class="form-input" style="width:210px;">

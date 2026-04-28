@@ -101,7 +101,16 @@ class Reports extends Component
             ->orderBy('k.id', 'desc');
 
         $this->applyDateFilter($query, 'k.pdate');
-        if ($this->filterClinic) $query->where('k.clinic_id', $this->filterClinic);
+
+        // دور عيادة: فلتر إجباري
+        $userClinicIds = [];
+        if ((auth()->user()?->role ?? '') === 'clinic') {
+            $userClinicIds = json_decode(auth()->user()?->clinic_ids ?? '[]', true);
+            if (!empty($userClinicIds)) $query->whereIn('k.clinic_id', $userClinicIds);
+        } elseif ($this->filterClinic) {
+            $query->where('k.clinic_id', $this->filterClinic);
+        }
+
         if ($this->search) {
             $t = '%' . $this->search . '%';
             $query->where(fn($q) => $q->where('s.full_name', 'like', $t)
@@ -114,7 +123,8 @@ class Reports extends Component
             ->leftJoin('rec as r', 'r.id', '=', 'k.rec_id')
             ->leftJoin('kstu as s', 's.id', '=', 'r.st_id')
             ->where('k.price', '>', 0)
-            ->when($this->filterClinic, fn($q) => $q->where('k.clinic_id', $this->filterClinic))
+            ->when(!empty($userClinicIds), fn($q) => $q->whereIn('k.clinic_id', $userClinicIds))
+            ->when(empty($userClinicIds) && $this->filterClinic, fn($q) => $q->where('k.clinic_id', $this->filterClinic))
             ->when($this->dateFrom, fn($q) => $q->whereRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') >= ?", [$this->dateFrom]))
             ->when($this->dateTo,   fn($q) => $q->whereRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') <= ?", [$this->dateTo]))
             ->when($this->search,   fn($q) => $q->where('s.full_name', 'like', '%'.$this->search.'%'))
@@ -436,14 +446,10 @@ class Reports extends Component
     ══════════════════════════════════════════════ */
     public function mount(): void
     {
-        // دور عيادة: اجبر نوع التقرير على clinics وابحث مباشرة
+        // دور عيادة: اجبر نوع التقرير على invoices وابحث مباشرة
         if ((auth()->user()?->role ?? '') === 'clinic') {
-            $this->reportType = 'clinics';
+            $this->reportType = 'invoices';
             $this->searched   = true;
-            $clinicIds = json_decode(auth()->user()?->clinic_ids ?? '[]', true);
-            if (!empty($clinicIds)) {
-                $this->filterClinic = (string) $clinicIds[0];
-            }
         }
     }
 
