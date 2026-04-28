@@ -232,7 +232,7 @@ Route::middleware(['auth.employee'])->group(function () {
 
         $payMethods = [
             1=>'نقدا', 3=>'شبكة', 6=>'فيزا', 4=>'تحويل بنكي',
-            11=>'MyFatoorah', 12=>'STC Pay', 14=>'دفع سريع', 20=>'Deema', 21=>'زكاء', 22=>'نقل رصيد',
+            11=>'MyFatoorah', 12=>'Deema', 14=>'دفع سريع', 20=>'Deema', 21=>'زكاء', 22=>'نقل رصيد',
             23=>'مجاني - من الرصيد',
         ];
 
@@ -240,6 +240,15 @@ Route::middleware(['auth.employee'])->group(function () {
         $hasRef = str_contains($desc, '| Ref:');
         $refNo = $hasRef ? trim(explode('| Ref:', $desc, 2)[1]) : null;
         $descClean = $hasRef ? trim(explode('| Ref:', $desc, 2)[0]) : trim($desc);
+
+        // تحديد طريقة الدفع الفعلية من pdesc إن كان pm=12
+        if ((int)$mov->payment_method === 12) {
+            if (preg_match('/2026\d{6,7}/', $desc)) {
+                $payMethods[12] = 'MyFatoorah';
+            } elseif (preg_match('/\b4\d{5}\b|\b45\d{4}\b/', $desc)) {
+                $payMethods[12] = 'Deema';
+            }
+        }
 
         return view('finance.movement-print', [
             'mov'        => $mov,
