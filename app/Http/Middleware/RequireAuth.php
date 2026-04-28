@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Auth;
 
 class RequireAuth
 {
-    // مدة الخمول بالثواني (4 دقائق)
-    const INACTIVITY_LIMIT = 240;
+    // مدة الخمول بالثواني (10 دقائق)
+    const INACTIVITY_LIMIT = 600;
 
     public function handle(Request $request, Closure $next)
     {
