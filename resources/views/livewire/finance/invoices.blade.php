@@ -394,8 +394,7 @@ $years  = range(2000, now()->year + 1);
 $groups = [
     'كلاسيك' => [
         ['en'=>'Cash',           'ar'=>'النقدية',        'val'=>($payBreak[1]['total'] ?? 0),                          'icon'=>'💵'],
-        ['en'=>'Visa (legacy)',  'ar'=>'فيزا (قديم)',    'val'=>$payBreak[2]['total']  ?? 0, 'icon'=>'💳'],
-        ['en'=>'Visa',           'ar'=>'الفيزا',          'val'=>$payBreak[6]['total']  ?? 0, 'icon'=>'💳'],
+        ['en'=>'Visa',           'ar'=>'فيزا',            'val'=>($payBreak[2]['total'] ?? 0) + ($payBreak[6]['total'] ?? 0), 'icon'=>'💳'],
         ['en'=>'Net / شبكة',    'ar'=>'الشبكة',          'val'=>$payBreak[3]['total']  ?? 0, 'icon'=>'🏦'],
         ['en'=>'Bank Transfer',  'ar'=>'التحويل البنكي',  'val'=>$payBreak[4]['total']  ?? 0, 'icon'=>'🏛'],
         ['en'=>'Voucher',        'ar'=>'السندات',         'val'=>$payBreak[5]['total']  ?? 0, 'icon'=>'🧾'],
