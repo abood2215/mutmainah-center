@@ -724,9 +724,8 @@
                     </select>
                 </div>
 
-                @php 
-                    $isFreeOrFromBalance = $isFree || in_array($paymentMethod, [8, 23]);
-                    $afDanger = $hasAccount && !$isFreeOrFromBalance && $patientAmount > 0 && $balance < $patientAmount; 
+                @php
+                    $afDanger = $hasAccount && !$isFree && (int)$paymentMethod === 5 && $patientAmount > 0 && $balance < $patientAmount;
                 @endphp
                 <div class="nc-amount-final {{ $afDanger ? 'af-danger' : '' }}">
                     <div class="af-lbl">{{ $afDanger ? '⛔ الرصيد غير كافٍ' : 'المبلغ على العميل' }}</div>
@@ -745,8 +744,7 @@
 
     {{-- ── الشريط السفلي ── --}}
     @php
-        $isFreeOrFromBalance = $isFree || in_array($paymentMethod, [8, 23]);
-        $balanceInsufficient = $hasAccount && !$isFreeOrFromBalance && $patientAmount > 0 && $balance < $patientAmount;
+        $balanceInsufficient = $hasAccount && !$isFree && (int)$paymentMethod === 5 && $patientAmount > 0 && $balance < $patientAmount;
     @endphp
 
     <div class="nc-footer">
