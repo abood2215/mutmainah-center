@@ -360,7 +360,12 @@ $years  = range(2000, now()->year + 1);
                     </td>
                     <td style="padding:0.4rem 0.75rem; color:#555; border-left:1px solid #eee; font-size:0.79rem; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ $v->pdesc ?: '—' }}</td>
                     <td style="padding:0.4rem 0.6rem; text-align:center;">
-                        <span style="color:#c8401a; font-weight:700; font-size:0.79rem;">{{ $v->serial_no ?: $v->id }}</span>
+                        <a href="{{ route('finance.movement-print', ['id' => $v->id]) }}" target="_blank"
+                           style="color:#c8401a; font-weight:900; font-size:0.85rem; text-decoration:none; padding:0.15rem 0.5rem; border:1px solid #c8401a; border-radius:4px; display:inline-block;"
+                           onmouseover="this.style.background='#c8401a'; this.style.color='#fff'"
+                           onmouseout="this.style.background=''; this.style.color='#c8401a'">
+                            {{ $v->serial_no ?: $v->id }}
+                        </a>
                     </td>
                 </tr>
                 @empty
