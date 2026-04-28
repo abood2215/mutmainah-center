@@ -157,7 +157,8 @@ class Invoices extends Component
             ->join('acck as a', 'a.id', '=', 'k.acc_id')
             ->leftJoin('kstu as s', 's.id', '=', 'a.stu_id')
             ->where('k.acc_id', '>', 0)
-            ->where('k.status', 1);
+            ->where('k.status', 1)
+            ->whereRaw("(k.pdesc NOT LIKE '%تسوية رصيد%' OR k.pdesc IS NULL)");
 
         if ($this->filterUser)
             $q->where('k.user_id', $this->filterUser);
