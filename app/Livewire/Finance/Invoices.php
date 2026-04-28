@@ -34,7 +34,7 @@ class Invoices extends Component
         6  => ['ar' => 'فيزا',             'en' => 'Visa'],
         7  => ['ar' => 'مجاني',            'en' => 'Free'],
         11 => ['ar' => 'myfatoorah',       'en' => 'myfatoorah'],
-        12 => ['ar' => 'stcpay',           'en' => 'stcpay'],
+        12 => ['ar' => 'ديمة',             'en' => 'Deema'],
         14 => ['ar' => 'Quick Pay',        'en' => 'Quick Pay'],
         23 => ['ar' => 'مجاني - من الرصيد', 'en' => 'Free - from Balance'],
     ];

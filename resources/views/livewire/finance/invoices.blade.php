@@ -402,8 +402,7 @@ $groups = [
     ],
     'إلكتروني' => [
         ['en'=>'myfatoorah',     'ar'=>'ماي فاتورة',     'val'=>$payBreak[11]['total'] ?? 0, 'icon'=>'📲'],
-        ['en'=>'Deema',          'ar'=>'ديمة',            'val'=>$vMethodBreak['deema'] ?? 0, 'icon'=>'📲'],
-        ['en'=>'stcpay',         'ar'=>'STC Pay',         'val'=>$payBreak[12]['total'] ?? 0, 'icon'=>'📲'],
+        ['en'=>'Deema',          'ar'=>'ديمة',            'val'=>($vMethodBreak['deema'] ?? 0) + ($payBreak[12]['total'] ?? 0), 'icon'=>'📲'],
         ['en'=>'Quick Pay',      'ar'=>'الدفع السريع',   'val'=>$payBreak[14]['total'] ?? 0, 'icon'=>'📲'],
     ],
     'أخرى' => [
