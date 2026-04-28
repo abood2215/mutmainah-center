@@ -24,14 +24,21 @@ class Index extends Component
             return;
         }
 
-        $searchTerm = '%' . $this->search . '%';
+        $raw = trim($this->search);
+        $isFileId = str_starts_with($raw, '#');
+        $term = $isFileId ? ltrim($raw, '#') : $raw;
+        $searchTerm = '%' . $term . '%';
 
         $this->suggestions = DB::table('kstu')
             ->select('id', 'file_id', 'full_name as name', 'phone')
-            ->where(function($q) use ($searchTerm) {
-                $q->where('full_name', 'like', $searchTerm)
-                  ->orWhere('file_id', 'like', $searchTerm)
-                  ->orWhere('phone', 'like', $searchTerm);
+            ->where(function($q) use ($searchTerm, $isFileId) {
+                if ($isFileId) {
+                    $q->where('file_id', 'like', $searchTerm);
+                } else {
+                    $q->where('full_name', 'like', $searchTerm)
+                      ->orWhere('file_id', 'like', $searchTerm)
+                      ->orWhere('phone', 'like', $searchTerm);
+                }
             })
             ->limit(8)
             ->get();
@@ -48,7 +55,10 @@ class Index extends Component
         $patients = collect();
 
         if ($this->searchPerformed) {
-            $searchTerm = '%' . $this->search . '%';
+            $raw = trim($this->search);
+            $isFileId = str_starts_with($raw, '#');
+            $term = $isFileId ? ltrim($raw, '#') : $raw;
+            $searchTerm = '%' . $term . '%';
 
             $q = DB::table('kstu as k')
                 ->leftJoin('branches as b', 'b.id', '=', 'k.branch_id')
@@ -60,11 +70,15 @@ class Index extends Component
                     'k.reg_date as created_at',
                     'b.name as branch_name'
                 )
-                ->where(function($q) use ($searchTerm) {
-                    $q->where('k.full_name', 'like', $searchTerm)
-                      ->orWhere('k.file_id', 'like', $searchTerm)
-                      ->orWhere('k.phone', 'like', $searchTerm)
-                      ->orWhere('k.ssn', 'like', $searchTerm);
+                ->where(function($q) use ($searchTerm, $isFileId) {
+                    if ($isFileId) {
+                        $q->where('k.file_id', 'like', $searchTerm);
+                    } else {
+                        $q->where('k.full_name', 'like', $searchTerm)
+                          ->orWhere('k.file_id', 'like', $searchTerm)
+                          ->orWhere('k.phone', 'like', $searchTerm)
+                          ->orWhere('k.ssn', 'like', $searchTerm);
+                    }
                 });
 
             if ($this->filterBranch) {
