@@ -41,16 +41,15 @@ class History extends Component
 
         abort_if(!$this->patient, 404);
 
-        // الحقول تبدأ فارغة — البيانات محفوظة بقاعدة البيانات لكن غير معروضة
-        $this->current_complaint      = '';
-        $this->psychiatric_treatments = '';
-        $this->impression             = '';
-        $this->plan                   = '';
-        $this->family_history         = '';
-        $this->personal_history       = '';
-        $this->mental_state           = '';
-        $this->recommendations        = '';
-        $this->future_plan            = '';
+        $this->current_complaint      = $this->patient->chronic    ?? '';
+        $this->psychiatric_treatments = $this->patient->heir       ?? '';
+        $this->impression             = $this->patient->surg       ?? '';
+        $this->plan                   = $this->patient->allerg     ?? '';
+        $this->family_history         = $this->patient->f_history  ?? '';
+        $this->personal_history       = $this->patient->notes      ?? '';
+        $this->mental_state           = $this->patient->evalu      ?? '';
+        $this->recommendations        = $this->patient->recomn     ?? '';
+        $this->future_plan            = $this->patient->fut_plan   ?? '';
 
         // تحميل تاريخ الميلاد - محاولة استخراج يوم/شهر/سنة من date_of_birth
         if ($this->patient->date_of_birth) {

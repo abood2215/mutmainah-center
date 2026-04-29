@@ -86,7 +86,7 @@ class Index extends Component
         $pageIds = $checks->pluck('id')->toArray();
         $payments = DB::table('kpayments')
             ->whereIn('rec_id', $pageIds)
-            ->select('rec_id', DB::raw('COALESCE(SUM(price), 0) as amount'), DB::raw('MAX(vno) as vno'), DB::raw('MAX(serial_no) as serial_no'))
+            ->select('rec_id', DB::raw('COALESCE(SUM(price - COALESCE(discount, 0)), 0) as amount'), DB::raw('MAX(vno) as vno'), DB::raw('MAX(serial_no) as serial_no'))
             ->groupBy('rec_id')
             ->get()
             ->keyBy('rec_id');

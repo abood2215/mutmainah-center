@@ -94,6 +94,8 @@ class Reports extends Component
             ->where('k.price', '>', 0)
             ->select(
                 'k.id', 'k.serial_no', 'k.pdate', 'k.price',
+                'k.discount', 'k.rec_id',
+                DB::raw('(k.price - COALESCE(k.discount, 0)) as net'),
                 'k.payment_method', 'k.pdesc', 'k.vno',
                 's.full_name as patient_name', 's.file_id',
                 'c.name as clinic_name'
@@ -118,8 +120,8 @@ class Reports extends Component
                 ->orWhere('s.file_id', 'like', $t));
         }
 
-        $rows  = $query->paginate(20);
-        $total = DB::table('kpayments as k')
+        $rows = $query->paginate(20);
+        $totalsQuery = DB::table('kpayments as k')
             ->leftJoin('rec as r', 'r.id', '=', 'k.rec_id')
             ->leftJoin('kstu as s', 's.id', '=', 'r.st_id')
             ->where('k.price', '>', 0)
@@ -128,9 +130,14 @@ class Reports extends Component
             ->when($this->dateFrom, fn($q) => $q->whereRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') >= ?", [$this->dateFrom]))
             ->when($this->dateTo,   fn($q) => $q->whereRaw("STR_TO_DATE(k.pdate, '%e-%c-%Y') <= ?", [$this->dateTo]))
             ->when($this->search,   fn($q) => $q->where('s.full_name', 'like', '%'.$this->search.'%'))
-            ->sum('k.price');
+            ->selectRaw('SUM(k.price) as total, SUM(COALESCE(k.discount,0)) as discount, SUM(k.price - COALESCE(k.discount,0)) as net')
+            ->first();
 
-        return ['rows' => $rows, 'summary' => ['total' => $total]];
+        return ['rows' => $rows, 'summary' => [
+            'total'    => (float) ($totalsQuery->total    ?? 0),
+            'discount' => (float) ($totalsQuery->discount ?? 0),
+            'net'      => (float) ($totalsQuery->net      ?? 0),
+        ]];
     }
 
     /* ══════════════════════════════════════════════

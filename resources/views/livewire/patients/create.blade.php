@@ -70,8 +70,57 @@
                             <label style="display:block; font-size:0.85rem; font-weight:800; color:var(--text-dim); margin-bottom:0.4rem;">
                                 رقم الجوال <span style="color:var(--danger);">*</span>
                             </label>
-                            <input type="text" wire:model="phone" placeholder="05XXXXXXXX..."
-                                class="form-input">
+                            <div style="display:flex; gap:0; border:1px solid #d1d5db; border-radius:8px; overflow:visible; background:#fff;">
+                                <!-- كود الدولة -->
+                                <div x-data="{
+                                    open: false,
+                                    search: '',
+                                    selected: { flag:'🇰🇼', name:'الكويت', dial:'+965' },
+                                    countries: @json($countryCodes),
+                                    get filtered() {
+                                        if (!this.search) return this.countries;
+                                        const s = this.search;
+                                        return this.countries.filter(c => c.name.includes(s) || c.dial.includes(s));
+                                    },
+                                    pick(c) {
+                                        this.selected = c;
+                                        $wire.set('phone_code', c.dial);
+                                        this.open = false;
+                                        this.search = '';
+                                    }
+                                }" @click.outside="open=false" style="position:relative; flex-shrink:0;">
+                                    <button type="button" @click="open=!open"
+                                        style="height:42px; padding:0 0.75rem; background:#f8fafc; border:none; border-left:1px solid #d1d5db; border-radius:0 8px 8px 0; cursor:pointer; display:flex; align-items:center; gap:0.4rem; font-family:'Tajawal',sans-serif; font-size:0.88rem; font-weight:700; color:var(--navy); white-space:nowrap; min-width:90px; justify-content:center;">
+                                        <span x-text="selected.flag"></span>
+                                        <span x-text="selected.dial" style="color:var(--primary);"></span>
+                                        <span style="font-size:0.7rem; color:#999;">▾</span>
+                                    </button>
+                                    <div x-show="open" x-transition
+                                        style="position:absolute; top:calc(100% + 4px); right:0; z-index:9999; background:#fff; border:1px solid #d1d5db; border-radius:10px; width:260px; box-shadow:0 8px 24px rgba(0,0,0,0.13); display:flex; flex-direction:column; overflow:hidden;">
+                                        <div style="padding:0.5rem 0.6rem; border-bottom:1px solid #f0f0f0;">
+                                            <input x-model="search" @click.stop
+                                                placeholder="🔍 بحث بالدولة أو الكود..."
+                                                style="width:100%; border:1px solid #e0e0e0; border-radius:6px; padding:0.4rem 0.6rem; font-family:'Tajawal',sans-serif; font-size:0.83rem; outline:none; box-sizing:border-box;">
+                                        </div>
+                                        <div style="overflow-y:auto; max-height:220px;">
+                                            <template x-for="c in filtered" :key="c.name">
+                                                <div @click="pick(c)"
+                                                    :style="selected.name===c.name ? 'background:var(--primary-glow);' : ''"
+                                                    style="padding:0.45rem 0.75rem; cursor:pointer; display:flex; align-items:center; gap:0.5rem; font-family:'Tajawal',sans-serif; transition:background 0.1s;"
+                                                    onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''">
+                                                    <span x-text="c.flag" style="font-size:1.1rem;"></span>
+                                                    <span x-text="c.name" style="font-size:0.83rem; flex:1;"></span>
+                                                    <span x-text="c.dial" style="font-size:0.8rem; font-weight:800; color:var(--primary);"></span>
+                                                </div>
+                                            </template>
+                                            <div x-show="filtered.length===0" style="padding:1rem; text-align:center; color:#999; font-size:0.83rem;">لا توجد نتائج</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- رقم الجوال -->
+                                <input type="text" wire:model="phone" placeholder="05XXXXXXXX"
+                                    style="flex:1; border:none; outline:none; padding:0 0.85rem; font-family:'Tajawal',sans-serif; font-size:0.92rem; border-radius:8px 0 0 8px; background:transparent; min-width:0;">
+                            </div>
                             @error('phone') <span style="color:var(--danger); font-size:0.8rem; font-weight:700; margin-top:0.3rem; display:block;">{{ $message }}</span> @enderror
                         </div>
 
@@ -94,15 +143,50 @@
                         <!-- الجنسية -->
                         <div>
                             <label style="display:block; font-size:0.85rem; font-weight:800; color:var(--text-dim); margin-bottom:0.4rem;">الجنسية</label>
-                            <select wire:model="nationality" class="form-input">
-                                <option value="1">كويتي</option>
-                                <option value="2">سعودي</option>
-                                <option value="3">مصري</option>
-                                <option value="4">أردني</option>
-                                <option value="5">لبناني</option>
-                                <option value="6">سوري</option>
-                                <option value="99">أخرى</option>
-                            </select>
+                            <div x-data="{
+                                open: false,
+                                search: '',
+                                selected: 'كويتي/ة',
+                                items: @json($nationalities),
+                                get filtered() {
+                                    if (!this.search) return this.items;
+                                    const s = this.search;
+                                    return this.items.filter(i => i.nat.includes(s) || i.country.includes(s));
+                                },
+                                pick(nat) {
+                                    this.selected = nat;
+                                    $wire.set('nationality', nat);
+                                    this.open = false;
+                                    this.search = '';
+                                }
+                            }" @click.outside="open=false" style="position:relative;">
+                                <button type="button" @click="open=!open"
+                                    class="form-input"
+                                    style="display:flex; align-items:center; justify-content:space-between; cursor:pointer; text-align:right; gap:0.5rem;">
+                                    <span x-text="selected" style="flex:1;"></span>
+                                    <span style="font-size:0.7rem; color:#999;">▾</span>
+                                </button>
+                                <div x-show="open" x-transition
+                                    style="position:absolute; top:calc(100% + 4px); right:0; left:0; z-index:9998; background:#fff; border:1px solid #d1d5db; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.13); display:flex; flex-direction:column; overflow:hidden;">
+                                    <div style="padding:0.5rem 0.6rem; border-bottom:1px solid #f0f0f0;">
+                                        <input x-model="search" @click.stop
+                                            placeholder="🔍 بحث بالجنسية أو الدولة..."
+                                            style="width:100%; border:1px solid #e0e0e0; border-radius:6px; padding:0.4rem 0.6rem; font-family:'Tajawal',sans-serif; font-size:0.83rem; outline:none; box-sizing:border-box;">
+                                    </div>
+                                    <div style="overflow-y:auto; max-height:220px;">
+                                        <template x-for="item in filtered" :key="item.nat">
+                                            <div @click="pick(item.nat)"
+                                                :style="selected===item.nat ? 'background:var(--primary-glow);' : ''"
+                                                style="padding:0.45rem 0.75rem; cursor:pointer; display:flex; align-items:center; justify-content:space-between; font-family:'Tajawal',sans-serif; transition:background 0.1s;"
+                                                onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''">
+                                                <span x-text="item.nat" style="font-size:0.83rem; font-weight:700;"></span>
+                                                <span x-text="item.country" style="font-size:0.78rem; color:#999;"></span>
+                                            </div>
+                                        </template>
+                                        <div x-show="filtered.length===0" style="padding:1rem; text-align:center; color:#999; font-size:0.83rem;">لا توجد نتائج</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- الحالة الاجتماعية -->

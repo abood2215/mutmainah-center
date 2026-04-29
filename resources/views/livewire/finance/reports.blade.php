@@ -76,6 +76,12 @@
             @if(isset($summary['total']))
             <div class="badge" style="background:var(--primary); color:#fff; padding:0.6rem 1.5rem; border-radius:10px; font-weight:900; font-size:0.92rem;">الإجمالي: {{ number_format($summary['total'], 0) }}</div>
             @endif
+            @if(isset($summary['discount']) && $summary['discount'] > 0)
+            <div class="badge" style="background:#c0392b; color:#fff; padding:0.6rem 1.5rem; border-radius:10px; font-weight:900; font-size:0.92rem;">الخصم: {{ number_format($summary['discount'], 0) }}</div>
+            @endif
+            @if(isset($summary['net']))
+            <div class="badge" style="background:#1a7a4a; color:#fff; padding:0.6rem 1.5rem; border-radius:10px; font-weight:900; font-size:0.92rem;">الصافي: {{ number_format($summary['net'], 0) }}</div>
+            @endif
             @if(isset($summary['count']))
             <div class="badge" style="background:var(--navy); color:#fff; padding:0.6rem 1.5rem; border-radius:10px; font-weight:900; font-size:0.92rem;">العدد: {{ number_format($summary['count']) }}</div>
             @endif
@@ -115,6 +121,9 @@
                         <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">المكتب</th>
                         <th style="padding:0.7rem 1rem; font-weight:800; color:var(--text-dim);">البيان</th>
                         <th style="padding:0.7rem 1rem; text-align:center; font-weight:800; color:var(--primary);">المبلغ</th>
+                        <th style="padding:0.7rem 1rem; text-align:center; font-weight:800; color:#c0392b;">الخصم</th>
+                        <th style="padding:0.7rem 1rem; text-align:center; font-weight:800; color:#1a7a4a;">الصافي</th>
+                        <th style="padding:0.7rem 0.5rem; text-align:center; font-weight:800; color:var(--text-dim);"></th>
                     </tr></thead>
                     <tbody>@forelse($rows as $r)
                         <tr style="border-bottom:1px solid #f0f2f5;" onmouseover="this.style.background='#fafbfc'" onmouseout="this.style.background=''">
@@ -122,10 +131,18 @@
                             <td style="padding:0.65rem 1rem; font-weight:800; color:var(--navy);">{{ $r->patient_name ?: '—' }}@if($r->file_id)<div style="font-size:0.74rem; color:var(--text-muted);">#{{ $r->file_id }}</div>@endif</td>
                             <td style="padding:0.65rem 1rem; color:#1565c0; font-weight:700; white-space:nowrap; direction:ltr; unicode-bidi:isolate;">{{ fmt_date($r->pdate) }}</td>
                             <td style="padding:0.65rem 1rem; color:var(--text-dim);">{{ $r->clinic_name ?: '—' }}</td>
-                            <td style="padding:0.65rem 1rem; color:var(--text-dim); max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ $r->pdesc ?: '—' }}</td>
-                            <td style="padding:0.65rem 1rem; text-align:center; font-weight:900; color:var(--primary);">{{ number_format($r->price, 0) }}</td>
+                            <td style="padding:0.65rem 1rem; color:var(--text-dim); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ $r->pdesc ?: '—' }}</td>
+                            <td style="padding:0.65rem 1rem; text-align:center; font-weight:700; color:var(--text-dim);">{{ number_format($r->price, 0) }}</td>
+                            <td style="padding:0.65rem 1rem; text-align:center; font-weight:700; color:#c0392b;">{{ ($r->discount ?? 0) > 0 ? number_format($r->discount, 0) : '—' }}</td>
+                            <td style="padding:0.65rem 1rem; text-align:center; font-weight:900; color:#1a7a4a;">{{ number_format($r->net ?? $r->price, 0) }}</td>
+                            <td style="padding:0.65rem 0.5rem; text-align:center;">
+                                @if($r->rec_id)
+                                <a href="{{ route('finance.invoice-print', $r->rec_id) }}" target="_blank"
+                                   style="color:#2563eb; font-size:0.78rem; text-decoration:none; border:1px solid #dbeafe; background:#eff6ff; padding:0.2rem 0.5rem; border-radius:5px; white-space:nowrap;">📄 فتح</a>
+                                @endif
+                            </td>
                         </tr>
-                    @empty<tr><td colspan="6" style="padding:3rem; text-align:center; color:var(--text-muted);">لا توجد بيانات</td></tr>@endforelse</tbody>
+                    @empty<tr><td colspan="9" style="padding:3rem; text-align:center; color:var(--text-muted);">لا توجد بيانات</td></tr>@endforelse</tbody>
 
                     @elseif($reportType === 'vouchers')
                     <thead><tr style="background:#fafbfc; border-bottom:2px solid var(--border);">

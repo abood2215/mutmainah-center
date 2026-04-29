@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Patients;
 
+use App\Data\Countries;
 use App\Helpers\ActivityLogger;
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -12,9 +13,10 @@ class Create extends Component
     public $name           = '';
     public $ssn            = '';
     public $phone          = '';
+    public $phone_code     = '+965';
     public $email          = '';
     public $gender         = 1;
-    public $nationality    = 1;
+    public $nationality    = 'كويتي/ة';
     public $social         = 1;
     public $birth_day      = '';
     public $birth_month    = '';
@@ -69,10 +71,10 @@ class Create extends Component
             'branch_id'     => (int) $this->branch_id,
             'full_name'     => trim($this->name),
             'ssn'           => trim($this->ssn),
-            'phone'         => trim($this->phone),
+            'phone'         => trim($this->phone_code) . trim($this->phone),
             'email'         => trim($this->email),
             'gender'        => (int) $this->gender,
-            'nationality'   => (int) $this->nationality,
+            'nationality'   => trim($this->nationality),
             'social'        => (int) $this->social,
             'date_of_birth' => $dob,
             'address1'      => trim($this->address),
@@ -116,6 +118,9 @@ class Create extends Component
 
     public function render()
     {
-        return view('livewire.patients.create')->layout('layouts.app');
+        return view('livewire.patients.create', [
+            'countryCodes'  => Countries::forDropdown(),
+            'nationalities' => Countries::nationalities(),
+        ])->layout('layouts.app');
     }
 }

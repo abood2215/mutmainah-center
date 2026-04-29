@@ -127,7 +127,8 @@ class Dashboard extends Component
                 ->where('price', '>', 0)
                 ->where('acc_id', 0)
                 ->where('pdate', 'like', "%-{$currentMonth}-{$currentYear}")
-                ->sum('price');
+                ->selectRaw('COALESCE(SUM(price - COALESCE(discount, 0)), 0) as net')
+                ->value('net') ?? 0;
 
             // إيرادات يومية للشهر الحالي
             $daysInMonth  = now()->daysInMonth;
@@ -135,7 +136,7 @@ class Dashboard extends Component
                 ->where('price', '>', 0)
                 ->where('acc_id', 0)
                 ->where('pdate', 'like', "%-{$currentMonth}-{$currentYear}")
-                ->select(DB::raw("CAST(SUBSTRING_INDEX(pdate, '-', 1) AS UNSIGNED) as day"), DB::raw('SUM(price) as total'))
+                ->select(DB::raw("CAST(SUBSTRING_INDEX(pdate, '-', 1) AS UNSIGNED) as day"), DB::raw('SUM(price - COALESCE(discount, 0)) as total'))
                 ->groupBy(DB::raw("CAST(SUBSTRING_INDEX(pdate, '-', 1) AS UNSIGNED)"))
                 ->pluck('total', 'day');
 
@@ -158,7 +159,8 @@ class Dashboard extends Component
                     ->where('price', '>', 0)
                     ->where('acc_id', 0)
                     ->where('pdate', 'like', "%-{$m}-{$y}")
-                    ->sum('price');
+                    ->selectRaw('COALESCE(SUM(price - COALESCE(discount, 0)), 0) as net')
+                    ->value('net') ?? 0;
                 $chartMonthLabels[] = $dt->locale('ar')->isoFormat('MMM YY');
                 $chartMonthData[]   = round($rev, 3);
                 $chartMonthKeys[]   = ['year' => $y, 'month' => $m, 'label' => $dt->locale('ar')->isoFormat('MMMM YYYY')];
@@ -189,7 +191,7 @@ class Dashboard extends Component
                 ->where('p.price', '>', 0)
                 ->where('p.pdate', 'like', "%-{$currentMonth}-{$currentYear}")
                 ->whereIn('k.branch_id', $allBranches->pluck('id'))
-                ->select('k.branch_id', DB::raw('SUM(p.price) as revenue'))
+                ->select('k.branch_id', DB::raw('SUM(p.price - COALESCE(p.discount, 0)) as revenue'))
                 ->groupBy('k.branch_id')
                 ->pluck('revenue', 'branch_id');
 
@@ -211,7 +213,7 @@ class Dashboard extends Component
                     ->where('price', '>', 0)
                     ->where('acc_id', 0)
                     ->where('pdate', 'like', "%-{$m}-{$y}")
-                    ->select(DB::raw("CAST(SUBSTRING_INDEX(pdate, '-', 1) AS UNSIGNED) as day"), DB::raw('SUM(price) as total'))
+                    ->select(DB::raw("CAST(SUBSTRING_INDEX(pdate, '-', 1) AS UNSIGNED) as day"), DB::raw('SUM(price - COALESCE(discount, 0)) as total'))
                     ->groupBy(DB::raw("CAST(SUBSTRING_INDEX(pdate, '-', 1) AS UNSIGNED)"))
                     ->pluck('total', 'day');
 
@@ -248,7 +250,8 @@ class Dashboard extends Component
             ->where('price', '>', 0)
             ->where('acc_id', 0)
             ->where('pdate', $today)
-            ->sum('price');
+            ->selectRaw('COALESCE(SUM(price - COALESCE(discount, 0)), 0) as net')
+            ->value('net') ?? 0;
 
         // أحدث الكشوف اليوم (لا cache)
         $recentChecks = DB::table('rec as r')
